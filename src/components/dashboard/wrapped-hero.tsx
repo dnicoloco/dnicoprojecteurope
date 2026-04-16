@@ -197,6 +197,11 @@ export function WrappedHero({
           <div className="absolute z-10 top-10 left-3 font-display text-[64px] leading-none text-[#191919]">
             {padded}
           </div>
+          <img
+            src="/tutor-avatar.jpg"
+            alt={student.tutor ?? "Tutor"}
+            className="absolute z-10 bottom-3 right-3 w-10 h-10 rounded-[4px] object-cover border-2 border-white/50"
+          />
           <div className="absolute z-10 bottom-2 left-0 right-0 px-2 opacity-70">
             <Sparkline
               values={session.confidenceArc}
@@ -247,18 +252,6 @@ export function WrappedHero({
           </div>
 
           <div className="flex items-center justify-end gap-2 mt-auto">
-            {/* Tutor avatar — square, above replay */}
-            <div className="flex items-center gap-2.5 mr-auto">
-              <img
-                src="/tutor-avatar.jpg"
-                alt={student.tutor ?? "Tutor"}
-                className="w-11 h-11 rounded-[4px] object-cover shrink-0"
-              />
-              <div>
-                <div className="text-[14px] font-medium text-[#191919]">{student.tutor}</div>
-                <div className="text-[12px] text-[#6a7580]">{fmtSessionDate(session.date)}</div>
-              </div>
-            </div>
             <button
               type="button"
               onClick={() => ttsPlay(narration)}
