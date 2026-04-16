@@ -55,10 +55,14 @@ export function VocabPills({ studentKey }: { studentKey: string }) {
 
   return (
     <div className="relative w-full rounded-[6px] pb-2 mt-6">
-      {/* Hover tooltip — appears above the pills */}
-      <div className="min-h-[52px] mb-2">
-        {hovered ? (
-          <div className="rounded-[8px] p-3 backdrop-blur-[16px] text-[13px] transition-opacity" style={{ boxShadow: GLASS_SHADOW, background: "rgba(255,255,255,0.92)" }}>
+      <div className="text-[13px] font-medium text-[#6a7580] text-center mb-2">Recent new words</div>
+      <div className="relative flex gap-2 justify-center">
+        {/* Hover tooltip — floats above pills */}
+        {hovered && (
+          <div
+            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-[320px] z-50 rounded-[8px] p-3 backdrop-blur-[16px] text-[13px]"
+            style={{ boxShadow: GLASS_SHADOW, background: "rgba(255,255,255,0.95)" }}
+          >
             <div className="font-medium text-[#191919] mb-0.5">
               {hovered.word}
               <span className="text-[#6a7580] font-normal ml-2">
@@ -69,11 +73,7 @@ export function VocabPills({ studentKey }: { studentKey: string }) {
               {hovered.context}
             </div>
           </div>
-        ) : (
-          <div className="text-[13px] font-medium text-[#6a7580] text-center pt-6">Recent new words</div>
         )}
-      </div>
-      <div className="flex gap-2 justify-center">
         {pills.slice(0, 3).map((p) => (
           <button
             key={p.word}
