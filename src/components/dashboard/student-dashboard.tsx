@@ -120,16 +120,21 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
           label="Book new session"
           hint="Pick a slot with your tutor"
         />
-        <div className="shrink-0 w-[220px] text-left">
-          <div className="relative aspect-square w-full rounded-[6px] overflow-hidden bg-[#191919] flex flex-col justify-between p-3">
-            <div className="text-[13px] font-semibold text-white">Upcoming</div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <img src="/tutor-avatar.jpg" alt="Tutor" className="w-8 h-8 rounded-[4px] object-cover border border-white/20 shrink-0" />
-                <span className="text-[12px] font-semibold text-white/90">Sarah W.</span>
-              </div>
-              <div className="text-[11px] text-white/50">Thu 17 Apr · 18:30</div>
+        <div className="group shrink-0 w-[220px] text-left cursor-pointer">
+          <div className="relative aspect-square w-full rounded-[6px] overflow-hidden bg-[#191919] p-3 flex flex-col border border-black/[0.06]">
+            <div className="font-display text-[24px] text-white leading-tight" style={{ fontWeight: 500 }}>
+              Upcoming
             </div>
+            <div className="mt-auto flex items-center gap-2">
+              <img src="/tutor-avatar.jpg" alt="Tutor" className="w-9 h-9 rounded-[4px] object-cover border border-white/20 shrink-0" />
+              <div>
+                <div className="text-[12px] font-semibold text-white/90">Sarah W.</div>
+                <div className="text-[11px] text-white/50">Thu 17 Apr · 18:30</div>
+              </div>
+            </div>
+          </div>
+          <div className="pt-2 px-0.5">
+            <div className="text-[13px] text-[#191919] line-clamp-1">Next lesson booked</div>
           </div>
         </div>
         {filteredSessions.map((s) => {
