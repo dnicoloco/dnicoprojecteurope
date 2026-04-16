@@ -386,9 +386,9 @@ export function JourneyStrip({
 // ============================================================
 // ProjectionWidget — dynamic "In X months" with +/- lesson rate
 // ============================================================
-// Cambridge: ~200 guided hours per CEFR level. Preply 2025 study:
-// 3x faster with 1-on-1 = ~67 hours per level. At 1hr/lesson:
-const HOURS_PER_LEVEL = 67;
+// Preply 2025 Leanlab study: 1 in 3 learners advanced a full CEFR
+// level in 24-48 hours of 1-on-1 lessons. Middle estimate: 36 hours.
+const HOURS_PER_LEVEL = 36;
 
 const MILESTONES: Array<{ maxMonths: number; text: string }> = [
   { maxMonths: 4, text: "You'll be expressing complex opinions, debating abstract topics, and understanding most native speakers" },
@@ -458,19 +458,16 @@ function Panel({
   const active = playingId === id;
   return (
     <div
-      className="rounded-[6px] p-4 flex flex-col gap-3 min-h-[160px] backdrop-blur-[16px] text-left"
+      className="rounded-[6px] p-5 flex flex-col gap-3 min-h-[220px] backdrop-blur-[16px] text-left"
       style={GLASS_STYLE}
     >
       <div className="flex items-start justify-between gap-2">
-        <h3
-          className="font-display text-[22px] leading-none text-[#191919]"
-          style={{ fontWeight: 500 }}
-        >
+        <span className="text-[13px] font-medium text-[#191919]/35">
           {label}
-        </h3>
-        <span className="text-[12px] text-[#191919]/40">{meta}</span>
+        </span>
+        <span className="text-[12px] text-[#191919]/30">{meta}</span>
       </div>
-      <p className="text-[15px] leading-snug text-[#191919] text-left line-clamp-4">
+      <p className="text-[17px] leading-snug text-[#191919] text-left line-clamp-5 font-medium">
         {quote ? <>&ldquo;<CefrHighlightedText text={quote} />&rdquo;</> : "\u00A0"}
       </p>
       <div className="mt-auto pt-1 flex justify-end">
