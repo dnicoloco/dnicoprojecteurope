@@ -336,6 +336,11 @@ export function JourneyStrip({
                 quote={pastQuote}
                 playingId={playingId}
                 onPlay={play}
+                metrics={[
+                  { label: "Accuracy", value: 78 },
+                  { label: "Flow", value: 33 },
+                  { label: "Range", value: 42 },
+                ]}
               />
               <Panel
                 id="now"
@@ -344,6 +349,11 @@ export function JourneyStrip({
                 quote={nowQuote}
                 playingId={playingId}
                 onPlay={play}
+                metrics={[
+                  { label: "Accuracy", value: 91 },
+                  { label: "Flow", value: 66 },
+                  { label: "Range", value: 74 },
+                ]}
               />
             </div>
           ) : (
@@ -439,6 +449,24 @@ function ProjectionWidget({ theme }: { theme: string }) {
   );
 }
 
+type PanelMetric = { label: string; value: number; max?: number };
+
+function MiniBar({ label, value, max = 100 }: PanelMetric) {
+  const pct = Math.min(100, Math.round((value / max) * 100));
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[10px] text-[#191919]/40 w-[52px] text-right shrink-0">{label}</span>
+      <div className="flex-1 h-[5px] rounded-full bg-[#191919]/[0.06] overflow-hidden">
+        <div
+          className="h-full rounded-full bg-[#FF7AAC]"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <span className="text-[10px] font-medium text-[#191919]/50 w-[28px] shrink-0">{value}%</span>
+    </div>
+  );
+}
+
 function Panel({
   id,
   label,
@@ -446,6 +474,7 @@ function Panel({
   quote,
   playingId,
   onPlay,
+  metrics,
 }: {
   id: string;
   label: string;
@@ -453,6 +482,7 @@ function Panel({
   quote: string;
   playingId: string | null;
   onPlay: (id: string, text: string, speaker: "student" | "other") => void;
+  metrics?: PanelMetric[];
 }) {
   const active = playingId === id;
   return (
@@ -469,6 +499,11 @@ function Panel({
       <p className="text-[17px] leading-snug text-[#191919] text-left line-clamp-5 font-medium">
         {quote ? <>&ldquo;<CefrHighlightedText text={quote} />&rdquo;</> : "\u00A0"}
       </p>
+      {metrics && metrics.length > 0 && (
+        <div className="flex flex-col gap-1.5 mt-1">
+          {metrics.map((m) => <MiniBar key={m.label} {...m} />)}
+        </div>
+      )}
       <div className="mt-auto pt-1 flex justify-end">
         <button
           type="button"
