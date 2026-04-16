@@ -205,10 +205,10 @@ export function CefrSpanHighlightedText({
           >
             {p.text}
             <span
-              className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded text-[9px] font-medium text-white bg-[#191919] opacity-0 group-hover/phrase:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 select-none"
+              className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded text-[9px] font-medium text-white bg-[#191919] opacity-0 group-hover/phrase:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[99999] select-none"
               aria-hidden="true"
             >
-              {p.span.level}
+              {p.span.level}{p.span.label ? ` · ${p.span.label}` : ""}
             </span>
           </span>
         );
