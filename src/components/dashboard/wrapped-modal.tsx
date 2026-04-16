@@ -3,8 +3,6 @@
 import * as React from "react";
 import {
   X,
-  Volume2,
-  Pause,
   ChevronLeft,
   ChevronRight,
   ArrowUp,
@@ -16,15 +14,9 @@ import { SparklesText } from "@/components/ui/sparkles-text";
 import { VerticalCutReveal } from "@/components/ui/vertical-cut-reveal";
 import { AnimatedUnderlineText } from "@/components/ui/animated-underline-text";
 import { CycleGradientText } from "@/components/ui/cycle-gradient-text";
-import {
-  getLessonTranscript,
-  type LessonUtterance,
-} from "@/lib/db";
+import { LessonFullView } from "@/components/dashboard/lesson-full-view";
 import type { SessionDetail, StudentProgress, Topic } from "@/lib/metrics";
 
-const TTS_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/tts`;
-
-// Glassy inner panel style (reused in bubbles + slide accents).
 const GLASS_STYLE: React.CSSProperties = {
   background: "rgba(15, 23, 42, 0.01)",
   boxShadow: [
@@ -39,13 +31,6 @@ const GLASS_STYLE: React.CSSProperties = {
   ].join(", "),
 };
 
-const GLASS_TEXT: React.CSSProperties = {
-  background: "linear-gradient(#020617, #64748b)",
-  color: "transparent",
-  backgroundClip: "text",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-};
 
 // Vibrant Grainient palettes per slide tone — richer than pastel, grainier feel.
 const GRAIN_PALETTES: Record<string, [string, string, string]> = {
@@ -57,104 +42,8 @@ const GRAIN_PALETTES: Record<string, [string, string, string]> = {
 };
 
 // ------------------------------------------------------------
-// TTS hook
-// ------------------------------------------------------------
-function useClipPlayer() {
-  const [playingId, setPlayingId] = React.useState<string | null>(null);
-  const audioRef = React.useRef<HTMLAudioElement | null>(null);
-  const currentIdRef = React.useRef<string | null>(null);
-
-  const stop = React.useCallback(() => {
-    audioRef.current?.pause();
-    audioRef.current = null;
-    currentIdRef.current = null;
-    setPlayingId(null);
-  }, []);
-
-  const playOne = React.useCallback(
-    async (id: string, text: string, speaker: "student" | "other") => {
-      if (currentIdRef.current === id && audioRef.current) {
-        const a = audioRef.current;
-        if (a.paused) {
-          await a.play();
-          setPlayingId(id);
-        } else {
-          a.pause();
-          setPlayingId(null);
-        }
-        return;
-      }
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-        currentIdRef.current = null;
-      }
-      setPlayingId(id);
-      try {
-        const resp = await fetch(TTS_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, speaker }),
-        });
-        if (!resp.ok) throw new Error(`TTS ${resp.status}`);
-        const ct = resp.headers.get("content-type") ?? "";
-        let src: string;
-        let cleanup: (() => void) | null = null;
-        if (ct.includes("application/json")) {
-          const body = (await resp.json()) as { url?: string; error?: string };
-          if (!body.url) throw new Error(body.error ?? "no url");
-          src = body.url;
-        } else {
-          const blob = await resp.blob();
-          const objectUrl = URL.createObjectURL(blob);
-          src = objectUrl;
-          cleanup = () => URL.revokeObjectURL(objectUrl);
-        }
-        const audio = new Audio(src);
-        audio.playbackRate = 1.05;
-        audioRef.current = audio;
-        currentIdRef.current = id;
-        audio.addEventListener("ended", () => {
-          cleanup?.();
-          setPlayingId(null);
-          audioRef.current = null;
-          currentIdRef.current = null;
-        });
-        audio.addEventListener("error", () => {
-          cleanup?.();
-          setPlayingId(null);
-          audioRef.current = null;
-          currentIdRef.current = null;
-        });
-        await audio.play();
-      } catch (err) {
-        console.error("clip tts", err);
-        setPlayingId(null);
-        currentIdRef.current = null;
-      }
-    },
-    [],
-  );
-
-  React.useEffect(() => {
-    return () => {
-      audioRef.current?.pause();
-      audioRef.current = null;
-    };
-  }, []);
-
-  return { playingId, playOne, stop };
-}
-
-// ------------------------------------------------------------
 // Helpers
 // ------------------------------------------------------------
-function fmtMMSS(sec: number): string {
-  if (!Number.isFinite(sec) || sec < 0) return "0:00";
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
 function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-GB", {
     weekday: "short",
@@ -263,11 +152,8 @@ export function WrappedModal({
   topic: Topic | undefined;
   personaStudentKey: string | undefined;
 }) {
-  const { playingId, playOne, stop } = useClipPlayer();
-  const [phase, setPhase] = React.useState<"slides" | "transcript">("slides");
+  const [phase, setPhase] = React.useState<"slides" | "fullscreen">("slides");
   const [slideIdx, setSlideIdx] = React.useState(0);
-  const [transcript, setTranscript] = React.useState<LessonUtterance[]>([]);
-  const [loading, setLoading] = React.useState(false);
   const [hasSeenBefore, setHasSeenBefore] = React.useState(false);
 
   // Suppress unused warning on topic prop — reserved for per-topic colour tints.
@@ -286,9 +172,9 @@ export function WrappedModal({
     }
   }, [open, session]);
 
-  // Mark seen once the user reaches the transcript phase.
+  // Mark seen once the user reaches the fullscreen phase.
   React.useEffect(() => {
-    if (phase !== "transcript" || !session) return;
+    if (phase !== "fullscreen" || !session) return;
     try {
       localStorage.setItem(`wrapped:seen:L${session.lesson}`, "1");
     } catch {
@@ -312,26 +198,9 @@ export function WrappedModal({
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prevOverflow;
-      stop();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, phase, slideIdx]);
-
-  // Load transcript when modal opens
-  React.useEffect(() => {
-    if (!open || !session) return;
-    let alive = true;
-    setLoading(true);
-    setTranscript([]);
-    getLessonTranscript(personaStudentKey, session.lesson).then((tr) => {
-      if (!alive) return;
-      setTranscript(tr);
-      setLoading(false);
-    });
-    return () => {
-      alive = false;
-    };
-  }, [open, session, personaStudentKey]);
 
   if (!open || !session) return null;
 
@@ -389,123 +258,112 @@ export function WrappedModal({
   const atLast = slideIdx >= slides.length - 1;
 
   function next() {
-    if (phase === "transcript") return;
+    if (phase === "fullscreen") return;
     if (atLast) {
-      setPhase("transcript");
+      setPhase("fullscreen");
       return;
     }
     setSlideIdx((i) => Math.min(i + 1, slides.length - 1));
   }
   function prev() {
-    if (phase === "transcript") {
+    if (phase === "fullscreen") {
       setPhase("slides");
       return;
     }
     setSlideIdx((i) => Math.max(0, i - 1));
   }
 
-  // Phase-based width. Slides: tad wider than before. Transcript: roomier for chat.
-  const widthClass =
-    phase === "slides" ? "max-w-[560px]" : "max-w-[680px]";
+  // Container morphs from centered modal (slides) to full-screen (fullscreen lesson).
+  const isFullscreen = phase === "fullscreen";
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
-      onClick={onClose}
+      className={cn(
+        "fixed inset-0 z-50 transition-colors duration-500",
+        isFullscreen
+          ? "bg-white"
+          : "bg-black/70 backdrop-blur-sm flex items-center justify-center p-4",
+      )}
+      onClick={isFullscreen ? undefined : onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         className={cn(
-          "relative w-full h-[min(88vh,780px)] rounded-[16px] bg-white overflow-hidden flex flex-col shadow-[0_20px_60px_rgba(0,0,0,0.4)] transition-[max-width] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
-          widthClass,
+          "bg-white overflow-hidden flex flex-col transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          isFullscreen
+            ? "w-full h-full rounded-none shadow-none"
+            : "relative w-full max-w-[560px] h-[min(88vh,780px)] rounded-[16px] shadow-[0_20px_60px_rgba(0,0,0,0.4)]",
         )}
       >
-        {/* Top: close + progress */}
-        <div className="flex items-center gap-2 p-4 relative z-[2]">
-          <div className="flex-1 flex items-center gap-1.5">
-            {phase === "slides" ? (
-              slides.map((_, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "h-1 flex-1 rounded-full transition-colors",
-                    i <= slideIdx ? "bg-[#191919]" : "bg-black/10",
-                  )}
-                />
-              ))
-            ) : (
-              <div className="h-1 flex-1 rounded-full bg-[#191919]" />
-            )}
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="w-8 h-8 inline-flex items-center justify-center rounded-full text-[#191919] hover:bg-black/5 cursor-pointer"
-          >
-            <X size={16} />
-          </button>
-        </div>
-
-        {/* Body */}
-        {phase === "slides" ? (
-          <SlideView slide={slides[slideIdx]} studentName={student.name} slideIdx={slideIdx} />
-        ) : (
-          <TranscriptView
-            transcript={transcript}
-            loading={loading}
+        {isFullscreen ? (
+          /* Full-screen lesson view with CEFR highlights + turn chunking */
+          <LessonFullView
+            lessonNumber={session.lesson}
             student={student}
-            playingId={playingId}
-            onPlay={playOne}
+            personaStudentKey={personaStudentKey}
+            onBack={() => setPhase("slides")}
           />
-        )}
-
-        {/* Footer controls */}
-        {phase === "slides" ? (
-          <div className="flex items-center justify-between gap-3 p-4 border-t border-black/[0.06] bg-white relative z-[2]">
-            <div className="flex items-center gap-3">
+        ) : (
+          <>
+            {/* Top: close + progress */}
+            <div className="flex items-center gap-2 p-4 relative z-[2]">
+              <div className="flex-1 flex items-center gap-1.5">
+                {slides.map((_, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      "h-1 flex-1 rounded-full transition-colors",
+                      i <= slideIdx ? "bg-[#191919]" : "bg-black/10",
+                    )}
+                  />
+                ))}
+              </div>
               <button
                 type="button"
-                onClick={prev}
-                disabled={slideIdx === 0}
-                className="inline-flex items-center gap-1 text-[13px] text-[#6a7580] hover:text-[#191919] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                onClick={onClose}
+                aria-label="Close"
+                className="w-8 h-8 inline-flex items-center justify-center rounded-full text-[#191919] hover:bg-black/5 cursor-pointer"
               >
-                <ChevronLeft size={14} /> Back
+                <X size={16} />
               </button>
-              {hasSeenBefore && (
+            </div>
+
+            {/* Slide body */}
+            <SlideView slide={slides[slideIdx]} studentName={student.name} slideIdx={slideIdx} />
+
+            {/* Footer controls */}
+            <div className="flex items-center justify-between gap-3 p-4 border-t border-black/[0.06] bg-white relative z-[2]">
+              <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setPhase("transcript")}
-                  className="text-[12px] text-[#94a3b8] hover:text-[#191919] underline underline-offset-4 decoration-dotted cursor-pointer"
+                  onClick={prev}
+                  disabled={slideIdx === 0}
+                  className="inline-flex items-center gap-1 text-[13px] text-[#6a7580] hover:text-[#191919] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
                 >
-                  Skip to full chat
+                  <ChevronLeft size={14} /> Back
                 </button>
-              )}
+                {hasSeenBefore && (
+                  <button
+                    type="button"
+                    onClick={() => setPhase("fullscreen")}
+                    className="text-[12px] text-[#94a3b8] hover:text-[#191919] underline underline-offset-4 decoration-dotted cursor-pointer"
+                  >
+                    Skip to full lesson
+                  </button>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={next}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#191919] text-white text-[13px] font-medium hover:-translate-y-0.5 transition-transform cursor-pointer"
+              >
+                {atLast ? "Read the whole lesson" : "Next"}
+                <ChevronRight size={14} />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={next}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#191919] text-white text-[13px] font-medium hover:-translate-y-0.5 transition-transform cursor-pointer"
-            >
-              {atLast ? "Read the whole lesson" : "Next"}
-              <ChevronRight size={14} />
-            </button>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between gap-3 p-4 border-t border-black/[0.06] bg-white relative z-[2]">
-            <button
-              type="button"
-              onClick={prev}
-              className="inline-flex items-center gap-1 text-[13px] text-[#6a7580] hover:text-[#191919] cursor-pointer"
-            >
-              <ChevronLeft size={14} /> Back to wrapped
-            </button>
-            <span className="text-[12px] text-[#94a3b8]">
-              {transcript.length} lines · tap a bubble to play
-            </span>
-          </div>
+          </>
         )}
       </div>
     </div>
@@ -749,165 +607,3 @@ function SlideView({
   );
 }
 
-// ============================================================
-// Transcript view — glass-style bubbles matching the Next Learn dialogue.
-// ============================================================
-function TranscriptView({
-  transcript,
-  loading,
-  student,
-  playingId,
-  onPlay,
-}: {
-  transcript: LessonUtterance[];
-  loading: boolean;
-  student: StudentProgress;
-  playingId: string | null;
-  onPlay: (id: string, text: string, speaker: "student" | "other") => void;
-}) {
-  if (loading) {
-    return (
-      <div className="flex-1 flex items-center justify-center text-[13px] text-[#6a7580]">
-        Loading transcript…
-      </div>
-    );
-  }
-  if (transcript.length === 0) {
-    return (
-      <div className="flex-1 flex items-center justify-center text-[13px] text-[#6a7580]">
-        No transcript available for this lesson.
-      </div>
-    );
-  }
-  return (
-    <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-      {transcript.map((u) => {
-        const pid = `t-${u.id}`;
-        const active = playingId === pid;
-        const isStudent = u.speaker === "student";
-        const authorName = isStudent ? student.name : student.tutor ?? "Tutor";
-        if (isStudent) {
-          return (
-            <StudentBubble
-              key={u.id}
-              id={pid}
-              text={u.text}
-              authorName={authorName}
-              tSec={Number(u.start_sec)}
-              active={active}
-              onPlay={() => onPlay(pid, u.text, "student")}
-            />
-          );
-        }
-        return (
-          <TutorRow
-            key={u.id}
-            id={pid}
-            text={u.text}
-            authorName={authorName}
-            tSec={Number(u.start_sec)}
-            active={active}
-            onPlay={() => onPlay(pid, u.text, "other")}
-          />
-        );
-      })}
-    </div>
-  );
-}
-
-function PlayButton({
-  active,
-  onClick,
-  size = 28,
-}: {
-  active: boolean;
-  onClick: () => void;
-  size?: number;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={active ? "Pause" : "Play"}
-      className={cn(
-        "inline-flex items-center justify-center rounded-[6px] transition-colors shrink-0",
-        "border border-[rgba(25,25,25,0.08)] bg-white hover:bg-[#FAFAFA] text-[#191919]",
-        active && "bg-[#191919] text-white border-[#191919] hover:bg-[#191919]",
-      )}
-      style={{ width: size, height: size }}
-    >
-      {active ? <Pause size={13} /> : <Volume2 size={13} />}
-    </button>
-  );
-}
-
-function StudentBubble({
-  id,
-  text,
-  authorName,
-  tSec,
-  active,
-  onPlay,
-}: {
-  id: string;
-  text: string;
-  authorName: string;
-  tSec: number;
-  active: boolean;
-  onPlay: () => void;
-}) {
-  void id;
-  return (
-    <div className="flex justify-end">
-      <div className="flex flex-col items-end max-w-[85%]">
-        <div className="flex items-baseline gap-2 mb-0.5 text-[11px] pr-1 flex-row-reverse">
-          <span className="font-medium text-[#191919]">{authorName}</span>
-          <span className="text-[#94a3b8] tabular-nums">{fmtMMSS(tSec)}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div
-            className="relative rounded-[14px] px-4 py-2 text-[14px] leading-snug backdrop-blur-[16px]"
-            style={GLASS_STYLE}
-          >
-            <span style={GLASS_TEXT}>{text}</span>
-          </div>
-          <PlayButton active={active} onClick={onPlay} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TutorRow({
-  id,
-  text,
-  authorName,
-  tSec,
-  active,
-  onPlay,
-}: {
-  id: string;
-  text: string;
-  authorName: string;
-  tSec: number;
-  active: boolean;
-  onPlay: () => void;
-}) {
-  void id;
-  return (
-    <div className="flex justify-start">
-      <div className="flex flex-col items-start max-w-[85%]">
-        <div className="flex items-baseline gap-2 mb-0.5 text-[11px] pl-1">
-          <span className="font-medium text-[#191919]">{authorName}</span>
-          <span className="text-[#94a3b8] tabular-nums">{fmtMMSS(tSec)}</span>
-        </div>
-        <div className="flex items-start gap-2">
-          <PlayButton active={active} onClick={onPlay} />
-          <p className="text-[14px] text-[#191919] leading-relaxed pt-0.5">
-            {text}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}

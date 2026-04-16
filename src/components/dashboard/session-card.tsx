@@ -1,6 +1,17 @@
+"use client";
+
 import * as React from "react";
 import { Sparkline } from "./sparkline";
+import { Grainient } from "@/components/ui/grainient";
 import type { SessionDetail, Topic } from "@/lib/metrics";
+
+const CARD_PALETTES: Array<[string, string, string]> = [
+  ["#FFB6D9", "#FF7AAC", "#E8649A"], // rose
+  ["#A8D8FF", "#5FA8FD", "#3D7CC9"], // sky
+  ["#9FE5BE", "#3DDABE", "#2DA88F"], // mint
+  ["#FFD0B8", "#FF9570", "#E87550"], // peach
+  ["#D4BFF5", "#9E7AFF", "#7044D4"], // lilac
+];
 
 function fmtDate(iso: string): string {
   const d = new Date(iso);
@@ -16,8 +27,8 @@ export function SessionCard({
   topic: Topic | undefined;
   onClick?: () => void;
 }) {
-  const color = topic?.color ?? "#FF7AAC";
   const padded = String(session.lesson).padStart(2, "0");
+  const palette = CARD_PALETTES[session.lesson % CARD_PALETTES.length];
 
   return (
     <button
@@ -26,21 +37,30 @@ export function SessionCard({
     >
       <div
         className="relative aspect-square w-full rounded-[6px] overflow-hidden border border-black/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_1px_2px_rgba(0,0,0,0.04),0_6px_14px_-8px_rgba(0,0,0,0.1)] group-hover:border-black/[0.15] group-hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_3px_6px_rgba(0,0,0,0.07),0_14px_24px_-10px_rgba(0,0,0,0.16)] group-hover:-translate-y-0.5 transition-all duration-200"
-        style={{ background: "#1a1a1d" }}
       >
-        <div
+        <Grainient
           className="absolute inset-0"
-          style={{
-            background: `radial-gradient(ellipse at top left, ${color}55 0%, transparent 55%)`,
-          }}
+          color1={palette[0]}
+          color2={palette[1]}
+          color3={palette[2]}
+          timeSpeed={0.15}
+          warpStrength={1.0}
+          warpFrequency={3.5}
+          warpAmplitude={55}
+          grainAmount={0.12}
+          grainScale={2.0}
+          grainAnimated={true}
+          contrast={1.1}
+          saturation={1.0}
+          zoom={1.1}
         />
-        <div className="absolute top-3 left-3 text-[14px] font-medium text-white/55">
+        <div className="absolute z-10 top-3 left-3 text-[14px] font-medium text-white/55">
           lesson
         </div>
-        <div className="absolute top-9 left-3 font-display text-[64px] leading-none text-white">
+        <div className="absolute z-10 top-9 left-3 font-display text-[64px] leading-none text-white">
           {padded}
         </div>
-        <div className="absolute bottom-2 left-0 right-0 px-2 opacity-70">
+        <div className="absolute z-10 bottom-2 left-0 right-0 px-2 opacity-70">
           <Sparkline
             values={session.confidenceArc}
             stroke="rgba(255,255,255,0.85)"
