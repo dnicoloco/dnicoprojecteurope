@@ -54,7 +54,7 @@ export function VocabPills({ studentKey }: { studentKey: string }) {
   const [selected, setSelected] = React.useState<VocabPill | null>(null);
 
   return (
-    <div className="relative w-full overflow-hidden rounded-[6px]">
+    <div className="relative w-full rounded-[6px] pb-2">
       <div className="text-[13px] font-medium text-[#6a7580] mb-1.5">Recent new words</div>
       <div className="flex flex-wrap gap-2 justify-start content-start">
         {pills.map((p) => (
