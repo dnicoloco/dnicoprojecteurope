@@ -122,8 +122,11 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
         />
         <div className="group shrink-0 w-[220px] text-left cursor-pointer">
           <div className="relative aspect-square w-full rounded-[6px] overflow-hidden bg-[#191919] p-3 flex flex-col border border-black/[0.06]">
-            <div className="font-display text-[24px] text-white leading-tight" style={{ fontWeight: 500 }}>
-              Upcoming
+            <div className="text-[14px] font-semibold text-white/70">
+              upcoming
+            </div>
+            <div className="font-display text-[64px] leading-none text-white mt-[-4px]">
+              04
             </div>
             <div className="mt-auto flex items-center gap-2">
               <img src="/tutor-avatar.jpg" alt="Tutor" className="w-9 h-9 rounded-[4px] object-cover border border-white/20 shrink-0" />
