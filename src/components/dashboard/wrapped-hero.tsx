@@ -9,11 +9,11 @@ import { cn } from "@/lib/utils";
 import type { SessionDetail, StudentProgress, Topic } from "@/lib/metrics";
 
 const CARD_PALETTES: Array<[string, string, string]> = [
-  ["#FFD6E0", "#FFBDCC", "#FFA3B8"], // pastel pink
-  ["#D0E8FF", "#B0D4FF", "#8EBFFF"], // pastel blue
-  ["#FFDDC1", "#FFCBA4", "#FFB88A"], // warm peach/orange
-  ["#C8F0D4", "#A8E4BC", "#88D8A4"], // soft green
-  ["#FFD6E0", "#E8C4D4", "#D0E8FF"], // pink into blue
+  ["#FFD6E0", "#FFBDCC", "#F5A3B8"], // pastel pink
+  ["#D0E8FF", "#B8D8FF", "#A0C8F5"], // pastel blue
+  ["#E8D6F5", "#D4C0EC", "#C0AADD"], // pastel lilac
+  ["#FFD6E0", "#E0D0F0", "#D0E8FF"], // pink to blue
+  ["#D8E4FF", "#C8D4F5", "#FFCCD8"], // blue to pink
 ];
 
 const TTS_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/tts`;
