@@ -299,6 +299,28 @@ export function LessonFullView({
 // ============================================================
 // TurnBlock — one speaker's consecutive utterances grouped
 // ============================================================
+// Glassy panel style for student bubbles.
+const GLASS_STYLE: React.CSSProperties = {
+  background: "rgba(15, 23, 42, 0.01)",
+  boxShadow: [
+    "0 0 0 0.5px rgba(15,23,42,0.12)",
+    "0 1px 1px -0.5px rgba(15,23,42,0.06)",
+    "0 2px 2px -1px rgba(15,23,42,0.06)",
+    "0 4px 4px -2px rgba(15,23,42,0.06)",
+    "inset 0 1.5px 1px rgba(255,255,255,0.9)",
+    "inset 0 -1.5px 1px rgba(255,255,255,0.9)",
+    "inset 0 6px 6px -3px rgba(15,23,42,0.08)",
+    "inset 0 -4px 4px -2px rgba(15,23,42,0.1)",
+  ].join(", "),
+};
+const GLASS_TEXT: React.CSSProperties = {
+  background: "linear-gradient(#020617, #64748b)",
+  color: "transparent",
+  backgroundClip: "text",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+};
+
 function TurnBlock({
   turn,
   student,
@@ -311,63 +333,64 @@ function TurnBlock({
   onPlay: (id: string, text: string, speaker: "student" | "other") => void;
 }) {
   const isStudent = turn.speaker === "student";
-  const authorName = isStudent ? student.name : student.tutor ?? "Tutor";
   const pid = `turn-${turn.startSec}`;
   const active = playingId === pid;
 
+  if (isStudent) {
+    return (
+      <div className="flex w-full justify-end">
+        <div className="flex flex-col items-end max-w-[75%]">
+          {/* Timestamp + play — no student name */}
+          <div className="flex items-baseline gap-2 mb-1 pr-1 text-[11px] flex-row-reverse">
+            <span className="text-[#94a3b8] tabular-nums">{fmtMMSS(turn.startSec)}</span>
+            <button
+              type="button"
+              onClick={() => onPlay(pid, turn.combinedText, "student")}
+              className={cn(
+                "inline-flex items-center justify-center w-5 h-5 rounded-[3px] transition-colors",
+                "text-[#94a3b8] hover:text-[#191919]",
+                active && "text-[#191919]",
+              )}
+            >
+              {active ? <Pause size={10} /> : <Volume2 size={10} />}
+            </button>
+          </div>
+          {/* Glassy bubble */}
+          <div
+            className="rounded-[14px] rounded-br-[6px] px-4 py-2.5 text-[14px] leading-relaxed backdrop-blur-[16px]"
+            style={GLASS_STYLE}
+          >
+            <span style={GLASS_TEXT}>
+              <CefrHighlightedText text={turn.combinedText} />
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Tutor: plain text on background, no box. Show tutor name.
   return (
-    <div className={cn("flex w-full", isStudent ? "justify-end" : "justify-start")}>
-      <div className={cn("flex flex-col max-w-[75%]", isStudent ? "items-end" : "items-start")}>
-        {/* Speaker label + timestamp */}
-        <div
-          className={cn(
-            "flex items-baseline gap-2 mb-1 text-[11px] px-1",
-            isStudent ? "flex-row-reverse" : "",
-          )}
-        >
-          <span className={cn("font-medium", isStudent ? "text-[#FF7AAC]" : "text-[#6a7580]")}>
-            {authorName}
-          </span>
+    <div className="flex w-full justify-start">
+      <div className="flex flex-col items-start max-w-[75%]">
+        <div className="flex items-baseline gap-2 mb-1 pl-1 text-[11px]">
+          <span className="font-medium text-[#6a7580]">{student.tutor ?? "Tutor"}</span>
           <span className="text-[#94a3b8] tabular-nums">{fmtMMSS(turn.startSec)}</span>
           <button
             type="button"
-            onClick={() =>
-              onPlay(pid, turn.combinedText, isStudent ? "student" : "other")
-            }
+            onClick={() => onPlay(pid, turn.combinedText, "other")}
             className={cn(
-              "inline-flex items-center justify-center w-6 h-6 rounded-[4px] transition-colors",
-              "text-[#6a7580] hover:text-[#191919] hover:bg-black/5",
-              active && "text-[#191919] bg-black/10",
+              "inline-flex items-center justify-center w-5 h-5 rounded-[3px] transition-colors",
+              "text-[#94a3b8] hover:text-[#191919]",
+              active && "text-[#191919]",
             )}
           >
-            {active ? <Pause size={11} /> : <Volume2 size={11} />}
+            {active ? <Pause size={10} /> : <Volume2 size={10} />}
           </button>
         </div>
-
-        {/* Message body */}
-        <div
-          className={cn(
-            "rounded-[16px] px-4 py-3 text-[14px] leading-relaxed",
-            isStudent
-              ? "bg-white border border-black/[0.06] rounded-br-[6px]"
-              : "bg-[#F1F3F5] text-[#191919] rounded-bl-[6px]",
-          )}
-        >
-          {isStudent ? (
-            <CefrHighlightedText text={turn.combinedText} />
-          ) : (
-            <span>{turn.combinedText}</span>
-          )}
-        </div>
-
-        {/* MetricBar under student turns (placeholder — real data from grammar backfill) */}
-        {isStudent && turn.utterances.length > 0 && (
-          <div className="flex items-center gap-3 mt-1.5 px-1">
-            <span className="text-[10px] text-[#94a3b8]">
-              {turn.utterances.length} sentence{turn.utterances.length > 1 ? "s" : ""} · {turn.combinedText.split(/\s+/).length} words
-            </span>
-          </div>
-        )}
+        <p className="text-[14px] text-[#191919] leading-relaxed pl-1">
+          {turn.combinedText}
+        </p>
       </div>
     </div>
   );
