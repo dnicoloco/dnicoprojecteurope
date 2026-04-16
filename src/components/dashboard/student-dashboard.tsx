@@ -118,17 +118,8 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
       >
         <GhostCard
           kind="session"
-          label="Your next lesson"
-          hint={
-            nextSession
-              ? "Booked, see Up next above"
-              : "Pick a slot with your tutor"
-          }
-        />
-        <GhostCard
-          kind="session"
-          label="Self-study recap"
-          hint="Coming between sessions"
+          label="Book new session"
+          hint="Pick a slot with your tutor"
         />
         {filteredSessions.map((s) => {
           const session = s as unknown as Parameters<typeof SessionCard>[0]["session"];
