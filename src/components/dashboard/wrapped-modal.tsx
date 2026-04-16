@@ -432,12 +432,8 @@ function SlideView({
         className="flex-1 relative flex flex-col items-center justify-center text-center px-8 overflow-hidden"
       >
         <div className="relative z-[1] flex flex-col items-center text-center">
-          <div className="font-display text-[22px] text-[#191919]" style={{ fontWeight: 500 }}>
-            <div className="w-full flex justify-center">
-              <VerticalCutReveal splitBy="characters" staggerDuration={0.02} staggerFrom="first">
-                Lesson wrapped
-              </VerticalCutReveal>
-            </div>
+          <div className="font-display text-[22px] text-[#191919] text-center" style={{ fontWeight: 500 }}>
+            Lesson wrapped
           </div>
 
           <SparklesText
@@ -447,17 +443,8 @@ function SlideView({
             sparklesCount={18}
           />
 
-          <div className="mt-6 text-[20px] text-[#191919] max-w-[360px]">
-            <div className="w-full flex justify-center">
-              <VerticalCutReveal
-                splitBy="words"
-                staggerDuration={0.05}
-                staggerFrom="first"
-                transition={{ type: "spring", stiffness: 190, damping: 22, delay: 0.3 }}
-              >
-                {`Hey ${studentName}, here's how this one landed.`}
-              </VerticalCutReveal>
-            </div>
+          <div className="mt-6 text-[20px] text-[#191919] text-center max-w-[360px]">
+            Hey {studentName}, here&apos;s how this one landed.
           </div>
         </div>
       </div>
@@ -512,17 +499,8 @@ function SlideView({
           </div>
 
           {/* Caption below the number */}
-          <div className="mt-5 text-[18px] font-medium text-[#191919] max-w-[400px] leading-snug text-center items-center">
-            <div className="w-full flex justify-center">
-              <VerticalCutReveal
-                splitBy="words"
-                staggerDuration={0.03}
-                staggerFrom="first"
-                transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.3 }}
-              >
-                {slide.caption}
-              </VerticalCutReveal>
-            </div>
+          <div className="mt-5 text-[18px] text-[#191919] max-w-[440px] leading-snug text-center">
+            {slide.caption}
           </div>
 
           {/* Trend pill */}
@@ -651,19 +629,10 @@ function SlideView({
             />
           </div>
           <div
-            className="relative font-display text-[24px] leading-tight text-[#191919]"
+            className="relative font-display text-[24px] leading-tight text-[#191919] text-center"
             style={{ fontWeight: 500 }}
           >
-            <div className="w-full flex justify-center">
-              <VerticalCutReveal
-                splitBy="words"
-                staggerDuration={0.04}
-                staggerFrom="first"
-                transition={{ type: "spring", stiffness: 190, damping: 22 }}
-              >
-                {`"${slide.label}"`}
-              </VerticalCutReveal>
-            </div>
+            &ldquo;{slide.label}&rdquo;
           </div>
         </div>
       </div>
