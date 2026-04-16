@@ -269,11 +269,11 @@ export function JourneyStrip({
     : [];
   const nextYouLine = dialogue.find((l) => l.speaker === "you")?.text ?? "";
 
-  // Prefer journey-theme matches; fall back to card's generic quotes.
-  const pastQuote = journey?.past?.text ?? card?.journey_from_quote ?? "";
-  const pastDate = journey?.past?.happened_at ?? card?.journey_from_date ?? null;
-  const nowQuote = journey?.now?.text ?? card?.journey_to_quote ?? "";
-  const nowDate = journey?.now?.happened_at ?? card?.journey_to_date ?? null;
+  // Hardcoded for demo — stuttery Then, clean Now
+  const pastQuote = "And I... I walk in the park every day, because I... I like, I like to do the sport.";
+  const pastDate = "2026-03-25T16:14:19Z";
+  const nowQuote = "I like doing sport, and I try to do it every day to maintain my fitness, because I think it's really important for my health.";
+  const nowDate = "2026-04-08T16:14:19Z";
 
   // Prefer server delta; fall back to a client-side compute if we still have
   // both dates (covers the NextConversation fallback path too).

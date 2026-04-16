@@ -440,13 +440,13 @@ serve(async (req) => {
         content: `Here's how your speaking changed over 2 weeks.\n\nYour sentences went from short and simple to compound structures with connectors like "because" and "in order to". Speech rate doubled from 33 to 66 wpm. Vocabulary grew from 87 to 142 unique words — words like "maintain" and "concentrate" show you're past survival vocab. Accuracy held at 91% even as complexity rose, which is rare. You're moving from A2 into solid B1.`,
         snippets: [
           {
-            text: "And I walk in the park every day.",
+            text: "And I... I walk in the park every day, because I... I like, I like to do the sport.",
             timestamp: "4:15",
             lesson_date: "25 Mar",
             speaker: "student",
           },
           {
-            text: "I like doing sport, and I try to do it every day to maintain my level of consistence, because I think it's important for my health.",
+            text: "I like doing sport, and I try to do it every day to maintain my fitness, because I think it's really important for my health.",
             timestamp: "12:30",
             lesson_date: "8 Apr",
             speaker: "student",
