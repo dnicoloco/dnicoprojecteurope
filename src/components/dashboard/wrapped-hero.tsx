@@ -234,7 +234,7 @@ export function WrappedHero({
             const firstOverall = Math.round(firstAccuracy * 0.4 + firstFlow * 0.3 + firstRange * 0.3);
             const overallDelta = firstOverall ? overall - firstOverall : 0;
             return (
-              <div className="flex flex-col gap-2 w-full mt-1">
+              <div className="flex flex-col gap-2 w-full max-w-[420px] mt-1">
                 {/* Overall bar — taller */}
                 <div className="flex items-center gap-2">
                   <span className="text-[13px] font-semibold text-[#191919] w-[80px] text-right shrink-0">
@@ -284,37 +284,6 @@ export function WrappedHero({
                   </div>
                 ))}
 
-                {/* Per-lesson score progression */}
-                {(() => {
-                  const allScores = student.lessons.map((l) => {
-                    const f = Math.min(100, Math.round((l.wpm / 150) * 100));
-                    const r = Math.min(100, Math.round(((l.vocab / l.durationMin) / 15) * 100));
-                    const a = metrics?.accuracy ?? 80;
-                    return Math.round(a * 0.4 + f * 0.3 + r * 0.3);
-                  });
-                  return allScores.length > 1 ? (
-                    <div className="flex items-center gap-1 mt-2">
-                      {allScores.map((s, i) => (
-                        <div key={i} className="flex items-center gap-1">
-                          {i > 0 && <div className="w-4 h-px bg-[#191919]/10" />}
-                          <div className="flex flex-col items-center">
-                            <span className="text-[10px] text-[#191919]/40">L{i + 1}</span>
-                            <div
-                              className={cn(
-                                "w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-medium",
-                                i === allScores.length - 1
-                                  ? "bg-[#191919] text-white"
-                                  : "bg-[#191919]/10 text-[#191919]/60",
-                              )}
-                            >
-                              {s}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : null;
-                })()}
               </div>
             );
           })()}
