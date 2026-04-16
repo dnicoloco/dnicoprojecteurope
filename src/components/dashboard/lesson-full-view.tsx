@@ -271,9 +271,22 @@ export function LessonFullView({
                 {student.name} with {student.tutor}
               </span>
             </div>
-            <span className="text-[12px] text-[#94a3b8] shrink-0">
-              {turns.length} turns
-            </span>
+            <button
+              type="button"
+              onClick={() => {
+                const allText = turns.map((t) => t.combinedText).join(" ");
+                play("play-all", allText, "student");
+              }}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-[12px] font-medium border border-black/[0.08] cursor-pointer shrink-0 transition-colors",
+                playingId === "play-all"
+                  ? "bg-[#191919] text-white border-[#191919]"
+                  : "bg-white text-[#191919] hover:bg-black/5",
+              )}
+            >
+              {playingId === "play-all" ? <Pause size={12} /> : <Volume2 size={12} />}
+              {playingId === "play-all" ? "Stop" : "Play lesson"}
+            </button>
           </div>
 
           {turns.length === 0 ? (

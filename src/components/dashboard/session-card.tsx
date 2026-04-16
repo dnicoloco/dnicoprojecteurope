@@ -75,7 +75,7 @@ export function SessionCard({
         <div className="text-[14px] font-medium text-[#191919] truncate">
           {fmtDate(session.date)}
         </div>
-        <div className="text-[14px] text-[#6a7580] mt-0.5 line-clamp-1">
+        <div className="text-[14px] text-[#191919] mt-0.5 line-clamp-1">
           {session.bestMomentLabel}
         </div>
       </div>
