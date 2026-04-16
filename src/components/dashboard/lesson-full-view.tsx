@@ -296,7 +296,7 @@ export function LessonFullView({
                 "inline-flex items-center justify-center w-9 h-9 rounded-[6px] border border-black/[0.08] cursor-pointer shrink-0 transition-colors",
                 showBars ? "bg-[#191919] text-white border-[#191919]" : "bg-white text-[#191919] hover:bg-black/5",
               )}
-              title={showBars ? "Hide metrics" : "Show metrics: Accuracy · Word range · Confidence"}
+              title={showBars ? "Hide metrics" : "Show metrics: Accuracy · CEFR"}
             >
               <BarChart3 size={15} />
             </button>
@@ -404,7 +404,6 @@ const GLASS_STYLE: React.CSSProperties = {
 const DIM_COLORS: Record<string, string> = { A: "#7AB8F0", B: "#FF7AAC", C: "#6DCFA0", D: "#A78BDB" };
 const DIM_SHORT: Record<string, string> = { A: "Sentence", B: "Tense", C: "Nominal", D: "Modal" };
 
-const CEFR_PCT: Record<string, number> = { A1: 15, A2: 30, B1: 50, B2: 70, C1: 85, C2: 100 };
 
 function TurnBlock({
   turn,
@@ -442,7 +441,7 @@ function TurnBlock({
   const hasErrors = turnDims && (turnDims.A + turnDims.B + turnDims.C + turnDims.D > 0);
   const maxDim = hasErrors ? Math.max(1, turnDims.A, turnDims.B, turnDims.C, turnDims.D) : 1;
 
-  // Compute per-turn metrics for student bubbles
+  // Compute per-turn metrics for student bubbles: Accuracy + CEFR level
   const turnMetrics = isStudent ? (() => {
     let accSum = 0, count = 0;
     const cefrs: string[] = [];
@@ -456,8 +455,7 @@ function TurnBlock({
     if (count === 0) return null;
     const acc = Math.round(accSum / count);
     const topCefr = cefrs.sort().reverse()[0] ?? "A2";
-    const wordRange = CEFR_PCT[topCefr] ?? 50;
-    return { accuracy: acc, wordRange, confidence: Math.min(100, acc + 8) };
+    return { accuracy: acc, cefr: topCefr };
   })() : null;
 
   if (isStudent) {
@@ -496,30 +494,33 @@ function TurnBlock({
               );
             })}
           </div>
-          {/* Accuracy bars — visible on hover or when toggled */}
+          {/* Per-turn metrics: Accuracy bar + CEFR badge — visible on hover or when toggled */}
           {turnMetrics && (
             <div
               className={cn(
-                "flex gap-2 mt-1.5 pr-1 transition-opacity duration-200",
+                "flex items-center gap-3 mt-1.5 pr-1 transition-opacity duration-200",
                 showBars ? "opacity-100" : "opacity-0 group-hover/turn:opacity-100",
               )}
             >
-              {[
-                { label: "Accuracy", value: turnMetrics.accuracy, from: "#4ade80", to: "#6DCFA0" },
-                { label: "Word range", value: turnMetrics.wordRange, from: "#60a5fa", to: "#7AB8F0" },
-                { label: "Confidence", value: turnMetrics.confidence, from: "#f472b6", to: "#FF7AAC" },
-              ].map((b) => (
-                <div key={b.label} className="flex items-center gap-1.5">
-                  <span className="text-[11px] text-[#94a3b8]">{b.label}</span>
-                  <div className="w-[44px] h-[6px] rounded-[3px] bg-black/[0.05] overflow-hidden">
-                    <div
-                      className="h-full rounded-[3px]"
-                      style={{ width: `${b.value}%`, background: `linear-gradient(90deg, ${b.from}, ${b.to})` }}
-                    />
-                  </div>
-                  <span className="text-[11px] text-[#94a3b8] tabular-nums">{b.value}</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-[#94a3b8]">Accuracy</span>
+                <div className="w-[44px] h-[6px] rounded-[3px] bg-black/[0.05] overflow-hidden">
+                  <div
+                    className="h-full rounded-[3px]"
+                    style={{ width: `${turnMetrics.accuracy}%`, backgroundColor: "#6DCFA0" }}
+                  />
                 </div>
-              ))}
+                <span className="text-[11px] text-[#94a3b8] tabular-nums">{turnMetrics.accuracy}</span>
+              </div>
+              <span
+                className="text-[10px] font-medium px-1.5 py-0.5 rounded-[3px]"
+                style={{
+                  backgroundColor: CEFR_BG[turnMetrics.cefr] ?? "rgba(148,163,184,0.12)",
+                  color: CEFR_TEXT[turnMetrics.cefr] ?? "#64748b",
+                }}
+              >
+                {turnMetrics.cefr}
+              </span>
             </div>
           )}
         </div>

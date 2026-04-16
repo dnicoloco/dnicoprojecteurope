@@ -128,9 +128,10 @@ type SlideData =
   | {
       kind: "grammar";
       accuracy: number;
+      flow: number;
+      range: number;
+      overall: number;
       cefr: string;
-      confidence: number;
-      dimensions: { A: number; B: number; C: number; D: number };
       palette: keyof typeof GRAIN_PALETTES;
     }
   | {
@@ -267,13 +268,17 @@ export function WrappedModal({
       palette: "blue",
     });
   }
-  if (grammarSummary) {
+  if (grammarSummary && current) {
+    const gramFlow = Math.min(100, Math.round((current.wpm / 150) * 100));
+    const gramRange = current.durationMin ? Math.min(100, Math.round(((current.vocab / current.durationMin) / 15) * 100)) : 0;
+    const gramOverall = Math.round(grammarSummary.accuracy_pct * 0.4 + gramFlow * 0.3 + gramRange * 0.3);
     slides.push({
       kind: "grammar",
       accuracy: grammarSummary.accuracy_pct,
+      flow: gramFlow,
+      range: gramRange,
+      overall: gramOverall,
       cefr: grammarSummary.cefr,
-      confidence: grammarSummary.confidence,
-      dimensions: grammarSummary.dimensions,
       palette: "pink",
     });
   }
@@ -523,9 +528,17 @@ function SlideView({
   if (slide.kind === "grammar") {
     const bars = [
       { label: "Accuracy", value: slide.accuracy, color: "#6DCFA0" },
-      { label: "Word range", value: Math.min(100, Math.round(({ A1: 15, A2: 30, B1: 50, B2: 70, C1: 85, C2: 100 }[slide.cefr] ?? 50))), color: "#7AB8F0" },
-      { label: "Confidence", value: Math.min(100, slide.confidence), color: "#FF7AAC" },
+      { label: "Flow", value: slide.flow, color: "#7AB8F0" },
+      { label: "Range", value: slide.range, color: "#FF7AAC" },
     ];
+
+    // Conversational improvement sentence
+    const improvementNote =
+      slide.overall >= 70
+        ? "Strong session across the board."
+        : slide.overall >= 50
+          ? "Solid foundation, keep building."
+          : "Every lesson adds up.";
 
     return (
       <div
@@ -563,16 +576,16 @@ function SlideView({
                 staggerFrom="center"
                 transition={{ type: "spring", stiffness: 220, damping: 20 }}
               >
-                {`${slide.accuracy}%`}
+                {`${slide.overall}%`}
               </VerticalCutReveal>
             </div>
           </div>
 
           <div className="mt-5 text-[18px] font-medium text-[#191919] leading-snug text-center items-center">
-            grammar accuracy · {slide.cefr}
+            overall score · {slide.cefr}
           </div>
 
-          {/* 3 clear metric bars */}
+          {/* 3 metric bars: Accuracy, Flow, Range */}
           <div className="mt-7 w-full flex flex-col gap-4">
             {bars.map((bar) => (
               <div key={bar.label} className="flex items-center gap-3">
@@ -593,6 +606,10 @@ function SlideView({
                 </span>
               </div>
             ))}
+          </div>
+
+          <div className="mt-5 text-[15px] text-[#191919]/60 leading-snug text-center">
+            {improvementNote}
           </div>
         </div>
       </div>

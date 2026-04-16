@@ -37,7 +37,7 @@ export function GreetingHero({
   const text = `${hovered && !sameLang ? native : learning} ${name}`;
 
   return (
-    <div className="min-h-[20vh] flex flex-col justify-end px-1">
+    <div className="min-h-[12vh] flex flex-col justify-end px-1">
       {/* h1 is w-fit so hover only activates over the actual glyphs, not the
           whole row of empty whitespace next to them. */}
       <h1

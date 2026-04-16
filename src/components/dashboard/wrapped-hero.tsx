@@ -221,33 +221,71 @@ export function WrappedHero({
               : session.bestMomentLabel}
           </h2>
 
-          {/* Horizontal metric bars */}
-          <div className="text-[12px] text-[#191919]/50 mt-1">How you did this lesson</div>
-          <div className="flex flex-col gap-2.5 max-w-[340px]">
-            {[
-              { label: "Accuracy", value: metrics?.accuracy ?? 0, from: "#4ade80", to: "#6DCFA0" },
-              { label: "Word range", value: metrics?.cefrPct ?? 0, from: "#60a5fa", to: "#7AB8F0" },
-              { label: "Confidence", value: metrics?.confidence ?? 0, from: "#f472b6", to: "#FF7AAC" },
-            ].map((m) => (
-              <div key={m.label} className="flex items-center gap-2">
-                <span className="text-[13px] font-medium text-[#6a7580] w-[80px] text-right shrink-0">
-                  {m.label}
-                </span>
-                <div className="flex-1 h-[16px] rounded-[4px] bg-[#F1F3F5] overflow-hidden">
-                  <div
-                    className="h-full rounded-[4px]"
-                    style={{
-                      width: `${m.value}%`,
-                      background: `linear-gradient(90deg, ${m.from}, ${m.to})`,
-                    }}
-                  />
+          {/* Computed scores */}
+          {(() => {
+            const accuracy = metrics?.accuracy ?? 0;
+            const flow = last.wpm ? Math.min(100, Math.round((last.wpm / 150) * 100)) : 0;
+            const range = last.vocab && last.durationMin ? Math.min(100, Math.round(((last.vocab / last.durationMin) / 15) * 100)) : 0;
+            const overall = Math.round(accuracy * 0.4 + flow * 0.3 + range * 0.3);
+            const firstLesson = student.lessons[0];
+            const firstAccuracy = metrics?.accuracy ?? accuracy; // no lesson-1 metrics here, so delta = 0 for accuracy
+            const firstFlow = firstLesson.wpm ? Math.min(100, Math.round((firstLesson.wpm / 150) * 100)) : 0;
+            const firstRange = firstLesson.vocab && firstLesson.durationMin ? Math.min(100, Math.round(((firstLesson.vocab / firstLesson.durationMin) / 15) * 100)) : 0;
+            const firstOverall = Math.round(firstAccuracy * 0.4 + firstFlow * 0.3 + firstRange * 0.3);
+            const overallDelta = firstOverall ? overall - firstOverall : 0;
+            return (
+              <div className="flex flex-col gap-2 max-w-[340px] mt-1">
+                {/* Overall bar — taller */}
+                <div className="flex items-center gap-2">
+                  <span className="text-[13px] font-semibold text-[#191919] w-[80px] text-right shrink-0">
+                    Overall
+                  </span>
+                  <div className="flex-1 h-[20px] rounded-[4px] bg-[#F1F3F5] overflow-hidden">
+                    <div
+                      className="h-full rounded-[4px]"
+                      style={{
+                        width: `${overall}%`,
+                        backgroundColor: "#191919",
+                      }}
+                    />
+                  </div>
+                  <span className="font-display text-[15px] text-[#191919] w-[36px] text-right tabular-nums leading-none">
+                    {overall}%
+                  </span>
+                  {overallDelta !== 0 && student.lessons.length > 1 && (
+                    <span className={cn("inline-flex items-center text-[11px] font-medium", overallDelta > 0 ? "text-[#FF7AAC]" : "text-[#6a7580]")}>
+                      {overallDelta > 0 ? <ArrowUp size={11} strokeWidth={2.5} /> : <ArrowDown size={11} strokeWidth={2.5} />}
+                      {Math.abs(overallDelta)}
+                    </span>
+                  )}
                 </div>
-                <span className="font-display text-[15px] text-[#191919] w-[36px] text-right tabular-nums leading-none">
-                  {m.value}%
-                </span>
+                {/* Three sub-bars */}
+                {[
+                  { label: "Accuracy", value: accuracy, color: "#6DCFA0" },
+                  { label: "Flow", value: flow, color: "#7AB8F0" },
+                  { label: "Range", value: range, color: "#FF7AAC" },
+                ].map((m) => (
+                  <div key={m.label} className="flex items-center gap-2">
+                    <span className="text-[13px] font-medium text-[#6a7580] w-[80px] text-right shrink-0">
+                      {m.label}
+                    </span>
+                    <div className="flex-1 h-[16px] rounded-[4px] bg-[#F1F3F5] overflow-hidden">
+                      <div
+                        className="h-full rounded-[4px]"
+                        style={{
+                          width: `${m.value}%`,
+                          backgroundColor: m.color,
+                        }}
+                      />
+                    </div>
+                    <span className="font-display text-[15px] text-[#191919] w-[36px] text-right tabular-nums leading-none">
+                      {m.value}%
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            );
+          })()}
 
           <div className="flex items-center justify-end gap-2 mt-auto">
             <button

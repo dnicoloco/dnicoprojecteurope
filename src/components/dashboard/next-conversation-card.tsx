@@ -403,7 +403,7 @@ function ProjectionWidget({ theme }: { theme: string }) {
   const [months, setMonths] = React.useState(Math.max(1, Math.round(HOURS_PER_LEVEL / (2 * 4))));
 
   const handleLessonsChange = (delta: number) => {
-    const next = Math.max(1, Math.min(5, lessonsPerWeek + delta));
+    const next = Math.max(1, Math.min(7, lessonsPerWeek + delta));
     setLessonsPerWeek(next);
     setMonths(Math.max(1, Math.round(HOURS_PER_LEVEL / (next * 4))));
   };

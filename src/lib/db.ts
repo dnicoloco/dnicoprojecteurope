@@ -277,8 +277,6 @@ export async function getLessonGrammarSummary(
 // ------------------------------------------------------------
 export type LessonMetricsSummary = {
   accuracy: number;       // avg accuracy_pct from utterance_grammar
-  confidence: number;     // avg avg_confidence from lesson_utterances (Deepgram word confidence)
-  cefrPct: number;        // CEFR mapped to percentage
   cefr: string;           // most common CEFR level
 };
 
@@ -297,14 +295,6 @@ export async function getLessonMetrics(
     .select("accuracy_pct, cefr_estimate")
     .eq("lesson_id", lessonId);
 
-  // Get real Deepgram confidence from lesson_utterances
-  const { data: uttData } = await supabase
-    .from("lesson_utterances")
-    .select("avg_confidence")
-    .eq("lesson_id", lessonId)
-    .eq("speaker", "student")
-    .not("avg_confidence", "is", null);
-
   if (!grammarData?.length) return null;
 
   const accuracy = Math.round(grammarData.reduce((s, r) => s + Number(r.accuracy_pct), 0) / grammarData.length);
@@ -313,15 +303,8 @@ export async function getLessonMetrics(
   const cefrCounts: Record<string, number> = {};
   grammarData.forEach(r => { cefrCounts[r.cefr_estimate] = (cefrCounts[r.cefr_estimate] ?? 0) + 1; });
   const cefr = Object.entries(cefrCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "A2";
-  const cefrMap: Record<string, number> = { A1: 15, A2: 30, B1: 50, B2: 70, C1: 85, C2: 100 };
-  const cefrPct = cefrMap[cefr] ?? 50;
 
-  // Real confidence from Deepgram
-  const confidence = uttData?.length
-    ? Math.round(uttData.reduce((s, r) => s + Number(r.avg_confidence ?? 0), 0) / uttData.length * 100)
-    : 85;
-
-  return { accuracy, confidence, cefrPct, cefr };
+  return { accuracy, cefr };
 }
 
 // ------------------------------------------------------------
