@@ -453,21 +453,12 @@ function TurnBlock({
               const hasSpans = g?.cefr_spans && g.cefr_spans.length > 0;
               const cleaned = cleanText(u.text, false);
               const uText = hasSpans ? u.text : cleaned;
-              // Convert grammar errors to GrammarError format
-              const grammarErrors: GrammarError[] = (g?.errors ?? []).map((e) => ({
-                start: e.offset,
-                end: e.offset + e.length,
-                text: e.span,
-                suggestion: e.suggestion,
-                message: e.message,
-              }));
               return (
                 <span key={u.id}>
                   {ui > 0 && " "}
                   <CefrSpanHighlightedText
                     text={uText}
                     spans={hasSpans ? g!.cefr_spans! : []}
-                    errors={grammarErrors.length > 0 ? grammarErrors : undefined}
                   />
                 </span>
               );

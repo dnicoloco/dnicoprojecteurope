@@ -29,7 +29,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <ChatContext.Provider value={{ closeChat }}>
       <div className="fixed inset-0 flex flex-col bg-white">
-        <header className="shrink-0 border-b border-[rgba(25,25,25,0.08)] bg-white z-[100]">
+        <header className="shrink-0 border-b border-[rgba(25,25,25,0.08)] bg-white z-[40]">
           <div className="flex items-center justify-between h-14 px-6">
             <div className="flex items-center gap-2">
               <Image
