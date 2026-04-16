@@ -223,7 +223,7 @@ export function WrappedModal({
       kind: "stat",
       bigValue: `${Math.round(current.talkRatioPct)}`,
       bigUnit: "%",
-      caption: "of the lesson was you",
+      caption: `of the lesson was you talking — ${current.talkRatioPct > 55 ? "you drove the conversation" : "your tutor led this one"}`,
       trend: {
         pct: talkTrend,
         fromLabel: `from ${Math.round(first.talkRatioPct)}% in lesson 1`,
@@ -234,10 +234,10 @@ export function WrappedModal({
     slides.push({
       kind: "stat",
       bigValue: `${Math.round(current.wpm)}`,
-      caption: "words a minute — your pace",
+      caption: `words per minute — ${current.wpm > 60 ? "you're getting into a flow" : current.wpm > 45 ? "steady and building speed" : "taking your time, that's okay"}`,
       trend: {
         pct: wpmTrend,
-        fromLabel: `from ${Math.round(first.wpm)} in lesson 1`,
+        fromLabel: `from ${Math.round(first.wpm)} wpm in lesson 1`,
       },
       palette: wpmTrend >= 0 ? "sky" : "blush",
     });
@@ -245,10 +245,10 @@ export function WrappedModal({
     slides.push({
       kind: "stat",
       bigValue: `${current.vocab}`,
-      caption: "unique words you used",
+      caption: `different words you used — ${current.vocab > 500 ? "your vocabulary is expanding fast" : current.vocab > 300 ? "a growing word bank" : "every new word counts"}`,
       trend: {
         pct: vocabTrend,
-        fromLabel: `from ${first.vocab} in lesson 1`,
+        fromLabel: `from ${first.vocab} words in lesson 1`,
       },
       palette: vocabTrend >= 0 ? "periwinkle" : "blush",
     });
@@ -295,14 +295,13 @@ export function WrappedModal({
         role="dialog"
         aria-modal="true"
         className={cn(
-          "bg-white overflow-hidden flex flex-col transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          "overflow-hidden flex flex-col transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
           isFullscreen
-            ? "w-full h-full rounded-none shadow-none"
+            ? "w-full h-full rounded-none shadow-none bg-white"
             : "relative w-full max-w-[640px] h-[min(92vh,860px)] rounded-[16px] shadow-[0_20px_60px_rgba(0,0,0,0.4)]",
         )}
       >
         {isFullscreen ? (
-          /* Full-screen lesson view with CEFR highlights + turn chunking */
           <LessonFullView
             lessonNumber={session.lesson}
             student={student}
@@ -311,57 +310,62 @@ export function WrappedModal({
           />
         ) : (
           <>
-            {/* Top: close + progress */}
-            <div className="flex items-center gap-2 p-4 relative z-[2]">
-              <div className="flex-1 flex items-center gap-1.5">
-                {slides.map((_, i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      "h-1 flex-1 rounded-full transition-colors",
-                      i <= slideIdx ? "bg-white" : "bg-white/30",
-                    )}
-                  />
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="Close"
-                className="w-8 h-8 inline-flex items-center justify-center rounded-full text-white hover:bg-white/10 cursor-pointer"
-              >
-                <X size={16} />
-              </button>
+            {/* Grainient fills the ENTIRE modal — behind dots + content + buttons */}
+            <GrainientBackdrop
+              palette={slides[slideIdx].palette}
+              opacity={0.85}
+              variant={slideIdx}
+            />
+
+            {/* Dot indicators — small circles at top, on the gradient */}
+            <div className="flex items-center justify-center gap-2 pt-5 pb-2 relative z-[2]">
+              {slides.map((_, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "w-2 h-2 rounded-full transition-colors",
+                    i === slideIdx ? "bg-white" : "bg-white/30",
+                  )}
+                />
+              ))}
             </div>
+
+            {/* Close button top-right */}
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="absolute top-4 right-4 z-[3] w-8 h-8 inline-flex items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/10 cursor-pointer"
+            >
+              <X size={16} />
+            </button>
 
             {/* Slide body */}
             <SlideView slide={slides[slideIdx]} studentName={student.name} slideIdx={slideIdx} />
 
-            {/* Footer controls */}
-            <div className="flex items-center justify-between gap-3 p-4 relative z-[2]">
-              <div className="flex items-center gap-3">
+            {/* Back / Next — simple text on gradient, no bar */}
+            <div className="flex items-center justify-between px-5 pb-5 pt-2 relative z-[2]">
+              <button
+                type="button"
+                onClick={prev}
+                disabled={slideIdx === 0}
+                className="inline-flex items-center gap-1 text-[13px] text-white/50 hover:text-white disabled:opacity-0 disabled:pointer-events-none cursor-pointer transition-opacity"
+              >
+                <ChevronLeft size={14} /> Back
+              </button>
+              {hasSeenBefore && slideIdx === 0 && (
                 <button
                   type="button"
-                  onClick={prev}
-                  disabled={slideIdx === 0}
-                  className="inline-flex items-center gap-1 text-[13px] text-white/60 hover:text-white disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                  onClick={() => setPhase("fullscreen")}
+                  className="text-[12px] text-white/40 hover:text-white underline underline-offset-4 decoration-dotted cursor-pointer"
                 >
-                  <ChevronLeft size={14} /> Back
+                  Skip to lesson
                 </button>
-                {hasSeenBefore && (
-                  <button
-                    type="button"
-                    onClick={() => setPhase("fullscreen")}
-                    className="text-[12px] text-white/50 hover:text-white underline underline-offset-4 decoration-dotted cursor-pointer"
-                  >
-                    Skip to full lesson
-                  </button>
-                )}
-              </div>
+              )}
               <button
                 type="button"
                 onClick={next}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/90 text-[#191919] text-[13px] font-medium hover:-translate-y-0.5 transition-transform cursor-pointer"
+                className="inline-flex items-center gap-1 text-[13px] text-white/70 hover:text-white cursor-pointer"
               >
                 {atLast ? "Read the whole lesson" : "Next"}
                 <ChevronRight size={14} />
@@ -394,7 +398,6 @@ function SlideView({
         key={`headline-${slideIdx}`}
         className="flex-1 relative flex flex-col items-center justify-center text-center px-8 overflow-hidden"
       >
-        <GrainientBackdrop palette={slide.palette} opacity={0.7} variant={slideIdx} />
         <div className="relative z-[1] flex flex-col items-center">
           <div className="text-[12px] uppercase tracking-[0.14em] text-[#6a7580] font-medium">
             <VerticalCutReveal splitBy="characters" staggerDuration={0.02} staggerFrom="first">
@@ -450,7 +453,6 @@ function SlideView({
           isOdd ? "justify-center text-center" : "justify-center text-center",
         )}
       >
-        <GrainientBackdrop palette={slide.palette} opacity={0.75} variant={slideIdx} />
         <div className="relative z-[1] flex flex-col items-center">
           {/* Caption-first layout (odd slides) uses animated-underline for a different visual rhythm */}
           {isOdd ? (
