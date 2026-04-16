@@ -477,6 +477,37 @@ function TurnBlock({
               );
             })}
           </div>
+          {/* CEFR badge + structure count — visible on hover or toggle */}
+          {turnMetrics && (
+            <div
+              className={cn(
+                "flex items-center gap-2 mt-1.5 pr-1 transition-opacity duration-200",
+                showBars ? "opacity-100" : "opacity-0 group-hover/turn:opacity-100",
+              )}
+            >
+              <span
+                className="text-[10px] font-medium px-1.5 py-0.5 rounded-[3px]"
+                style={{
+                  backgroundColor: CEFR_BG[turnMetrics.cefr] ?? "rgba(148,163,184,0.12)",
+                  color: CEFR_TEXT[turnMetrics.cefr] ?? "#64748b",
+                }}
+              >
+                {turnMetrics.cefr}
+              </span>
+              {(() => {
+                let spanCount = 0;
+                for (const u of turn.utterances) {
+                  const g = grammarMap.get(u.id);
+                  spanCount += g?.cefr_spans?.length ?? 0;
+                }
+                return spanCount > 0 ? (
+                  <span className="text-[10px] text-[#94a3b8]">
+                    {spanCount} structure{spanCount === 1 ? "" : "s"}
+                  </span>
+                ) : null;
+              })()}
+            </div>
+          )}
         </div>
       </div>
     );
