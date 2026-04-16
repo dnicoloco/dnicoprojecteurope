@@ -296,7 +296,7 @@ export const SESSION_DETAILS: Record<string, SessionDetail[]> = {
         { topicId: "feelings",   startMin: 45, minutes: 10 },
       ],
       bestMomentMin: 22,
-      bestMomentLabel: "Led a 55-minute debate on technology and attention",
+      bestMomentLabel: "Used \"even though\" and \"however\" naturally for the first time",
       confidenceArc: [0.88, 0.90, 0.92, 0.94, 0.93, 0.95, 0.94, 0.93, 0.94, 0.95],
       tutor: "Sarah W.",
       language: "Italian",
