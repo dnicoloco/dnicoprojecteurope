@@ -200,17 +200,11 @@ export function WrappedHero({
           <img
             src="/tutor-avatar.jpg"
             alt={student.tutor ?? "Tutor"}
-            className="absolute z-20 bottom-3 right-3 w-14 h-14 rounded-[4px] object-cover border-2 border-white/60"
+            className="absolute z-20 top-3 right-3 w-12 h-12 rounded-[4px] object-cover border-2 border-white/60"
           />
-          <div className="absolute z-10 bottom-2 left-0 right-0 px-2 opacity-70">
-            <Sparkline
-              values={session.confidenceArc}
-              stroke="rgba(255,255,255,0.85)"
-              fill="rgba(255,255,255,0.06)"
-              width={184}
-              height={32}
-              className="w-full"
-            />
+          <div className="absolute z-10 bottom-3 left-3 right-3">
+            <div className="text-[12px] font-medium text-[#191919]/70">{student.tutor}</div>
+            <div className="text-[11px] text-[#191919]/50">{fmtSessionDate(session.date)}</div>
           </div>
         </div>
 
