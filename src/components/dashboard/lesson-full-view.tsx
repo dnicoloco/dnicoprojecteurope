@@ -8,7 +8,6 @@ import {
   type LessonUtterance,
 } from "@/lib/db";
 import type { StudentProgress } from "@/lib/metrics";
-import { Grainient } from "@/components/ui/grainient";
 
 const TTS_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/tts`;
 
@@ -26,14 +25,6 @@ const CEFR_TEXT: Record<string, string> = {
   C2: "#5b21b6",
 };
 
-// Palettes for the lesson header
-const PALETTES: Array<[string, string, string]> = [
-  ["#FFB6D9", "#FF7AAC", "#E8649A"],
-  ["#A8D8FF", "#5FA8FD", "#3D7CC9"],
-  ["#9FE5BE", "#3DDABE", "#2DA88F"],
-  ["#FFD0B8", "#FF9570", "#E87550"],
-  ["#D4BFF5", "#9E7AFF", "#7044D4"],
-];
 
 // ============================================================
 // Types
@@ -225,73 +216,57 @@ export function LessonFullView({
   }, [personaStudentKey, lessonNumber]);
 
   const turns = React.useMemo(() => chunkIntoTurns(transcript), [transcript]);
-  const palette = PALETTES[(lessonNumber - 1) % PALETTES.length];
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header with Grainient accent */}
-      <div className="relative shrink-0 overflow-hidden" style={{ minHeight: 64 }}>
-        <div className="absolute inset-0 opacity-60 pointer-events-none">
-          <Grainient
-            color1={palette[0]}
-            color2={palette[1]}
-            color3={palette[2]}
-            timeSpeed={0.12}
-            warpStrength={1.0}
-            warpAmplitude={60}
-            grainAmount={0.14}
-            grainAnimated
-            contrast={1.1}
-            saturation={1.0}
-            zoom={1.1}
-          />
+    <div className="h-full overflow-y-auto">
+      {loading ? (
+        <div className="flex items-center justify-center h-64 text-[13px] text-[#6a7580]">
+          Loading transcript…
         </div>
-        <div className="relative z-[1] px-6 py-3 flex items-center gap-4">
-          <button
-            type="button"
-            onClick={onBack}
-            className="w-9 h-9 inline-flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm border border-black/[0.08] text-[#191919] hover:bg-white cursor-pointer shrink-0"
-          >
-            <ArrowLeft size={16} />
-          </button>
-          <div>
-            <div className="text-[12px] uppercase tracking-[0.1em] text-[#191919]/60 font-medium">
-              Lesson {lessonNumber} · Full transcript
+      ) : (
+        <>
+          {/* Compact header — scrolls with content */}
+          <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm border-b border-black/[0.06] px-6 py-2.5 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onBack}
+              className="w-8 h-8 inline-flex items-center justify-center rounded-[6px] border border-black/[0.08] text-[#191919] hover:bg-black/5 cursor-pointer shrink-0"
+            >
+              <ArrowLeft size={15} />
+            </button>
+            <div className="flex-1 min-w-0">
+              <span className="text-[13px] font-medium text-[#191919]">
+                Lesson {lessonNumber}
+              </span>
+              <span className="text-[13px] text-[#6a7580] mx-1.5">·</span>
+              <span className="text-[13px] text-[#6a7580]">
+                {student.name} with {student.tutor}
+              </span>
             </div>
-            <div className="font-display text-[20px] text-[#191919] leading-tight" style={{ fontWeight: 500 }}>
-              {student.name} with {student.tutor}
-            </div>
+            <span className="text-[12px] text-[#94a3b8] shrink-0">
+              {turns.length} turns
+            </span>
           </div>
-          <div className="ml-auto text-[13px] text-[#191919]/50">
-            {transcript.length} lines · {turns.length} turns
-          </div>
-        </div>
-      </div>
 
-      {/* Transcript body */}
-      <div className="flex-1 overflow-y-auto">
-        {loading ? (
-          <div className="flex items-center justify-center h-64 text-[13px] text-[#6a7580]">
-            Loading transcript…
-          </div>
-        ) : turns.length === 0 ? (
-          <div className="flex items-center justify-center h-64 text-[13px] text-[#6a7580]">
-            No transcript available for this lesson.
-          </div>
-        ) : (
-          <div className="max-w-4xl mx-auto px-6 py-8 space-y-5">
-            {turns.map((turn, ti) => (
-              <TurnBlock
-                key={ti}
-                turn={turn}
-                student={student}
-                playingId={playingId}
-                onPlay={play}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+          {turns.length === 0 ? (
+            <div className="flex items-center justify-center h-64 text-[13px] text-[#6a7580]">
+              No transcript available for this lesson.
+            </div>
+          ) : (
+            <div className="max-w-4xl mx-auto px-6 py-6 space-y-5">
+              {turns.map((turn, ti) => (
+                <TurnBlock
+                  key={ti}
+                  turn={turn}
+                  student={student}
+                  playingId={playingId}
+                  onPlay={play}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
