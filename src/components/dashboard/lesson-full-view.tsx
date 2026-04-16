@@ -271,16 +271,6 @@ export function LessonFullView({
 
   return (
     <div className="h-full relative">
-      {/* Top fade */}
-      <div
-        className="absolute top-0 left-0 right-0 h-20 z-[5] pointer-events-none"
-        style={{ background: "linear-gradient(to bottom, white 30%, transparent 100%)" }}
-      />
-      {/* Bottom fade */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-16 z-[5] pointer-events-none"
-        style={{ background: "linear-gradient(to top, white 20%, transparent 100%)" }}
-      />
 
       {/* Notion-style section markers — thin lines on right edge */}
       {sections.length > 1 && (
@@ -304,7 +294,14 @@ export function LessonFullView({
         </div>
       )}
 
-      <div ref={scrollRef} className="h-full overflow-y-auto">
+      <div
+        ref={scrollRef}
+        className="h-full overflow-y-auto"
+        style={{
+          maskImage: "linear-gradient(to bottom, transparent 0px, black 56px, black calc(100% - 40px), transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, transparent 0px, black 56px, black calc(100% - 40px), transparent 100%)",
+        }}
+      >
       {loading ? (
         <div className="flex items-center justify-center h-64 text-[13px] text-[#6a7580]">
           Loading transcript…
