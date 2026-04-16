@@ -482,22 +482,19 @@ function TurnBlock({
             className="rounded-[14px] rounded-br-[6px] px-4 py-2.5 text-[17px] leading-relaxed backdrop-blur-[16px] text-[#191919]"
             style={GLASS_STYLE}
           >
-            {(() => {
-              // Collect Opus CEFR spans for this turn's utterances
-              const allSpans: CefrSpan[] = [];
-              let offset = 0;
-              for (const u of turn.utterances) {
-                const g = grammarMap.get(u.id);
-                const cleaned = cleanText(u.text, false);
-                if (g?.cefr_spans) {
-                  for (const s of g.cefr_spans) {
-                    allSpans.push({ ...s, start: s.start + offset, end: s.end + offset });
-                  }
-                }
-                offset += cleaned.length + 1; // +1 for the space between utterances
-              }
-              return <CefrSpanHighlightedText text={displayText} spans={allSpans} />;
-            })()}
+            {turn.utterances.map((u, ui) => {
+              const g = grammarMap.get(u.id);
+              const hasSpans = g?.cefr_spans && g.cefr_spans.length > 0;
+              const cleaned = cleanText(u.text, false);
+              return (
+                <span key={u.id}>
+                  {ui > 0 && " "}
+                  {hasSpans
+                    ? <CefrSpanHighlightedText text={u.text} spans={g!.cefr_spans!} />
+                    : <CefrSpanHighlightedText text={cleaned} spans={[]} />}
+                </span>
+              );
+            })}
           </div>
           {/* Accuracy bars — visible on hover or when toggled */}
           {turnMetrics && (

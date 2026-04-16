@@ -216,7 +216,9 @@ export function WrappedHero({
 
         <div className="flex-1 flex flex-col min-w-0 gap-3">
           <h2 className="font-display text-[24px] text-[#191919] leading-tight line-clamp-2">
-            {session.bestMomentLabel}
+            {student.lessons.length > 1
+              ? `Last lesson you spoke ${Math.round(last.wpm)} wpm, up from ${Math.round(student.lessons[0].wpm)} in your first`
+              : session.bestMomentLabel}
           </h2>
 
           {/* Horizontal metric bars */}
