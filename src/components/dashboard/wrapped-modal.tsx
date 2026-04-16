@@ -370,7 +370,7 @@ export function WrappedModal({
                   key={i}
                   className={cn(
                     "w-2 h-2 rounded-full transition-colors",
-                    i === slideIdx ? "bg-[#191919]/60" : "bg-[#191919]/15",
+                    i === slideIdx ? "bg-white/80" : "bg-white/30",
                   )}
                 />
               ))}
@@ -392,7 +392,7 @@ export function WrappedModal({
                 <button
                   type="button"
                   onClick={() => setPhase("fullscreen")}
-                  className="text-[12px] text-[#191919]/40 hover:text-[#191919] cursor-pointer"
+                  className="text-[12px] text-[#191919]/40 hover:text-[#191919] cursor-pointer mr-1"
                 >
                   Skip
                 </button>

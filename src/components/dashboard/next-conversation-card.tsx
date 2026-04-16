@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Volume2, Pause, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Volume2, Pause, X, ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
 import { CefrHighlightedText } from "@/components/ui/cefr-highlight";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -296,9 +296,9 @@ export function JourneyStrip({
   return (
     <section>
       {/* Title + theme label */}
-      <div className="text-center mb-5">
+      <div className="text-center mb-6">
         <h2
-          className="font-display text-[22px] text-[#191919] leading-none"
+          className="font-display text-[26px] text-[#191919] leading-none"
           style={{ fontWeight: 500 }}
         >
           Your speaking journey
@@ -313,7 +313,7 @@ export function JourneyStrip({
       </div>
 
       {/* Then / Now with chevrons to cycle themes */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <button
           type="button"
           onClick={() => {
@@ -375,18 +375,74 @@ export function JourneyStrip({
         </button>
       </div>
 
-      {/* Projection — centred below */}
+      {/* Dynamic projection */}
       {deltaDays !== null && deltaDays > 0 && pastQuote && nowQuote && (
-        <div className="mt-4 text-center max-w-[560px] mx-auto">
-          <p className="text-[14px] text-[#191919] leading-relaxed">
-            At this pace, in <span className="font-semibold text-[#FF7AAC]">3 months</span> you&apos;ll be holding full debates and defending nuanced positions on {activeTheme?.label?.toLowerCase() ?? "this topic"} in English.
-          </p>
-          <p className="text-[12px] text-[#191919]/40 mt-1">
-            (estimate based on avg. student progression)
-          </p>
-        </div>
+        <ProjectionWidget theme={activeTheme?.label ?? ""} />
       )}
     </section>
+  );
+}
+
+// ============================================================
+// ProjectionWidget — dynamic "In X months" with +/- lesson rate
+// ============================================================
+// Cambridge: ~200 guided hours per CEFR level. Preply 2025 study:
+// 3x faster with 1-on-1 = ~67 hours per level. At 1hr/lesson:
+const HOURS_PER_LEVEL = 67;
+
+const MILESTONES: Array<{ minMonths: number; text: string }> = [
+  { minMonths: 0, text: "Keep your current momentum going" },
+  { minMonths: 3, text: "You'll be expressing complex opinions and debating abstract topics" },
+  { minMonths: 6, text: "You'll understand native speakers in most situations and write structured arguments" },
+  { minMonths: 12, text: "You'll be operating near-fluently in professional and social settings" },
+];
+
+function ProjectionWidget({ theme }: { theme: string }) {
+  const [lessonsPerMonth, setLessonsPerMonth] = React.useState(8);
+
+  const monthsToNextLevel = Math.max(1, Math.round(HOURS_PER_LEVEL / lessonsPerMonth));
+  const milestone = [...MILESTONES].reverse().find((m) => monthsToNextLevel >= m.minMonths) ?? MILESTONES[0];
+
+  return (
+    <div className="mt-5 text-center max-w-[560px] mx-auto">
+      <div className="flex items-center justify-center gap-3 mb-3">
+        <span className="font-display text-[20px] text-[#191919]" style={{ fontWeight: 500 }}>
+          In <span className="text-[#FF7AAC]">{monthsToNextLevel} months</span>
+        </span>
+      </div>
+
+      <p className="text-[14px] text-[#191919] leading-relaxed">
+        {milestone.text} in {theme.toLowerCase() || "English"}.
+      </p>
+
+      <div className="flex items-center justify-center gap-3 mt-3">
+        <span className="text-[12px] text-[#191919]/50">Based on</span>
+        <div className="inline-flex items-center gap-1 border border-black/[0.08] rounded-[6px] px-1">
+          <button
+            type="button"
+            onClick={() => setLessonsPerMonth((v) => Math.max(2, v - 2))}
+            className="w-6 h-6 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[4px] cursor-pointer"
+          >
+            <Minus size={12} />
+          </button>
+          <span className="text-[13px] font-medium text-[#191919] tabular-nums w-[14px] text-center">
+            {lessonsPerMonth}
+          </span>
+          <button
+            type="button"
+            onClick={() => setLessonsPerMonth((v) => Math.min(20, v + 2))}
+            className="w-6 h-6 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[4px] cursor-pointer"
+          >
+            <Plus size={12} />
+          </button>
+        </div>
+        <span className="text-[12px] text-[#191919]/50">lessons/month</span>
+      </div>
+
+      <p className="text-[11px] text-[#191919]/30 mt-2">
+        Based on Preply&apos;s 2025 efficiency study and Cambridge CEFR guidelines
+      </p>
+    </div>
   );
 }
 
@@ -423,7 +479,7 @@ function Panel({
       <p className="text-[15px] leading-snug text-[#191919] text-left line-clamp-4">
         {quote ? <>&ldquo;<CefrHighlightedText text={quote} />&rdquo;</> : "\u00A0"}
       </p>
-      <div className="mt-auto pt-1">
+      <div className="mt-auto pt-1 flex justify-end">
         <button
           type="button"
           onClick={() => quote && onPlay(id, quote, "student")}
