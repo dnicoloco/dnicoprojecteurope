@@ -51,20 +51,35 @@ const GLASS_TEXT: React.CSSProperties = {
 
 export function VocabPills({ studentKey }: { studentKey: string }) {
   const pills = DATA[studentKey] ?? [];
-  const [selected, setSelected] = React.useState<VocabPill | null>(null);
+  const [hovered, setHovered] = React.useState<VocabPill | null>(null);
 
   return (
     <div className="relative w-full rounded-[6px] pb-2 mt-6">
-      <div className="text-[13px] font-medium text-[#6a7580] mb-1.5 text-center">Recent new words</div>
+      {/* Hover tooltip — appears above the pills */}
+      <div className="min-h-[52px] mb-2">
+        {hovered ? (
+          <div className="rounded-[8px] p-3 backdrop-blur-[16px] text-[13px] transition-opacity" style={{ boxShadow: GLASS_SHADOW, background: "rgba(255,255,255,0.92)" }}>
+            <div className="font-medium text-[#191919] mb-0.5">
+              {hovered.word}
+              <span className="text-[#6a7580] font-normal ml-2">
+                first used lesson {hovered.firstLesson}
+              </span>
+            </div>
+            <div className="text-[#6a7580] italic line-clamp-2">
+              {hovered.context}
+            </div>
+          </div>
+        ) : (
+          <div className="text-[13px] font-medium text-[#6a7580] text-center pt-6">Recent new words</div>
+        )}
+      </div>
       <div className="flex gap-2 justify-center">
         {pills.slice(0, 3).map((p) => (
           <button
             key={p.word}
-            onClick={() => setSelected(selected?.word === p.word ? null : p)}
-            className={cn(
-              "px-4 py-2 rounded-full text-[15px] font-medium backdrop-blur-[16px] transition-shadow cursor-pointer",
-              selected?.word === p.word && "ring-2 ring-[#FF7AAC]/40",
-            )}
+            onMouseEnter={() => setHovered(p)}
+            onMouseLeave={() => setHovered(null)}
+            className="px-4 py-2 rounded-full text-[15px] font-medium backdrop-blur-[16px] transition-shadow cursor-pointer"
             style={{
               boxShadow: GLASS_SHADOW,
               background: "rgba(15, 23, 42, 0.01)",
@@ -74,24 +89,6 @@ export function VocabPills({ studentKey }: { studentKey: string }) {
           </button>
         ))}
       </div>
-
-      {/* Detail popover */}
-      {selected && (
-        <div
-          className="absolute bottom-2 left-2 right-2 rounded-[8px] p-3 backdrop-blur-[16px] text-[13px]"
-          style={{ boxShadow: GLASS_SHADOW, background: "rgba(255,255,255,0.92)" }}
-        >
-          <div className="font-medium text-[#191919] mb-1">
-            {selected.word}
-            <span className="text-[#6a7580] font-normal ml-2">
-              lesson {selected.firstLesson} · {selected.firstLessonDate}
-            </span>
-          </div>
-          <div className="text-[#6a7580] italic line-clamp-2">
-            {selected.context}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

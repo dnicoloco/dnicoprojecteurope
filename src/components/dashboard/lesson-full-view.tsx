@@ -401,8 +401,6 @@ const GLASS_STYLE: React.CSSProperties = {
   ].join(", "),
 };
 
-const DIM_COLORS: Record<string, string> = { A: "#7AB8F0", B: "#FF7AAC", C: "#6DCFA0", D: "#A78BDB" };
-const DIM_SHORT: Record<string, string> = { A: "Sentence", B: "Tense", C: "Nominal", D: "Modal" };
 
 
 function TurnBlock({
@@ -425,21 +423,6 @@ function TurnBlock({
   const active = playingId === pid;
 
   const displayText = cleanText(turn.combinedText, !isStudent);
-
-  const turnDims = isStudent ? (() => {
-    const d = { A: 0, B: 0, C: 0, D: 0 };
-    for (const u of turn.utterances) {
-      const g = grammarMap.get(u.id);
-      if (!g) continue;
-      d.A += g.dimension_counts?.A ?? 0;
-      d.B += g.dimension_counts?.B ?? 0;
-      d.C += g.dimension_counts?.C ?? 0;
-      d.D += g.dimension_counts?.D ?? 0;
-    }
-    return d;
-  })() : null;
-  const hasErrors = turnDims && (turnDims.A + turnDims.B + turnDims.C + turnDims.D > 0);
-  const maxDim = hasErrors ? Math.max(1, turnDims.A, turnDims.B, turnDims.C, turnDims.D) : 1;
 
   // Compute per-turn metrics for student bubbles: Accuracy + CEFR level
   const turnMetrics = isStudent ? (() => {
