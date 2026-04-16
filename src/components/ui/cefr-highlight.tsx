@@ -68,21 +68,33 @@ export function CefrSpanHighlightedText({
     return <CefrHighlightedText text={text} />;
   }
 
-  // Sort spans by start offset
-  const sorted = [...spans]
-    .filter((s) => s.start >= 0 && s.end <= text.length && CEFR_BG[s.level])
-    .sort((a, b) => a.start - b.start);
+  // Substring matching — find each span's text in the utterance by indexOf.
+  // Robust against offset drift from whitespace/punctuation differences.
+  const matches: Array<{ start: number; end: number; span: CefrSpan }> = [];
+  const usedRanges: Array<[number, number]> = [];
+
+  for (const s of spans) {
+    if (!s.text || !CEFR_BG[s.level]) continue;
+    const idx = text.indexOf(s.text);
+    if (idx === -1) continue;
+    // Check for overlap with already-matched ranges
+    const overlaps = usedRanges.some(([a, b]) => idx < b && idx + s.text.length > a);
+    if (overlaps) continue;
+    matches.push({ start: idx, end: idx + s.text.length, span: s });
+    usedRanges.push([idx, idx + s.text.length]);
+  }
+
+  matches.sort((a, b) => a.start - b.start);
 
   const parts: Array<{ text: string; span?: CefrSpan }> = [];
   let cursor = 0;
 
-  for (const s of sorted) {
-    if (s.start < cursor) continue; // overlapping, skip
-    if (s.start > cursor) {
-      parts.push({ text: text.slice(cursor, s.start) });
+  for (const m of matches) {
+    if (m.start > cursor) {
+      parts.push({ text: text.slice(cursor, m.start) });
     }
-    parts.push({ text: text.slice(s.start, s.end), span: s });
-    cursor = s.end;
+    parts.push({ text: text.slice(m.start, m.end), span: m.span });
+    cursor = m.end;
   }
   if (cursor < text.length) {
     parts.push({ text: text.slice(cursor) });

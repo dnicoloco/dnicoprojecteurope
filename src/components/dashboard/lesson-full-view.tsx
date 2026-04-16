@@ -477,35 +477,6 @@ function TurnBlock({
               );
             })}
           </div>
-          {/* Per-turn metrics: Accuracy bar + CEFR badge — visible on hover or when toggled */}
-          {turnMetrics && (
-            <div
-              className={cn(
-                "flex items-center gap-3 mt-1.5 pr-1 transition-opacity duration-200",
-                showBars ? "opacity-100" : "opacity-0 group-hover/turn:opacity-100",
-              )}
-            >
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] text-[#94a3b8]">Accuracy</span>
-                <div className="w-[44px] h-[6px] rounded-[3px] bg-black/[0.05] overflow-hidden">
-                  <div
-                    className="h-full rounded-[3px]"
-                    style={{ width: `${turnMetrics.accuracy}%`, backgroundColor: "#6DCFA0" }}
-                  />
-                </div>
-                <span className="text-[11px] text-[#94a3b8] tabular-nums">{turnMetrics.accuracy}</span>
-              </div>
-              <span
-                className="text-[10px] font-medium px-1.5 py-0.5 rounded-[3px]"
-                style={{
-                  backgroundColor: CEFR_BG[turnMetrics.cefr] ?? "rgba(148,163,184,0.12)",
-                  color: CEFR_TEXT[turnMetrics.cefr] ?? "#64748b",
-                }}
-              >
-                {turnMetrics.cefr}
-              </span>
-            </div>
-          )}
         </div>
       </div>
     );
