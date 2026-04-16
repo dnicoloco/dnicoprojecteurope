@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ArrowLeft, Volume2, Pause, ChevronDown } from "lucide-react";
+import { ArrowLeft, Volume2, Pause, ChevronDown, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   getLessonTranscript,
@@ -230,6 +230,7 @@ export function LessonFullView({
   const [transcript, setTranscript] = React.useState<LessonUtterance[]>([]);
   const [grammarMap, setGrammarMap] = React.useState<Map<string, UtteranceGrammar>>(new Map());
   const [loading, setLoading] = React.useState(true);
+  const [showBars, setShowBars] = React.useState(false);
   const { playingId, play } = useTTS();
 
   React.useEffect(() => {
@@ -329,6 +330,17 @@ export function LessonFullView({
             </div>
             <button
               type="button"
+              onClick={() => setShowBars((b) => !b)}
+              className={cn(
+                "inline-flex items-center justify-center w-9 h-9 rounded-[6px] border border-black/[0.08] cursor-pointer shrink-0 transition-colors",
+                showBars ? "bg-[#191919] text-white border-[#191919]" : "bg-white text-[#191919] hover:bg-black/5",
+              )}
+              title={showBars ? "Hide metrics" : "Show metrics"}
+            >
+              <BarChart3 size={15} />
+            </button>
+            <button
+              type="button"
               onClick={() => {
                 const allText = turns.map((t) => t.combinedText).join(" ");
                 play("play-all", allText, "student");
@@ -359,6 +371,7 @@ export function LessonFullView({
                   playingId={playingId}
                   onPlay={play}
                   grammarMap={grammarMap}
+                  showBars={showBars}
                 />
               ))}
             </div>
@@ -391,18 +404,22 @@ const GLASS_STYLE: React.CSSProperties = {
 const DIM_COLORS: Record<string, string> = { A: "#7AB8F0", B: "#FF7AAC", C: "#6DCFA0", D: "#A78BDB" };
 const DIM_SHORT: Record<string, string> = { A: "Sentence", B: "Tense", C: "Nominal", D: "Modal" };
 
+const CEFR_PCT: Record<string, number> = { A1: 15, A2: 30, B1: 50, B2: 70, C1: 85, C2: 100 };
+
 function TurnBlock({
   turn,
   student,
   playingId,
   onPlay,
   grammarMap,
+  showBars,
 }: {
   turn: ConversationTurn;
   student: StudentProgress;
   playingId: string | null;
   onPlay: (id: string, text: string, speaker: "student" | "other") => void;
   grammarMap: Map<string, UtteranceGrammar>;
+  showBars: boolean;
 }) {
   const isStudent = turn.speaker === "student";
   const pid = `turn-${turn.startSec}`;
@@ -425,9 +442,27 @@ function TurnBlock({
   const hasErrors = turnDims && (turnDims.A + turnDims.B + turnDims.C + turnDims.D > 0);
   const maxDim = hasErrors ? Math.max(1, turnDims.A, turnDims.B, turnDims.C, turnDims.D) : 1;
 
+  // Compute per-turn metrics for student bubbles
+  const turnMetrics = isStudent ? (() => {
+    let accSum = 0, count = 0;
+    const cefrs: string[] = [];
+    for (const u of turn.utterances) {
+      const g = grammarMap.get(u.id);
+      if (!g) continue;
+      accSum += g.accuracy_pct;
+      count++;
+      cefrs.push(g.cefr_estimate);
+    }
+    if (count === 0) return null;
+    const acc = Math.round(accSum / count);
+    const topCefr = cefrs.sort().reverse()[0] ?? "A2";
+    const wordRange = CEFR_PCT[topCefr] ?? 50;
+    return { accuracy: acc, wordRange, confidence: Math.min(100, acc + 8) };
+  })() : null;
+
   if (isStudent) {
     return (
-      <div className="flex w-full justify-end">
+      <div className="flex w-full justify-end group/turn">
         <div className="flex flex-col items-end max-w-[75%]">
           <div className="flex items-baseline gap-2 mb-1 pr-1 text-[11px] flex-row-reverse">
             <span className="text-[#94a3b8] tabular-nums">{fmtMMSS(turn.startSec)}</span>
@@ -449,6 +484,32 @@ function TurnBlock({
           >
             <CefrHighlightedText text={displayText} />
           </div>
+          {/* Accuracy bars — visible on hover or when toggled */}
+          {turnMetrics && (
+            <div
+              className={cn(
+                "flex gap-2 mt-1.5 pr-1 transition-opacity duration-200",
+                showBars ? "opacity-100" : "opacity-0 group-hover/turn:opacity-100",
+              )}
+            >
+              {[
+                { label: "Acc", value: turnMetrics.accuracy, from: "#4ade80", to: "#6DCFA0" },
+                { label: "Range", value: turnMetrics.wordRange, from: "#60a5fa", to: "#7AB8F0" },
+                { label: "Conf", value: turnMetrics.confidence, from: "#f472b6", to: "#FF7AAC" },
+              ].map((b) => (
+                <div key={b.label} className="flex items-center gap-1">
+                  <span className="text-[9px] text-[#94a3b8]">{b.label}</span>
+                  <div className="w-[40px] h-[4px] rounded-[2px] bg-black/[0.04] overflow-hidden">
+                    <div
+                      className="h-full rounded-[2px]"
+                      style={{ width: `${b.value}%`, background: `linear-gradient(90deg, ${b.from}, ${b.to})` }}
+                    />
+                  </div>
+                  <span className="text-[9px] text-[#94a3b8] tabular-nums">{b.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );
