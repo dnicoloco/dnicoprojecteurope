@@ -298,7 +298,7 @@ export function JourneyStrip({
       {/* Title + theme label */}
       <div className="text-center mb-6">
         <h2
-          className="font-display text-[26px] text-[#191919] leading-none"
+          className="font-display text-[30px] text-[#191919] leading-none"
           style={{ fontWeight: 500 }}
         >
           Your speaking journey
@@ -390,56 +390,56 @@ export function JourneyStrip({
 // 3x faster with 1-on-1 = ~67 hours per level. At 1hr/lesson:
 const HOURS_PER_LEVEL = 67;
 
-const MILESTONES: Array<{ minMonths: number; text: string }> = [
-  { minMonths: 0, text: "Keep your current momentum going" },
-  { minMonths: 3, text: "You'll be expressing complex opinions and debating abstract topics" },
-  { minMonths: 6, text: "You'll understand native speakers in most situations and write structured arguments" },
-  { minMonths: 12, text: "You'll be operating near-fluently in professional and social settings" },
+const MILESTONES: Array<{ maxMonths: number; text: string }> = [
+  { maxMonths: 4, text: "You'll be expressing complex opinions, debating abstract topics, and understanding most native speakers" },
+  { maxMonths: 8, text: "You'll be comfortably debating and forming structured arguments on complex topics" },
+  { maxMonths: 14, text: "You'll be building confidence in expressing opinions and handling everyday debates" },
+  { maxMonths: 99, text: "You'll be steadily building towards fluent, natural conversation" },
 ];
 
 function ProjectionWidget({ theme }: { theme: string }) {
   const [lessonsPerMonth, setLessonsPerMonth] = React.useState(8);
 
   const monthsToNextLevel = Math.max(1, Math.round(HOURS_PER_LEVEL / lessonsPerMonth));
-  const milestone = [...MILESTONES].reverse().find((m) => monthsToNextLevel >= m.minMonths) ?? MILESTONES[0];
+  const milestone = MILESTONES.find((m) => monthsToNextLevel <= m.maxMonths) ?? MILESTONES[MILESTONES.length - 1];
 
   return (
-    <div className="mt-5 text-center max-w-[560px] mx-auto">
-      <div className="flex items-center justify-center gap-3 mb-3">
-        <span className="font-display text-[20px] text-[#191919]" style={{ fontWeight: 500 }}>
-          In <span className="text-[#FF7AAC]">{monthsToNextLevel} months</span>
+    <div className="mt-8 mb-2 text-center max-w-[560px] mx-auto">
+      <div className="mb-4">
+        <span className="font-display text-[24px] text-[#191919]" style={{ fontWeight: 500 }}>
+          In <span className="text-[#FF7AAC]">{monthsToNextLevel} month{monthsToNextLevel === 1 ? "" : "s"}</span>
         </span>
       </div>
 
-      <p className="text-[14px] text-[#191919] leading-relaxed">
+      <p className="text-[16px] text-[#191919] leading-relaxed">
         {milestone.text} in {theme.toLowerCase() || "English"}.
       </p>
 
-      <div className="flex items-center justify-center gap-3 mt-3">
-        <span className="text-[12px] text-[#191919]/50">Based on</span>
-        <div className="inline-flex items-center gap-1 border border-black/[0.08] rounded-[6px] px-1">
+      <div className="flex items-center justify-center gap-3 mt-4">
+        <span className="text-[14px] text-[#191919]/50">Based on</span>
+        <div className="inline-flex items-center gap-1 border border-black/[0.08] rounded-[6px] px-1.5 py-0.5">
           <button
             type="button"
             onClick={() => setLessonsPerMonth((v) => Math.max(2, v - 2))}
-            className="w-6 h-6 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[4px] cursor-pointer"
+            className="w-7 h-7 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[4px] cursor-pointer"
           >
-            <Minus size={12} />
+            <Minus size={14} />
           </button>
-          <span className="text-[13px] font-medium text-[#191919] tabular-nums w-[14px] text-center">
+          <span className="text-[15px] font-medium text-[#191919] tabular-nums w-[20px] text-center">
             {lessonsPerMonth}
           </span>
           <button
             type="button"
             onClick={() => setLessonsPerMonth((v) => Math.min(20, v + 2))}
-            className="w-6 h-6 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[4px] cursor-pointer"
+            className="w-7 h-7 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[4px] cursor-pointer"
           >
-            <Plus size={12} />
+            <Plus size={14} />
           </button>
         </div>
-        <span className="text-[12px] text-[#191919]/50">lessons/month</span>
+        <span className="text-[14px] text-[#191919]/50">lessons/month</span>
       </div>
 
-      <p className="text-[11px] text-[#191919]/30 mt-2">
+      <p className="text-[12px] text-[#191919]/30 mt-3">
         Based on Preply&apos;s 2025 efficiency study and Cambridge CEFR guidelines
       </p>
     </div>
