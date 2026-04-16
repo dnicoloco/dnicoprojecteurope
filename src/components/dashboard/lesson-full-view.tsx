@@ -252,21 +252,66 @@ export function LessonFullView({
 
   const turns = React.useMemo(() => chunkIntoTurns(transcript), [transcript]);
 
+  // Scroll ref for the Notion-style section markers
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  // Compute section boundaries from turns (group every ~8 turns into a section)
+  const sections = React.useMemo(() => {
+    if (turns.length === 0) return [];
+    const secs: Array<{ label: string; turnIdx: number; pct: number }> = [];
+    const chunkSize = Math.max(6, Math.floor(turns.length / 10));
+    for (let i = 0; i < turns.length; i += chunkSize) {
+      const t = turns[i];
+      const label = `${fmtMMSS(t.startSec)}`;
+      secs.push({ label, turnIdx: i, pct: (i / turns.length) * 100 });
+    }
+    return secs;
+  }, [turns]);
+
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full relative">
+      {/* Top fade */}
+      <div
+        className="absolute top-0 left-0 right-0 h-20 z-[5] pointer-events-none"
+        style={{ background: "linear-gradient(to bottom, white 30%, transparent 100%)" }}
+      />
+      {/* Bottom fade */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-16 z-[5] pointer-events-none"
+        style={{ background: "linear-gradient(to top, white 20%, transparent 100%)" }}
+      />
+
+      {/* Notion-style section markers on right edge */}
+      {sections.length > 1 && (
+        <div className="absolute right-2 top-20 bottom-16 z-[6] flex flex-col justify-between w-[20px]">
+          {sections.map((s, i) => (
+            <button
+              key={i}
+              type="button"
+              title={s.label}
+              onClick={() => {
+                const el = scrollRef.current;
+                if (!el) return;
+                const target = el.scrollHeight * (s.pct / 100);
+                el.scrollTo({ top: target, behavior: "smooth" });
+              }}
+              className="group flex items-center justify-end cursor-pointer"
+            >
+              <div className="w-[14px] h-[3px] rounded-full bg-[#191919]/15 group-hover:bg-[#191919]/50 group-hover:w-[18px] transition-all" />
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div ref={scrollRef} className="h-full overflow-y-auto">
       {loading ? (
         <div className="flex items-center justify-center h-64 text-[13px] text-[#6a7580]">
           Loading transcript…
         </div>
       ) : (
         <>
-          {/* Compact header — scrolls with content */}
-          <div
-            className="sticky top-0 z-10 px-6 py-3 flex items-center gap-4"
-            style={{
-              background: "linear-gradient(to bottom, white 70%, transparent 100%)",
-            }}
-          >
+          {/* Header — inside scroll, fades behind top gradient */}
+          <div className="px-6 py-3 flex items-center gap-4">
             <button
               type="button"
               onClick={onBack}
@@ -320,6 +365,7 @@ export function LessonFullView({
           )}
         </>
       )}
+      </div>
     </div>
   );
 }
