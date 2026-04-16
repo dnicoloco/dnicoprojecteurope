@@ -70,7 +70,7 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
   });
 
   return (
-    <div className="w-full max-w-6xl mx-auto pt-8 pb-16 px-6 space-y-8">
+    <div className="w-full max-w-6xl mx-auto pt-8 pb-16 px-6 space-y-10">
       <div className="flex items-end gap-6">
         <div className="flex-1 min-w-0">
           <GreetingHero name={student.name} studentKey={student.id} />
@@ -120,11 +120,18 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
           label="Book new session"
           hint="Pick a slot with your tutor"
         />
-        <GhostCard
-          kind="session"
-          label="Upcoming lesson"
-          hint="Thu 17 Apr · 18:30"
-        />
+        <div className="shrink-0 w-[220px] text-left">
+          <div className="relative aspect-square w-full rounded-[6px] overflow-hidden bg-[#191919] flex flex-col justify-between p-3">
+            <div className="text-[13px] font-semibold text-white">Upcoming</div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <img src="/tutor-avatar.jpg" alt="Tutor" className="w-8 h-8 rounded-[4px] object-cover border border-white/20 shrink-0" />
+                <span className="text-[12px] font-semibold text-white/90">Sarah W.</span>
+              </div>
+              <div className="text-[11px] text-white/50">Thu 17 Apr · 18:30</div>
+            </div>
+          </div>
+        </div>
         {filteredSessions.map((s) => {
           const session = s as unknown as Parameters<typeof SessionCard>[0]["session"];
           const t = topics.find((x) => x.id === (s.topTopicId as string));

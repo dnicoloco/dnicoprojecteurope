@@ -59,7 +59,7 @@ export function SessionCard({
         <div className="absolute z-10 top-9 left-3 font-display text-[64px] leading-none text-[#191919]">
           {padded}
         </div>
-        <div className="absolute z-10 bottom-3 left-3 right-3 flex items-center gap-2">
+        <div className="absolute z-20 bottom-3 left-3 right-3 flex items-center gap-2">
           <img
             src="/tutor-avatar.jpg"
             alt="Tutor"

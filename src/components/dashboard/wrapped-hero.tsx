@@ -197,26 +197,23 @@ export function WrappedHero({
           <div className="absolute z-10 top-10 left-3 font-display text-[64px] leading-none text-[#191919]">
             {padded}
           </div>
-          <img
-            src="/tutor-avatar.jpg"
-            alt={student.tutor ?? "Tutor"}
-            className="absolute z-20 top-3 right-3 w-12 h-12 rounded-[4px] object-cover border-2 border-white/60"
-          />
-          <div className="absolute z-10 bottom-3 left-3 right-3">
-            <div className="text-[12px] font-medium text-[#191919]/70">{student.tutor}</div>
-            <div className="text-[11px] text-[#191919]/50">{fmtSessionDate(session.date)}</div>
+          <div className="absolute z-20 bottom-3 left-3 right-3 flex items-center gap-2">
+            <img
+              src="/tutor-avatar.jpg"
+              alt={student.tutor ?? "Tutor"}
+              className="w-9 h-9 rounded-[4px] object-cover border border-white/40 shrink-0"
+            />
+            <div>
+              <div className="text-[12px] font-semibold text-[#191919]/80">{student.tutor}</div>
+              <div className="text-[11px] text-[#191919]/55">{fmtSessionDate(session.date)}</div>
+            </div>
           </div>
         </div>
 
         <div className="flex-1 flex flex-col min-w-0 gap-3">
-          <div>
-            <h2 className="font-display text-[24px] text-[#191919] leading-tight line-clamp-2">
-              {session.bestMomentLabel}
-            </h2>
-            <p className="text-[14px] text-[#6a7580] mt-1">
-              Lesson {session.lesson} with {student.tutor}
-            </p>
-          </div>
+          <h2 className="font-display text-[24px] text-[#191919] leading-tight line-clamp-2">
+            {session.bestMomentLabel}
+          </h2>
 
           {/* Horizontal metric bars */}
           <div className="flex flex-col gap-2.5 max-w-[340px]">
