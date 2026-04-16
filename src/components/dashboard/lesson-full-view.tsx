@@ -335,7 +335,7 @@ export function LessonFullView({
                 "inline-flex items-center justify-center w-9 h-9 rounded-[6px] border border-black/[0.08] cursor-pointer shrink-0 transition-colors",
                 showBars ? "bg-[#191919] text-white border-[#191919]" : "bg-white text-[#191919] hover:bg-black/5",
               )}
-              title={showBars ? "Hide metrics" : "Show metrics"}
+              title={showBars ? "Hide metrics" : "Show metrics: Accuracy · Word range · Confidence"}
             >
               <BarChart3 size={15} />
             </button>
@@ -493,19 +493,19 @@ function TurnBlock({
               )}
             >
               {[
-                { label: "Acc", value: turnMetrics.accuracy, from: "#4ade80", to: "#6DCFA0" },
-                { label: "Range", value: turnMetrics.wordRange, from: "#60a5fa", to: "#7AB8F0" },
-                { label: "Conf", value: turnMetrics.confidence, from: "#f472b6", to: "#FF7AAC" },
+                { label: "Accuracy", value: turnMetrics.accuracy, from: "#4ade80", to: "#6DCFA0" },
+                { label: "Word range", value: turnMetrics.wordRange, from: "#60a5fa", to: "#7AB8F0" },
+                { label: "Confidence", value: turnMetrics.confidence, from: "#f472b6", to: "#FF7AAC" },
               ].map((b) => (
-                <div key={b.label} className="flex items-center gap-1">
-                  <span className="text-[9px] text-[#94a3b8]">{b.label}</span>
-                  <div className="w-[40px] h-[4px] rounded-[2px] bg-black/[0.04] overflow-hidden">
+                <div key={b.label} className="flex items-center gap-1.5">
+                  <span className="text-[11px] text-[#94a3b8]">{b.label}</span>
+                  <div className="w-[44px] h-[6px] rounded-[3px] bg-black/[0.05] overflow-hidden">
                     <div
-                      className="h-full rounded-[2px]"
+                      className="h-full rounded-[3px]"
                       style={{ width: `${b.value}%`, background: `linear-gradient(90deg, ${b.from}, ${b.to})` }}
                     />
                   </div>
-                  <span className="text-[9px] text-[#94a3b8] tabular-nums">{b.value}</span>
+                  <span className="text-[11px] text-[#94a3b8] tabular-nums">{b.value}</span>
                 </div>
               ))}
             </div>
