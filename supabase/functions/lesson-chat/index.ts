@@ -437,7 +437,7 @@ serve(async (req) => {
 
     if (isCompare) {
       return json({
-        content: `Here's how your speaking changed over 2 weeks.\n\nYour sentences went from short and simple to compound structures with connectors like "because" and "in order to". Speech rate doubled from 33 to 66 wpm. Vocabulary grew from 87 to 142 unique words — words like "maintain" and "concentrate" show you're past survival vocab. Accuracy held at 91% even as complexity rose, which is rare. You're moving from A2 into solid B1.`,
+        content: `Here's how your speaking changed over 2 weeks.\n\nYour sentences went from short and simple to compound structures with connectors like "because" and "in order to".\n\nSpeech rate doubled from 33 to 66 wpm. Vocabulary grew from 87 to 142 unique words. Words like "maintain" and "concentrate" show you're past survival vocab.\n\nAccuracy held at 91% even as complexity rose, which is rare and shows the gains are solid.\n\nYou're moving from A2 into solid B1.`,
         snippets: [
           {
             text: "And I... I walk in the park every day, because I... I like, I like to do the sport.",
@@ -497,7 +497,7 @@ serve(async (req) => {
 
     if (isStats) {
       return json({
-        content: `Your 3 lessons at a glance:\n\nLesson 1 (25 Mar) — 33 wpm, 87 unique words, 88% accuracy, A2\nLesson 2 (1 Apr) — 48 wpm, 112 unique words, 90% accuracy, A2-B1\nLesson 3 (8 Apr) — 66 wpm, 142 unique words, 91% accuracy, B1\n\nSpeed doubled, vocab grew 63%, and accuracy actually improved even as you took on harder structures. Usually when complexity rises, accuracy drops — yours didn't. That means the gains are solid.`,
+        content: `Your 3 lessons at a glance:\n\nLesson 1 (25 Mar): 33 wpm, 87 unique words, 88% accuracy, A2\nLesson 2 (1 Apr): 48 wpm, 112 unique words, 90% accuracy, A2-B1\nLesson 3 (8 Apr): 66 wpm, 142 unique words, 91% accuracy, B1\n\nSpeed doubled. Vocab grew 63%. Accuracy actually improved even as you took on harder structures.\n\nUsually when complexity rises, accuracy drops. Yours didn't. That means the gains are solid.`,
       });
     }
     // ── End demo-rigged responses ──────────────────────────────

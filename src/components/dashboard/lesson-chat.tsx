@@ -161,7 +161,7 @@ export function LessonChat({
     {
       id: "welcome",
       role: "assistant",
-      content: "Hey! Ask me anything about your lessons — I can find specific moments, compare how you spoke, quiz you on your errors, or explain your progress.",
+      content: "Hey! Ask me anything about your lessons. I can find specific moments, compare how you spoke, quiz you on errors, or explain your progress.",
     },
   ]);
   const [input, setInput] = React.useState("");
@@ -248,11 +248,15 @@ export function LessonChat({
                 className={cn(
                   "inline-block px-4 py-2.5 rounded-[14px] text-[14px] leading-relaxed",
                   msg.role === "user"
-                    ? "bg-[#EDEDEB] text-[#191919] rounded-br-[6px]"
+                    ? "bg-[#191919] text-white rounded-br-[6px]"
                     : "text-[#191919]",
                 )}
               >
-                {msg.content}
+                {msg.role === "assistant"
+                  ? msg.content.split("\n\n").map((para, i) => (
+                      <p key={i} className={i > 0 ? "mt-2.5" : ""}>{para}</p>
+                    ))
+                  : msg.content}
               </div>
               {msg.snippets && msg.snippets.length > 0 && (
                 <div className="mt-2 space-y-1.5 text-left">
