@@ -343,13 +343,13 @@ export function WrappedModal({
             {/* Slide body */}
             <SlideView slide={slides[slideIdx]} studentName={student.name} slideIdx={slideIdx} />
 
-            {/* Back / Next — simple text on gradient, no bar */}
-            <div className="flex items-center justify-between px-5 pb-5 pt-2 relative z-[2]">
+            {/* Back / Next — embossed pills floating on gradient */}
+            <div className="absolute bottom-5 left-5 right-5 z-[3] flex items-center justify-between">
               <button
                 type="button"
                 onClick={prev}
                 disabled={slideIdx === 0}
-                className="inline-flex items-center gap-1 text-[13px] text-white/50 hover:text-white disabled:opacity-0 disabled:pointer-events-none cursor-pointer transition-opacity"
+                className="inline-flex items-center gap-1 px-4 py-2 rounded-[6px] bg-[#191919] text-white text-[13px] font-medium shadow-[0_1px_0_rgba(255,255,255,0.06),0_2px_4px_rgba(0,0,0,0.2)] disabled:opacity-0 disabled:pointer-events-none cursor-pointer transition-opacity hover:-translate-y-0.5 active:translate-y-0"
               >
                 <ChevronLeft size={14} /> Back
               </button>
@@ -357,15 +357,15 @@ export function WrappedModal({
                 <button
                   type="button"
                   onClick={() => setPhase("fullscreen")}
-                  className="text-[12px] text-white/40 hover:text-white underline underline-offset-4 decoration-dotted cursor-pointer"
+                  className="text-[12px] text-white/50 hover:text-white underline underline-offset-4 decoration-dotted cursor-pointer"
                 >
-                  Skip to lesson
+                  Skip
                 </button>
               )}
               <button
                 type="button"
                 onClick={next}
-                className="inline-flex items-center gap-1 text-[13px] text-white/70 hover:text-white cursor-pointer"
+                className="inline-flex items-center gap-1 px-4 py-2 rounded-[6px] bg-white text-[#191919] text-[13px] font-medium shadow-[0_1px_0_rgba(0,0,0,0.04),0_2px_4px_rgba(0,0,0,0.1)] cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-transform"
               >
                 {atLast ? "Read the whole lesson" : "Next"}
                 <ChevronRight size={14} />

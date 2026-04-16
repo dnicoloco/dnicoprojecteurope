@@ -16,9 +16,7 @@ export function GhostCard({ label, hint, icon }: Props) {
         style={{ background: "#FAFAFA" }}
       >
         {icon ?? (
-          <div className="w-12 h-12 rounded-[10px] bg-[#FF7AAC] flex items-center justify-center shadow-[0_2px_8px_rgba(255,122,172,0.35)]">
-            <Plus size={22} className="text-white" strokeWidth={2.5} />
-          </div>
+          <Plus size={32} className="text-[#FF7AAC]" strokeWidth={1.8} />
         )}
       </div>
       <div className="pt-2.5 px-0.5">

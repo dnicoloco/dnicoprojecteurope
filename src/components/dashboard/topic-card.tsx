@@ -1,25 +1,16 @@
 import * as React from "react";
+import Image from "next/image";
 import type { Topic } from "@/lib/metrics";
-import { Grainient } from "@/components/ui/grainient";
 
-function deriveGradientColors(hex: string): [string, string, string] {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
+const TOPIC_IMAGES: Record<string, string> = {
+  family: "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=440&h=300&fit=crop&q=80",
+  opinions: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=440&h=300&fit=crop&q=80",
+  feelings: "https://images.unsplash.com/photo-1493612276216-ee3925520721?w=440&h=300&fit=crop&q=80",
+  philosophy: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=440&h=300&fit=crop&q=80",
+};
 
-  const lighten = (v: number, pct: number) =>
-    Math.min(255, Math.round(v + (255 - v) * pct));
-  const darken = (v: number, pct: number) =>
-    Math.max(0, Math.round(v * (1 - pct)));
-  const toHex = (rv: number, gv: number, bv: number) =>
-    `#${[rv, gv, bv].map((c) => c.toString(16).padStart(2, "0")).join("")}`;
-
-  return [
-    hex,
-    toHex(lighten(r, 0.35), lighten(g, 0.35), lighten(b, 0.35)),
-    toHex(darken(r, 0.25), darken(g, 0.25), darken(b, 0.25)),
-  ];
-}
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=440&h=300&fit=crop&q=80";
 
 export function TopicCard({
   topic,
@@ -28,9 +19,9 @@ export function TopicCard({
   topic: Topic;
   index?: number;
 }) {
+  void index;
   const delta = topic.vocabDeltaPct;
-  const [c1, c2, c3] = deriveGradientColors(topic.color);
-  const warpFrequency = 3.5 + index * 1.8;
+  const imgSrc = TOPIC_IMAGES[topic.id] ?? FALLBACK_IMAGE;
 
   return (
     <button className="group shrink-0 w-[220px] text-left cursor-pointer">
@@ -38,19 +29,15 @@ export function TopicCard({
         className="relative aspect-square w-full rounded-[6px] overflow-hidden border border-black/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_1px_2px_rgba(0,0,0,0.04),0_6px_14px_-8px_rgba(0,0,0,0.1)] group-hover:border-black/[0.15] group-hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_3px_6px_rgba(0,0,0,0.07),0_14px_24px_-10px_rgba(0,0,0,0.16)] group-hover:-translate-y-0.5 transition-all duration-200"
         style={{ background: "#1a1a1d" }}
       >
-        {/* Grainient fills top ~65% */}
-        <div className="absolute top-0 left-0 right-0 h-[65%] overflow-hidden rounded-t-[5px]">
-          <Grainient
-            color1={c1}
-            color2={c2}
-            color3={c3}
-            warpFrequency={warpFrequency}
-            warpAmplitude={40}
-            timeSpeed={0.15}
-            grainAmount={0.08}
-            contrast={1.3}
-            saturation={1.1}
-            className="w-full h-full"
+        {/* Editorial blurred photo */}
+        <div className="absolute top-0 left-0 right-0 h-[65%] overflow-hidden">
+          <Image
+            src={imgSrc}
+            alt=""
+            width={440}
+            height={300}
+            className="w-full h-full object-cover blur-[2px] brightness-105 saturate-[0.85] scale-105"
+            unoptimized
           />
         </div>
 
@@ -58,7 +45,7 @@ export function TopicCard({
           {topic.emoji}
         </span>
 
-        {/* Dark bottom section — just covers behind text */}
+        {/* Dark bottom with topic name */}
         <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-4 z-[1]">
           <div className="font-display text-[24px] text-white leading-[1.05]">
             {topic.name}
