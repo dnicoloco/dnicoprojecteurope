@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Volume2, Pause, X } from "lucide-react";
+import { Volume2, Pause, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { CefrHighlightedText } from "@/components/ui/cefr-highlight";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -294,94 +294,96 @@ export function JourneyStrip({
   })();
 
   return (
-    <section
-      className="rounded-[6px] border p-4 md:p-5"
-      style={{ background: CARD_BG, borderColor: CARD_BORDER }}
-    >
-      {/* Header row: title + inline delta on the left, chips on the right */}
-      <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-        <div className="flex items-baseline gap-3 min-w-0">
-          <h2
-            className="font-display text-[18px] text-[#191919] leading-none px-0.5"
-            style={{ fontWeight: 500 }}
-          >
-            Your speaking journey
-          </h2>
-          <span className="text-[13px] text-[#64748b]">
-            {journeyLoading
-              ? "…"
-              : deltaDays !== null
-                ? `${prettyDelta(deltaDays)} of progress`
-                : "\u00A0"}
-          </span>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          {themes.map((t) => {
-            const active = t.id === themeId;
-            return (
-              <button
-                key={t.id}
-                onClick={() => setThemeId(t.id)}
-                className={cn(
-                  "text-[14px] px-4 py-2 rounded-[12px] font-medium backdrop-blur-[16px] transition-all cursor-pointer",
-                  active
-                    ? "bg-[#191919] text-white shadow-[0_1px_3px_rgba(0,0,0,0.2)]"
-                    : "text-[#191919] shadow-[0_0_0_0.5px_rgba(15,23,42,0.12),0_1px_1px_-0.5px_rgba(15,23,42,0.06),0_2px_2px_-1px_rgba(15,23,42,0.06),inset_0_1.5px_1px_rgba(255,255,255,0.9)] hover:shadow-[0_0_0_0.5px_rgba(15,23,42,0.2),0_2px_4px_rgba(15,23,42,0.1)]",
-                )}
-                style={active ? undefined : { background: "rgba(15, 23, 42, 0.01)" }}
-              >
-                {t.label}
-              </button>
-            );
-          })}
-        </div>
+    <section>
+      {/* Title + theme label */}
+      <div className="flex items-baseline gap-3 mb-4">
+        <h2
+          className="font-display text-[18px] text-[#191919] leading-none"
+          style={{ fontWeight: 500 }}
+        >
+          Your speaking journey
+        </h2>
+        <span className="text-[13px] text-[#191919]/40">
+          {journeyLoading
+            ? "…"
+            : deltaDays !== null && deltaDays > 0
+              ? `${prettyDelta(deltaDays)} of progress`
+              : activeTheme?.label ?? ""}
+        </span>
       </div>
 
-      {/* Then / Now — only show comparison when quotes are from different lessons */}
-      {deltaDays !== null && deltaDays > 0 && pastQuote && nowQuote ? (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-            <Panel
-              id="past"
-              label="Then"
-              meta={pastDate ? formatDateShort(pastDate) : ""}
-              quote={pastQuote}
-              playingId={playingId}
-              onPlay={play}
-            />
-            <Panel
-              id="now"
-              label="Now"
-              meta={nowDate ? formatDateShort(nowDate) : ""}
-              quote={nowQuote}
-              playingId={playingId}
-              onPlay={play}
-            />
-          </div>
+      {/* Then / Now with chevrons to cycle themes */}
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => {
+            const idx = themes.findIndex((t) => t.id === themeId);
+            const prev = (idx - 1 + themes.length) % themes.length;
+            setThemeId(themes[prev].id);
+          }}
+          className="w-9 h-9 shrink-0 inline-flex items-center justify-center rounded-full border border-black/[0.08] text-[#191919] hover:bg-black/5 cursor-pointer"
+        >
+          <ChevronLeft size={16} />
+        </button>
 
-          {/* Projection — centred */}
-          <div className="mt-5 text-center max-w-[600px] mx-auto">
-            <p className="text-[15px] text-[#191919] leading-relaxed">
-              At this pace, in <span className="font-semibold text-[#FF7AAC]">3 months</span> you&apos;ll be holding full debates and defending nuanced positions on {activeTheme?.label?.toLowerCase() ?? "this topic"} in English.
-            </p>
-            <p className="text-[12px] text-[#191919]/40 mt-1.5">
-              (estimate based on avg. student progression)
-            </p>
-          </div>
-        </>
-      ) : (
-        /* Single lesson or no match — show honestly */
-        <div className="rounded-[6px] p-4 backdrop-blur-[16px]" style={GLASS_STYLE}>
-          <p className="text-[15px] text-[#191919]">
-            {nowQuote
-              ? <>&ldquo;{nowQuote}&rdquo;</>
-              : "No strong matches for this topic yet."}
-          </p>
-          {nowQuote && (
-            <p className="text-[13px] text-[#191919]/50 mt-2">
-              You explored {activeTheme?.label?.toLowerCase() ?? "this"} in one lesson so far. After more sessions, we&apos;ll show your progression.
-            </p>
+        <div className="flex-1 min-w-0">
+          {deltaDays !== null && deltaDays > 0 && pastQuote && nowQuote ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
+              <Panel
+                id="past"
+                label="Then"
+                meta={pastDate ? formatDateShort(pastDate) : ""}
+                quote={pastQuote}
+                playingId={playingId}
+                onPlay={play}
+              />
+              <Panel
+                id="now"
+                label="Now"
+                meta={nowDate ? formatDateShort(nowDate) : ""}
+                quote={nowQuote}
+                playingId={playingId}
+                onPlay={play}
+              />
+            </div>
+          ) : (
+            <div className="rounded-[6px] p-4 backdrop-blur-[16px]" style={GLASS_STYLE}>
+              <p className="text-[15px] text-[#191919]">
+                {nowQuote
+                  ? <>&ldquo;<CefrHighlightedText text={nowQuote} />&rdquo;</>
+                  : journeyLoading ? "Loading..." : "No strong matches for this topic yet."}
+              </p>
+              {nowQuote && (
+                <p className="text-[13px] text-[#191919]/50 mt-2">
+                  You explored {activeTheme?.label?.toLowerCase() ?? "this"} in one lesson so far.
+                </p>
+              )}
+            </div>
           )}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            const idx = themes.findIndex((t) => t.id === themeId);
+            const next = (idx + 1) % themes.length;
+            setThemeId(themes[next].id);
+          }}
+          className="w-9 h-9 shrink-0 inline-flex items-center justify-center rounded-full border border-black/[0.08] text-[#191919] hover:bg-black/5 cursor-pointer"
+        >
+          <ChevronRight size={16} />
+        </button>
+      </div>
+
+      {/* Projection — centred below */}
+      {deltaDays !== null && deltaDays > 0 && pastQuote && nowQuote && (
+        <div className="mt-4 text-center max-w-[560px] mx-auto">
+          <p className="text-[14px] text-[#191919] leading-relaxed">
+            At this pace, in <span className="font-semibold text-[#FF7AAC]">3 months</span> you&apos;ll be holding full debates and defending nuanced positions on {activeTheme?.label?.toLowerCase() ?? "this topic"} in English.
+          </p>
+          <p className="text-[12px] text-[#191919]/40 mt-1">
+            (estimate based on avg. student progression)
+          </p>
         </div>
       )}
     </section>

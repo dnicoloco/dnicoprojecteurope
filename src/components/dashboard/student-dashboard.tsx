@@ -70,7 +70,7 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
   });
 
   return (
-    <div className="w-full max-w-6xl mx-auto pt-8 pb-16 px-6 space-y-10">
+    <div className="w-full max-w-6xl mx-auto pt-5 pb-16 px-6 space-y-8">
       <div className="flex items-end gap-6">
         <div className="flex-1 min-w-0">
           <GreetingHero name={student.name} studentKey={student.id} />
@@ -90,27 +90,28 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
         />
       )}
 
+      <JourneyStrip personaStudentKey={student.id} />
+
       <HorizontalRow
         title="Recent sessions"
       >
         <GhostCard
           kind="session"
           label="Book new session"
-          hint="Pick a slot with your tutor"
         />
         <div className="group shrink-0 w-[220px] text-left cursor-pointer">
-          <div className="relative aspect-square w-full rounded-[6px] overflow-hidden bg-[#191919] p-3 flex flex-col border border-black/[0.06]">
-            <div className="text-[14px] font-semibold text-white/70">
+          <div className="relative aspect-square w-full rounded-[6px] overflow-hidden p-3 flex flex-col border border-black/[0.06]" style={{ background: "#E0EEFA" }}>
+            <div className="text-[14px] font-semibold text-[#191919]/60">
               upcoming
             </div>
-            <div className="font-display text-[64px] leading-none text-white mt-[-4px]">
+            <div className="font-display text-[64px] leading-none text-[#191919] mt-[-4px]">
               04
             </div>
             <div className="mt-auto flex items-center gap-2">
-              <img src="/tutor-avatar.jpg" alt="Tutor" className="w-9 h-9 rounded-[4px] object-cover border border-white/20 shrink-0" />
+              <img src="/tutor-avatar.jpg" alt="Tutor" className="w-9 h-9 rounded-[4px] object-cover border border-white/40 shrink-0" />
               <div>
-                <div className="text-[12px] font-semibold text-white/90">Sarah W.</div>
-                <div className="text-[11px] text-white/50">Thu 17 Apr · 18:30</div>
+                <div className="text-[12px] font-semibold text-[#191919]/80">Sarah W.</div>
+                <div className="text-[11px] text-[#191919]/50">Thu 17 Apr · 18:30</div>
               </div>
             </div>
           </div>
@@ -131,8 +132,6 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
           );
         })}
       </HorizontalRow>
-
-      <JourneyStrip personaStudentKey={student.id} />
 
       {!hasSoonSession && <BookNextCard student={student} />}
 
