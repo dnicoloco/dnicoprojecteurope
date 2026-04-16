@@ -13,22 +13,22 @@ import type { StudentProgress } from "@/lib/metrics";
 
 const TTS_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/tts`;
 
-// CEFR highlight colors — A1/A2 subtle, B1/B2 visible, C1/C2 strong.
+// CEFR highlight colors — A1 grey, A2 faint blue, B1 weak pink, B2 Preply pink, C1/C2 green.
 const CEFR_BG: Record<string, string> = {
   A1: "rgba(148,163,184,0.12)",
-  A2: "rgba(148,163,184,0.18)",
-  B1: "rgba(64,224,208,0.22)",
-  B2: "rgba(255,107,157,0.22)",
-  C1: "rgba(158,122,255,0.25)",
-  C2: "rgba(112,68,212,0.3)",
+  A2: "rgba(40,133,253,0.12)",
+  B1: "rgba(255,122,172,0.15)",
+  B2: "rgba(255,122,172,0.28)",
+  C1: "rgba(61,218,190,0.2)",
+  C2: "rgba(61,218,190,0.35)",
 };
 const CEFR_TEXT: Record<string, string> = {
   A1: "#64748b",
-  A2: "#475569",
-  B1: "#0d9488",
-  B2: "#e11d73",
-  C1: "#7c3aed",
-  C2: "#5b21b6",
+  A2: "#2885FD",
+  B1: "#e8649a",
+  B2: "#d4447a",
+  C1: "#2DA88F",
+  C2: "#1a8a72",
 };
 
 // ============================================================
