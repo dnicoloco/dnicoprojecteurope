@@ -70,7 +70,7 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
   });
 
   return (
-    <div className="w-full max-w-6xl mx-auto pt-14 pb-16 px-6 space-y-8">
+    <div className="w-full max-w-6xl mx-auto pt-8 pb-16 px-6 space-y-8">
       <div className="flex items-stretch gap-6">
         <div className="flex-1 min-w-0">
           <GreetingHero name={student.name} studentKey={student.id} />

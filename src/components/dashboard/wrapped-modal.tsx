@@ -539,27 +539,18 @@ function SlideView({
   }
 
   if (slide.kind === "grammar") {
-    const DIMENSION_LABELS: Record<string, string> = {
-      A: "Sentence Architecture",
-      B: "Tense & Aspect",
-      C: "Nominal Precision",
-      D: "Modal Range",
-    };
-    const DIMENSION_COLORS: Record<string, string> = {
-      A: "#7AB8F0",
-      B: "#FF7AAC",
-      C: "#6DCFA0",
-      D: "#A78BDB",
-    };
-    const maxDim = Math.max(slide.dimensions.A, slide.dimensions.B, slide.dimensions.C, slide.dimensions.D, 1);
+    const bars = [
+      { label: "Accuracy", value: slide.accuracy, color: "#6DCFA0" },
+      { label: "Word range", value: Math.min(100, Math.round(({ A1: 15, A2: 30, B1: 50, B2: 70, C1: 85, C2: 100 }[slide.cefr] ?? 50))), color: "#7AB8F0" },
+      { label: "Confidence", value: Math.min(100, slide.accuracy + 8), color: "#FF7AAC" },
+    ];
 
     return (
       <div
         key={`grammar-${slideIdx}`}
         className="flex-1 relative flex flex-col items-center justify-center text-center px-8 overflow-hidden"
       >
-        <div className="relative z-[1] flex flex-col items-center w-full max-w-[400px]">
-          {/* Big accuracy number */}
+        <div className="relative z-[1] flex flex-col items-center w-full max-w-[420px]">
           <div
             className="px-10 py-5 rounded-[20px] backdrop-blur-[10px] relative overflow-hidden"
             style={GLASS_STYLE}
@@ -595,36 +586,28 @@ function SlideView({
             </div>
           </div>
 
-          {/* Caption */}
           <div className="mt-5 text-[15px] font-medium text-[#191919] leading-snug text-center">
-            <VerticalCutReveal
-              splitBy="words"
-              staggerDuration={0.03}
-              staggerFrom="first"
-              transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.3 }}
-            >
-              {`grammar accuracy · CEFR ${slide.cefr}`}
-            </VerticalCutReveal>
+            grammar accuracy · {slide.cefr}
           </div>
 
-          {/* Dimension bars */}
-          <div className="mt-6 w-full flex flex-col gap-3">
-            {(["A", "B", "C", "D"] as const).map((dim) => (
-              <div key={dim} className="flex items-center gap-3 text-left">
-                <span className="text-[12px] text-[#6a7580] w-[140px] shrink-0 leading-tight">
-                  {dim}: {DIMENSION_LABELS[dim]}
+          {/* 3 clear metric bars */}
+          <div className="mt-7 w-full flex flex-col gap-4">
+            {bars.map((bar) => (
+              <div key={bar.label} className="flex items-center gap-3">
+                <span className="text-[13px] font-medium text-[#191919] w-[90px] text-right shrink-0">
+                  {bar.label}
                 </span>
-                <div className="flex-1 h-[10px] rounded-full bg-white/40 overflow-hidden">
+                <div className="flex-1 h-[12px] rounded-full bg-white/50 overflow-hidden">
                   <div
-                    className="h-full rounded-full transition-all duration-700"
+                    className="h-full rounded-full transition-all duration-1000 ease-out"
                     style={{
-                      width: `${Math.round((slide.dimensions[dim] / maxDim) * 100)}%`,
-                      backgroundColor: DIMENSION_COLORS[dim],
+                      width: `${bar.value}%`,
+                      backgroundColor: bar.color,
                     }}
                   />
                 </div>
-                <span className="text-[13px] font-medium text-[#191919] w-[28px] text-right tabular-nums">
-                  {slide.dimensions[dim]}
+                <span className="text-[14px] font-medium text-[#191919] w-[36px] text-right tabular-nums">
+                  {bar.value}%
                 </span>
               </div>
             ))}

@@ -261,22 +261,21 @@ export function LessonFullView({
       ) : (
         <>
           {/* Compact header — scrolls with content */}
-          <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm border-b border-black/[0.06] px-6 py-2.5 flex items-center gap-3">
+          <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm border-b border-black/[0.06] px-6 py-3 flex items-center gap-4">
             <button
               type="button"
               onClick={onBack}
-              className="w-8 h-8 inline-flex items-center justify-center rounded-[6px] border border-black/[0.08] text-[#191919] hover:bg-black/5 cursor-pointer shrink-0"
+              className="w-9 h-9 inline-flex items-center justify-center rounded-[6px] border border-black/[0.08] text-[#191919] hover:bg-black/5 cursor-pointer shrink-0"
             >
-              <ArrowLeft size={15} />
+              <ArrowLeft size={16} />
             </button>
             <div className="flex-1 min-w-0">
-              <span className="text-[13px] font-medium text-[#191919]">
+              <div className="font-display text-[22px] text-[#191919] leading-tight" style={{ fontWeight: 500 }}>
                 Lesson {lessonNumber}
-              </span>
-              <span className="text-[13px] text-[#6a7580] mx-1.5">·</span>
-              <span className="text-[13px] text-[#6a7580]">
-                {student.name} with {student.tutor}
-              </span>
+              </div>
+              <div className="text-[13px] text-[#6a7580] mt-0.5">
+                with {student.tutor}
+              </div>
             </div>
             <button
               type="button"
@@ -285,13 +284,13 @@ export function LessonFullView({
                 play("play-all", allText, "student");
               }}
               className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-[12px] font-medium border border-black/[0.08] cursor-pointer shrink-0 transition-colors",
+                "inline-flex items-center gap-1.5 px-4 py-2 rounded-[6px] text-[13px] font-medium border border-black/[0.08] cursor-pointer shrink-0 transition-colors",
                 playingId === "play-all"
                   ? "bg-[#191919] text-white border-[#191919]"
                   : "bg-white text-[#191919] hover:bg-black/5",
               )}
             >
-              {playingId === "play-all" ? <Pause size={12} /> : <Volume2 size={12} />}
+              {playingId === "play-all" ? <Pause size={14} /> : <Volume2 size={14} />}
               {playingId === "play-all" ? "Stop" : "Play lesson"}
             </button>
           </div>
@@ -394,7 +393,7 @@ function TurnBlock({
             </button>
           </div>
           <div
-            className="rounded-[14px] rounded-br-[6px] px-4 py-2.5 text-[14px] leading-relaxed backdrop-blur-[16px] text-[#191919]"
+            className="rounded-[14px] rounded-br-[6px] px-4 py-2.5 text-[17px] leading-relaxed backdrop-blur-[16px] text-[#191919]"
             style={GLASS_STYLE}
           >
             <CefrHighlightedText text={displayText} />
@@ -422,7 +421,7 @@ function TurnBlock({
             {active ? <Pause size={10} /> : <Volume2 size={10} />}
           </button>
         </div>
-        <p className="text-[14px] text-[#191919] leading-relaxed pl-1">
+        <p className="text-[17px] text-[#191919] leading-relaxed pl-1">
           {displayText}
         </p>
       </div>
