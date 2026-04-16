@@ -60,8 +60,8 @@ export function VocabPills({ studentKey }: { studentKey: string }) {
         {/* Hover tooltip — floats above pills */}
         {hovered && (
           <div
-            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-[320px] z-[999] rounded-[8px] p-3 backdrop-blur-[16px] text-[13px]"
-            style={{ boxShadow: GLASS_SHADOW, background: "rgba(255,255,255,0.95)" }}
+            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-[320px] rounded-[8px] p-3 backdrop-blur-[16px] text-[13px]"
+            style={{ boxShadow: GLASS_SHADOW, background: "rgba(255,255,255,0.95)", zIndex: 99999, position: "absolute" }}
           >
             <div className="font-medium text-[#191919] mb-0.5">
               {hovered.word}
@@ -70,7 +70,13 @@ export function VocabPills({ studentKey }: { studentKey: string }) {
               </span>
             </div>
             <div className="text-[#6a7580] italic line-clamp-2">
-              {hovered.context}
+              {hovered.context.split(hovered.word).map((part, i, arr) =>
+                i < arr.length - 1 ? (
+                  <React.Fragment key={i}>{part}<span className="text-[#FF7AAC] not-italic font-medium">{hovered.word}</span></React.Fragment>
+                ) : (
+                  <React.Fragment key={i}>{part}</React.Fragment>
+                )
+              )}
             </div>
           </div>
         )}
