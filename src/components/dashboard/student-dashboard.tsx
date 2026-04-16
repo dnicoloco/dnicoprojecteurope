@@ -116,18 +116,6 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
           </div>
         }
       >
-        {filteredSessions.map((s) => {
-          const session = s as unknown as Parameters<typeof SessionCard>[0]["session"];
-          const t = topics.find((x) => x.id === (s.topTopicId as string));
-          return (
-            <SessionCard
-              key={s.lesson as number}
-              session={session}
-              topic={t}
-              onClick={() => setWrappedSession(session)}
-            />
-          );
-        })}
         <GhostCard
           kind="session"
           label="Your next lesson"
@@ -142,6 +130,18 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
           label="Self-study recap"
           hint="Coming between sessions"
         />
+        {filteredSessions.map((s) => {
+          const session = s as unknown as Parameters<typeof SessionCard>[0]["session"];
+          const t = topics.find((x) => x.id === (s.topTopicId as string));
+          return (
+            <SessionCard
+              key={s.lesson as number}
+              session={session}
+              topic={t}
+              onClick={() => setWrappedSession(session)}
+            />
+          );
+        })}
       </HorizontalRow>
 
       <JourneyStrip personaStudentKey={student.id} />

@@ -10,12 +10,16 @@ type Props = {
 
 export function GhostCard({ label, hint, icon }: Props) {
   return (
-    <div className="group shrink-0 w-[220px] text-left">
+    <div className="group shrink-0 w-[220px] text-left cursor-pointer">
       <div
-        className="relative aspect-square w-full rounded-[6px] overflow-hidden border border-dashed border-black/[0.14] shadow-[0_1px_2px_rgba(0,0,0,0.03)] group-hover:border-black/[0.25] group-hover:shadow-[0_3px_6px_rgba(0,0,0,0.07)] group-hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center"
-        style={{ background: "#FAF9F5" }}
+        className="relative aspect-square w-full rounded-[6px] overflow-hidden border border-dashed border-black/[0.1] group-hover:border-black/[0.2] group-hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center"
+        style={{ background: "#FAFAFA" }}
       >
-        {icon ?? <Plus size={26} className="text-[#6a7580]/50" />}
+        {icon ?? (
+          <div className="w-12 h-12 rounded-[10px] bg-[#FF7AAC] flex items-center justify-center shadow-[0_2px_8px_rgba(255,122,172,0.35)]">
+            <Plus size={22} className="text-white" strokeWidth={2.5} />
+          </div>
+        )}
       </div>
       <div className="pt-2.5 px-0.5">
         <div className="text-[14px] font-medium text-[#191919]/80 truncate">

@@ -2,11 +2,6 @@ import * as React from "react";
 import type { Topic } from "@/lib/metrics";
 import { Grainient } from "@/components/ui/grainient";
 
-/**
- * Derive three Grainient colours from the topic's single brand colour.
- * We keep the base colour as color1, lighten it for color2, and darken
- * it slightly for color3 -- giving each card a cohesive gradient feel.
- */
 function deriveGradientColors(hex: string): [string, string, string] {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -16,15 +11,14 @@ function deriveGradientColors(hex: string): [string, string, string] {
     Math.min(255, Math.round(v + (255 - v) * pct));
   const darken = (v: number, pct: number) =>
     Math.max(0, Math.round(v * (1 - pct)));
-
   const toHex = (rv: number, gv: number, bv: number) =>
     `#${[rv, gv, bv].map((c) => c.toString(16).padStart(2, "0")).join("")}`;
 
-  const color1 = hex;
-  const color2 = toHex(lighten(r, 0.35), lighten(g, 0.35), lighten(b, 0.35));
-  const color3 = toHex(darken(r, 0.25), darken(g, 0.25), darken(b, 0.25));
-
-  return [color1, color2, color3];
+  return [
+    hex,
+    toHex(lighten(r, 0.35), lighten(g, 0.35), lighten(b, 0.35)),
+    toHex(darken(r, 0.25), darken(g, 0.25), darken(b, 0.25)),
+  ];
 }
 
 export function TopicCard({
@@ -36,8 +30,6 @@ export function TopicCard({
 }) {
   const delta = topic.vocabDeltaPct;
   const [c1, c2, c3] = deriveGradientColors(topic.color);
-
-  // Vary warpFrequency per card so each Grainient looks unique
   const warpFrequency = 3.5 + index * 1.8;
 
   return (
@@ -46,8 +38,8 @@ export function TopicCard({
         className="relative aspect-square w-full rounded-[6px] overflow-hidden border border-black/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_1px_2px_rgba(0,0,0,0.04),0_6px_14px_-8px_rgba(0,0,0,0.1)] group-hover:border-black/[0.15] group-hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_3px_6px_rgba(0,0,0,0.07),0_14px_24px_-10px_rgba(0,0,0,0.16)] group-hover:-translate-y-0.5 transition-all duration-200"
         style={{ background: "#1a1a1d" }}
       >
-        {/* Grainient fills the entire card */}
-        <div className="absolute inset-0">
+        {/* Grainient fills top ~65% */}
+        <div className="absolute top-0 left-0 right-0 h-[65%] overflow-hidden rounded-t-[5px]">
           <Grainient
             color1={c1}
             color2={c2}
@@ -65,13 +57,9 @@ export function TopicCard({
         <span className="absolute top-3 right-3 text-[28px] z-[1]">
           {topic.emoji}
         </span>
-        {/* Dark scrim behind text — minimal height */}
-        <div
-          className="absolute bottom-0 left-0 right-0 z-[1] px-3 pb-3 pt-8"
-          style={{
-            background: "linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.3) 60%, transparent 100%)",
-          }}
-        >
+
+        {/* Dark bottom section — just covers behind text */}
+        <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-4 z-[1]">
           <div className="font-display text-[24px] text-white leading-[1.05]">
             {topic.name}
           </div>
