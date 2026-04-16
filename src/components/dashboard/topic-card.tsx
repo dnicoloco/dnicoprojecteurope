@@ -3,14 +3,14 @@ import Image from "next/image";
 import type { Topic } from "@/lib/metrics";
 
 const TOPIC_IMAGES: Record<string, string> = {
-  family: "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=440&h=300&fit=crop&q=80",
-  opinions: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=440&h=300&fit=crop&q=80",
-  feelings: "https://images.unsplash.com/photo-1493612276216-ee3925520721?w=440&h=300&fit=crop&q=80",
-  philosophy: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=440&h=300&fit=crop&q=80",
+  family: "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=440&h=440&fit=crop&q=80",
+  opinions: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=440&h=440&fit=crop&q=80",
+  feelings: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=440&h=440&fit=crop&q=80",
+  philosophy: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=440&h=440&fit=crop&q=80",
 };
 
 const FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=440&h=300&fit=crop&q=80";
+  "https://images.unsplash.com/photo-1557672172-298e090bd0f1?w=440&h=440&fit=crop&q=80";
 
 export function TopicCard({
   topic,
@@ -35,8 +35,8 @@ export function TopicCard({
             src={imgSrc}
             alt=""
             width={440}
-            height={300}
-            className="w-full h-full object-cover blur-[2px] brightness-105 saturate-[0.85] scale-105"
+            height={440}
+            className="w-full h-full object-cover blur-[10px] brightness-110 saturate-[1.15] scale-[1.15]"
             unoptimized
           />
         </div>
