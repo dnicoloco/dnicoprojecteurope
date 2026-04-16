@@ -213,6 +213,7 @@ export function WrappedHero({
           </h2>
 
           {/* Horizontal metric bars */}
+          <div className="text-[12px] text-[#191919]/50 mt-1">How you did this lesson</div>
           <div className="flex flex-col gap-2.5 max-w-[340px]">
             {[
               { label: "Accuracy", value: 87, from: "#4ade80", to: "#6DCFA0" },
