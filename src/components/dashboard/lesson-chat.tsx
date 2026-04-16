@@ -3,40 +3,36 @@
 import * as React from "react";
 import { ArrowUp, Volume2, Pause, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { searchUtterances, type SearchHit } from "@/lib/db";
+import { DB_STUDENT_IDS } from "@/lib/db";
 
+const CHAT_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/lesson-chat`;
 const TTS_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/tts`;
 
+const GLASS_SHADOW = [
+  "0 0 0 0.5px rgba(15,23,42,0.12)",
+  "0 1px 1px -0.5px rgba(15,23,42,0.06)",
+  "0 2px 2px -1px rgba(15,23,42,0.06)",
+  "0 4px 4px -2px rgba(15,23,42,0.06)",
+  "inset 0 1.5px 1px rgba(255,255,255,0.9)",
+  "inset 0 -1.5px 1px rgba(255,255,255,0.9)",
+  "inset 0 6px 6px -3px rgba(15,23,42,0.08)",
+  "inset 0 -4px 4px -2px rgba(15,23,42,0.1)",
+].join(", ");
+
+type Snippet = { text: string; timestamp: string; lesson_date: string; speaker?: string };
+type QuizQuestion = { question: string; options: string[]; correct: number; explanation: string };
 type ChatMessage = {
   id: string;
   role: "user" | "assistant";
   content: string;
-  snippets?: Array<{
-    text: string;
-    timestamp: string;
-    lessonDate: string;
-  }>;
+  snippets?: Snippet[];
+  quiz?: { questions: QuizQuestion[] };
 };
 
-function fmtMMSS(sec: number): string {
-  if (!Number.isFinite(sec) || sec < 0) return "0:00";
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
-
 // ============================================================
-// Inline audio snippet — play button + text + timestamp
+// Audio snippet — glass card with waveform
 // ============================================================
-function AudioSnippet({
-  text,
-  timestamp,
-  lessonDate,
-}: {
-  text: string;
-  timestamp: string;
-  lessonDate: string;
-}) {
+function AudioSnippet({ text, timestamp, lesson_date }: Snippet) {
   const [playing, setPlaying] = React.useState(false);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
@@ -68,19 +64,16 @@ function AudioSnippet({
       const audio = new Audio(src);
       audio.playbackRate = 1.05;
       audioRef.current = audio;
-      audio.addEventListener("ended", () => {
-        cleanup?.();
-        setPlaying(false);
-        audioRef.current = null;
-      });
+      audio.addEventListener("ended", () => { cleanup?.(); setPlaying(false); audioRef.current = null; });
       await audio.play();
-    } catch {
-      setPlaying(false);
-    }
+    } catch { setPlaying(false); }
   };
 
   return (
-    <div className="flex items-start gap-2 my-2 p-2.5 rounded-[10px] bg-[#F8F8F8] border border-black/[0.04]">
+    <div
+      className="flex items-start gap-2.5 my-2 p-3 rounded-[12px] backdrop-blur-[16px]"
+      style={{ boxShadow: GLASS_SHADOW, background: "rgba(15, 23, 42, 0.01)" }}
+    >
       <button
         type="button"
         onClick={play}
@@ -89,14 +82,29 @@ function AudioSnippet({
           playing ? "bg-[#191919] text-white" : "bg-[#FF7AAC] text-white hover:bg-[#f0699d]",
         )}
       >
-        {playing ? <Pause size={13} /> : <Volume2 size={13} />}
+        {playing ? <Pause size={12} /> : <Volume2 size={12} />}
       </button>
       <div className="flex-1 min-w-0">
+        {/* Waveform bars when playing */}
+        {playing && (
+          <div className="flex items-center gap-[2px] h-4 mb-1">
+            {Array.from({ length: 20 }).map((_, i) => (
+              <div
+                key={i}
+                className="w-[3px] rounded-full bg-[#FF7AAC]"
+                style={{
+                  height: `${Math.random() * 12 + 4}px`,
+                  animation: `pulse 0.4s ease-in-out ${i * 0.05}s infinite alternate`,
+                }}
+              />
+            ))}
+          </div>
+        )}
         <p className="text-[13px] text-[#191919] leading-snug line-clamp-2">
           &ldquo;{text}&rdquo;
         </p>
-        <span className="text-[11px] text-[#191919]/40 mt-0.5 block">
-          {timestamp} · {lessonDate}
+        <span className="text-[11px] text-[#191919]/35 mt-0.5 block">
+          {timestamp} · {lesson_date}
         </span>
       </div>
     </div>
@@ -104,7 +112,43 @@ function AudioSnippet({
 }
 
 // ============================================================
-// LessonChat — side panel chat for lesson exploration
+// Quiz question card
+// ============================================================
+function QuizCard({ q }: { q: QuizQuestion }) {
+  const [selected, setSelected] = React.useState<number | null>(null);
+  const answered = selected !== null;
+
+  return (
+    <div className="my-2 p-3 rounded-[12px] border border-black/[0.06] bg-[#FAFAFA]">
+      <p className="text-[13px] font-medium text-[#191919] mb-2">{q.question}</p>
+      <div className="space-y-1.5">
+        {q.options.map((opt, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => !answered && setSelected(i)}
+            disabled={answered}
+            className={cn(
+              "w-full text-left px-3 py-2 rounded-[8px] text-[13px] transition-colors cursor-pointer",
+              answered && i === q.correct && "bg-[#D1F5E0] text-[#191919]",
+              answered && i === selected && i !== q.correct && "bg-[#FFE5E0] text-[#191919]",
+              !answered && "bg-white border border-black/[0.06] hover:bg-black/[0.02]",
+              answered && i !== q.correct && i !== selected && "bg-white/50 text-[#191919]/40",
+            )}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
+      {answered && (
+        <p className="text-[12px] text-[#191919]/60 mt-2 italic">{q.explanation}</p>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// LessonChat — AI-powered side panel
 // ============================================================
 export function LessonChat({
   personaStudentKey,
@@ -117,16 +161,25 @@ export function LessonChat({
     {
       id: "welcome",
       role: "assistant",
-      content: "Ask me anything about your lessons. I can find specific moments, compare how you spoke across sessions, or explain your progress.",
+      content: "Hey! Ask me anything about your lessons — I can find specific moments, compare how you spoke, quiz you on your errors, or explain your progress.",
     },
   ]);
   const [input, setInput] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
+
+  // Auto-resize textarea
+  React.useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+  }, [input]);
 
   const send = async () => {
     const q = input.trim();
@@ -138,20 +191,27 @@ export function LessonChat({
     setLoading(true);
 
     try {
-      const hits = await searchUtterances(personaStudentKey, q, 5);
-      const snippets = hits.map((h: SearchHit) => ({
-        text: h.text,
-        timestamp: fmtMMSS(h.start_sec),
-        lessonDate: new Date(h.lesson_happened_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
+      const studentId = DB_STUDENT_IDS[personaStudentKey ?? ""] ?? "";
+      const chatHistory = [...messages.filter((m) => m.id !== "welcome"), userMsg].map((m) => ({
+        role: m.role,
+        content: m.content,
       }));
+
+      const resp = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ student_id: studentId, messages: chatHistory }),
+      });
+
+      if (!resp.ok) throw new Error(`Chat ${resp.status}`);
+      const data = await resp.json();
 
       const assistantMsg: ChatMessage = {
         id: `a-${Date.now()}`,
         role: "assistant",
-        content: snippets.length > 0
-          ? `I found ${snippets.length} moment${snippets.length === 1 ? "" : "s"} matching "${q}". Here they are — tap play to listen:`
-          : `I couldn't find any strong matches for "${q}" in your lessons. Try searching for a topic you discussed, like "notifications" or "discipline".`,
-        snippets: snippets.length > 0 ? snippets : undefined,
+        content: data.content ?? "I couldn't process that. Try again.",
+        snippets: data.snippets ?? undefined,
+        quiz: data.quiz ?? undefined,
       };
       setMessages((m) => [...m, assistantMsg]);
     } catch {
@@ -183,7 +243,7 @@ export function LessonChat({
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
         {messages.map((msg) => (
           <div key={msg.id} className={cn("flex", msg.role === "user" ? "justify-end" : "justify-start")}>
-            <div className={cn("max-w-[85%]", msg.role === "user" ? "text-right" : "text-left")}>
+            <div className={cn("max-w-[88%]", msg.role === "user" ? "text-right" : "text-left")}>
               <div
                 className={cn(
                   "inline-block px-4 py-2.5 rounded-[14px] text-[14px] leading-relaxed",
@@ -194,10 +254,17 @@ export function LessonChat({
               >
                 {msg.content}
               </div>
-              {msg.snippets && (
-                <div className="mt-2 space-y-1.5">
+              {msg.snippets && msg.snippets.length > 0 && (
+                <div className="mt-2 space-y-1.5 text-left">
                   {msg.snippets.map((s, i) => (
-                    <AudioSnippet key={i} text={s.text} timestamp={s.timestamp} lessonDate={s.lessonDate} />
+                    <AudioSnippet key={i} {...s} />
+                  ))}
+                </div>
+              )}
+              {msg.quiz && msg.quiz.questions && (
+                <div className="mt-2 space-y-2 text-left">
+                  {msg.quiz.questions.map((q, i) => (
+                    <QuizCard key={i} q={q} />
                   ))}
                 </div>
               )}
@@ -222,6 +289,7 @@ export function LessonChat({
           style={{ backgroundColor: "rgba(255, 255, 255, 0.75)", backdropFilter: "blur(20px)" }}
         >
           <textarea
+            ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -230,7 +298,7 @@ export function LessonChat({
                 send();
               }
             }}
-            placeholder="Search your lessons..."
+            placeholder="Ask about your lessons..."
             rows={1}
             className="flex-1 resize-none outline-none bg-transparent text-[15px] text-[#191919] placeholder:text-[#191919]/30 max-h-[120px] leading-relaxed"
             style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}
@@ -250,6 +318,14 @@ export function LessonChat({
           </button>
         </div>
       </div>
+
+      {/* Waveform animation keyframes */}
+      <style jsx>{`
+        @keyframes pulse {
+          from { height: 4px; }
+          to { height: 16px; }
+        }
+      `}</style>
     </div>
   );
 }

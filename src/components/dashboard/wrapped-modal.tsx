@@ -143,6 +143,8 @@ type SlideData =
 // ============================================================
 // WrappedModal
 // ============================================================
+import { ChatContext } from "@/components/app-shell";
+
 export function WrappedModal({
   open,
   onClose,
@@ -158,7 +160,12 @@ export function WrappedModal({
   topic: Topic | undefined;
   personaStudentKey: string | undefined;
 }) {
-  const [phase, setPhase] = React.useState<"slides" | "fullscreen">("slides");
+  const { closeChat } = React.useContext(ChatContext);
+  const [phase, setPhaseRaw] = React.useState<"slides" | "fullscreen">("slides");
+  const setPhase = React.useCallback((p: "slides" | "fullscreen") => {
+    if (p === "fullscreen") closeChat();
+    setPhaseRaw(p);
+  }, [closeChat]);
   const [slideIdx, setSlideIdx] = React.useState(0);
   const [hasSeenBefore, setHasSeenBefore] = React.useState(false);
   const [grammarSummary, setGrammarSummary] = React.useState<LessonGrammarSummary | null>(null);
