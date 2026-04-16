@@ -55,9 +55,9 @@ export function VocabPills({ studentKey }: { studentKey: string }) {
 
   return (
     <div className="relative w-full rounded-[6px] pb-2 mt-6">
-      <div className="text-[13px] font-medium text-[#6a7580] mb-1.5">Recent new words</div>
-      <div className="flex flex-wrap gap-2 justify-start content-start">
-        {pills.map((p) => (
+      <div className="text-[13px] font-medium text-[#6a7580] mb-1.5 text-center">Recent new words</div>
+      <div className="flex gap-2 justify-center">
+        {pills.slice(0, 3).map((p) => (
           <button
             key={p.word}
             onClick={() => setSelected(selected?.word === p.word ? null : p)}

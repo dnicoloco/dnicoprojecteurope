@@ -296,14 +296,14 @@ export function JourneyStrip({
   return (
     <section>
       {/* Title + theme label */}
-      <div className="flex items-baseline gap-3 mb-4">
+      <div className="text-center mb-5">
         <h2
-          className="font-display text-[18px] text-[#191919] leading-none"
+          className="font-display text-[22px] text-[#191919] leading-none"
           style={{ fontWeight: 500 }}
         >
           Your speaking journey
         </h2>
-        <span className="text-[13px] text-[#191919]/40">
+        <span className="text-[13px] text-[#191919]/40 mt-1 block">
           {journeyLoading
             ? "…"
             : deltaDays !== null && deltaDays > 0

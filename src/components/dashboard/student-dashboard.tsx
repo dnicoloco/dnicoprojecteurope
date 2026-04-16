@@ -100,7 +100,7 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
           label="Book new session"
         />
         <div className="group shrink-0 w-[220px] text-left cursor-pointer">
-          <div className="relative aspect-square w-full rounded-[6px] overflow-hidden p-3 flex flex-col border border-black/[0.06]" style={{ background: "#E0EEFA" }}>
+          <div className="relative aspect-square w-full rounded-[6px] overflow-hidden p-3 flex flex-col border border-black/[0.06]" style={{ background: "#FFF4E0" }}>
             <div className="text-[14px] font-semibold text-[#191919]/60">
               upcoming
             </div>
