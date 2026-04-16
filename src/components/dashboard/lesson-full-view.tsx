@@ -289,13 +289,6 @@ const GLASS_STYLE: React.CSSProperties = {
     "inset 0 -4px 4px -2px rgba(15,23,42,0.1)",
   ].join(", "),
 };
-const GLASS_TEXT: React.CSSProperties = {
-  background: "linear-gradient(#020617, #64748b)",
-  color: "transparent",
-  backgroundClip: "text",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-};
 
 function TurnBlock({
   turn,
@@ -331,14 +324,12 @@ function TurnBlock({
               {active ? <Pause size={10} /> : <Volume2 size={10} />}
             </button>
           </div>
-          {/* Glassy bubble */}
+          {/* Glassy bubble — normal text so CEFR highlights are visible */}
           <div
-            className="rounded-[14px] rounded-br-[6px] px-4 py-2.5 text-[14px] leading-relaxed backdrop-blur-[16px]"
+            className="rounded-[14px] rounded-br-[6px] px-4 py-2.5 text-[14px] leading-relaxed backdrop-blur-[16px] text-[#191919]"
             style={GLASS_STYLE}
           >
-            <span style={GLASS_TEXT}>
-              <CefrHighlightedText text={turn.combinedText} />
-            </span>
+            <CefrHighlightedText text={turn.combinedText} />
           </div>
         </div>
       </div>
@@ -391,7 +382,10 @@ function CefrHighlightedText({ text }: { text: string }) {
             style={{ backgroundColor: CEFR_BG[level], color: CEFR_TEXT[level] }}
           >
             {token}
-            <span className="absolute -top-6 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded text-[9px] font-medium text-white bg-[#191919] opacity-0 group-hover/word:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+            <span
+              className="absolute -top-6 left-1/2 -translate-x-1/2 px-1.5 py-0.5 rounded text-[9px] font-medium text-white bg-[#191919] opacity-0 group-hover/word:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 select-none"
+              aria-hidden="true"
+            >
               {level}
             </span>
           </span>
