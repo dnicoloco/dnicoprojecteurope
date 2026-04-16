@@ -70,7 +70,7 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
   });
 
   return (
-    <div className="w-full max-w-6xl mx-auto pt-5 pb-16 px-6 space-y-20">
+    <div className="w-full max-w-6xl mx-auto pt-5 pb-16 px-6">
       <div className="flex items-end gap-6">
         <div className="flex-1 min-w-0">
           <GreetingHero name={student.name} studentKey={student.id} />
@@ -79,6 +79,8 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
           <VocabPills studentKey={student.id} />
         </div>
       </div>
+
+      <div className="mt-6" />
 
       {latest && (
         <WrappedHero
@@ -90,7 +92,11 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
         />
       )}
 
+      <div className="mt-20" />
+
       <JourneyStrip personaStudentKey={student.id} />
+
+      <div className="mt-20" />
 
       <HorizontalRow
         title="Recent sessions"
