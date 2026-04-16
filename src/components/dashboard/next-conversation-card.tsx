@@ -404,40 +404,16 @@ function ProjectionWidget({ theme }: { theme: string }) {
   const milestone = MILESTONES.find((m) => monthsToNextLevel <= m.maxMonths) ?? MILESTONES[MILESTONES.length - 1];
 
   return (
-    <div className="mt-8 mb-2 text-center max-w-[560px] mx-auto">
-      <div className="mb-4">
-        <span className="font-display text-[24px] text-[#191919]" style={{ fontWeight: 500 }}>
-          In <span className="text-[#FF7AAC]">{monthsToNextLevel} month{monthsToNextLevel === 1 ? "" : "s"}</span>
-        </span>
-      </div>
-
+    <div className="mt-8 mb-2 text-center max-w-[600px] mx-auto">
       <p className="text-[16px] text-[#191919] leading-relaxed">
-        {milestone.text} in {theme.toLowerCase() || "English"}.
+        In <span className="font-semibold text-[#FF7AAC]">{monthsToNextLevel} month{monthsToNextLevel === 1 ? "" : "s"}</span> with{" "}
+        <span className="inline-flex items-center gap-0.5 align-middle border border-black/[0.08] rounded-[6px] px-1 mx-0.5">
+          <button type="button" onClick={() => setLessonsPerMonth((v) => Math.max(2, v - 2))} className="w-5 h-5 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[3px] cursor-pointer"><Minus size={11} /></button>
+          <span className="text-[14px] font-semibold text-[#FF7AAC] tabular-nums w-[16px] text-center">{lessonsPerMonth}</span>
+          <button type="button" onClick={() => setLessonsPerMonth((v) => Math.min(20, v + 2))} className="w-5 h-5 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[3px] cursor-pointer"><Plus size={11} /></button>
+        </span>{" "}
+        lessons/month, {milestone.text.charAt(0).toLowerCase()}{milestone.text.slice(1)} in {theme.toLowerCase() || "English"}.
       </p>
-
-      <div className="flex items-center justify-center gap-3 mt-4">
-        <span className="text-[14px] text-[#191919]/50">Based on</span>
-        <div className="inline-flex items-center gap-1 border border-black/[0.08] rounded-[6px] px-1.5 py-0.5">
-          <button
-            type="button"
-            onClick={() => setLessonsPerMonth((v) => Math.max(2, v - 2))}
-            className="w-7 h-7 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[4px] cursor-pointer"
-          >
-            <Minus size={14} />
-          </button>
-          <span className="text-[15px] font-medium text-[#191919] tabular-nums w-[20px] text-center">
-            {lessonsPerMonth}
-          </span>
-          <button
-            type="button"
-            onClick={() => setLessonsPerMonth((v) => Math.min(20, v + 2))}
-            className="w-7 h-7 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[4px] cursor-pointer"
-          >
-            <Plus size={14} />
-          </button>
-        </div>
-        <span className="text-[14px] text-[#191919]/50">lessons/month</span>
-      </div>
 
       <p className="text-[12px] text-[#191919]/30 mt-3">
         Based on Preply&apos;s 2025 efficiency study and Cambridge CEFR guidelines
