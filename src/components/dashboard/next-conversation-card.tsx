@@ -399,20 +399,38 @@ const MILESTONES: Array<{ maxMonths: number; text: string }> = [
 
 function ProjectionWidget({ theme }: { theme: string }) {
   const [lessonsPerMonth, setLessonsPerMonth] = React.useState(8);
+  const [months, setMonths] = React.useState(Math.max(1, Math.round(HOURS_PER_LEVEL / 8)));
 
-  const monthsToNextLevel = Math.max(1, Math.round(HOURS_PER_LEVEL / lessonsPerMonth));
-  const milestone = MILESTONES.find((m) => monthsToNextLevel <= m.maxMonths) ?? MILESTONES[MILESTONES.length - 1];
+  // When lessons change, recalculate months to same milestone
+  const handleLessonsChange = (delta: number) => {
+    const next = Math.max(2, Math.min(20, lessonsPerMonth + delta));
+    setLessonsPerMonth(next);
+    setMonths(Math.max(1, Math.round(HOURS_PER_LEVEL / next)));
+  };
+
+  // When months change, keep lessons the same — shifts the milestone
+  const handleMonthsChange = (delta: number) => {
+    setMonths((v) => Math.max(1, Math.min(36, v + delta)));
+  };
+
+  const milestone = MILESTONES.find((m) => months <= m.maxMonths) ?? MILESTONES[MILESTONES.length - 1];
+
+  const InlineControl = ({ value, onMinus, onPlus }: { value: number; onMinus: () => void; onPlus: () => void }) => (
+    <span className="inline-flex items-center gap-0.5 align-middle border border-black/[0.08] rounded-[6px] px-1 mx-0.5">
+      <button type="button" onClick={onMinus} className="w-5 h-5 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[3px] cursor-pointer"><Minus size={11} /></button>
+      <span className="text-[14px] font-semibold text-[#FF7AAC] tabular-nums min-w-[16px] text-center">{value}</span>
+      <button type="button" onClick={onPlus} className="w-5 h-5 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[3px] cursor-pointer"><Plus size={11} /></button>
+    </span>
+  );
 
   return (
-    <div className="mt-8 mb-2 text-center max-w-[600px] mx-auto">
-      <p className="text-[16px] text-[#191919] leading-relaxed">
-        In <span className="font-semibold text-[#FF7AAC]">{monthsToNextLevel} month{monthsToNextLevel === 1 ? "" : "s"}</span> with{" "}
-        <span className="inline-flex items-center gap-0.5 align-middle border border-black/[0.08] rounded-[6px] px-1 mx-0.5">
-          <button type="button" onClick={() => setLessonsPerMonth((v) => Math.max(2, v - 2))} className="w-5 h-5 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[3px] cursor-pointer"><Minus size={11} /></button>
-          <span className="text-[14px] font-semibold text-[#FF7AAC] tabular-nums w-[16px] text-center">{lessonsPerMonth}</span>
-          <button type="button" onClick={() => setLessonsPerMonth((v) => Math.min(20, v + 2))} className="w-5 h-5 inline-flex items-center justify-center text-[#191919] hover:bg-black/5 rounded-[3px] cursor-pointer"><Plus size={11} /></button>
-        </span>{" "}
-        lessons/month, {milestone.text.charAt(0).toLowerCase()}{milestone.text.slice(1)} in {theme.toLowerCase() || "English"}.
+    <div className="mt-8 mb-2 text-center max-w-[620px] mx-auto">
+      <p className="text-[16px] text-[#191919] leading-[2]">
+        In{" "}
+        <InlineControl value={months} onMinus={() => handleMonthsChange(-1)} onPlus={() => handleMonthsChange(1)} />
+        {" "}month{months === 1 ? "" : "s"} with{" "}
+        <InlineControl value={lessonsPerMonth} onMinus={() => handleLessonsChange(-2)} onPlus={() => handleLessonsChange(2)} />
+        {" "}lessons/month, {milestone.text.charAt(0).toLowerCase()}{milestone.text.slice(1)} in {theme.toLowerCase() || "English"}.
       </p>
 
       <p className="text-[12px] text-[#191919]/30 mt-3">
