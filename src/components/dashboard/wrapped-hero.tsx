@@ -200,7 +200,7 @@ export function WrappedHero({
           <img
             src="/tutor-avatar.jpg"
             alt={student.tutor ?? "Tutor"}
-            className="absolute z-10 bottom-3 right-3 w-10 h-10 rounded-[4px] object-cover border-2 border-white/50"
+            className="absolute z-20 bottom-3 right-3 w-14 h-14 rounded-[4px] object-cover border-2 border-white/60"
           />
           <div className="absolute z-10 bottom-2 left-0 right-0 px-2 opacity-70">
             <Sparkline
