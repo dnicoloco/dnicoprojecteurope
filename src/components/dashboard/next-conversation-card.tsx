@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Volume2, Pause, X } from "lucide-react";
+import { CefrHighlightedText } from "@/components/ui/cefr-highlight";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -361,7 +362,7 @@ export function JourneyStrip({
           {/* Projection — centred */}
           <div className="mt-5 text-center max-w-[600px] mx-auto">
             <p className="text-[15px] text-[#191919] leading-relaxed">
-              At this pace, in 3 months you&apos;ll be holding full debates and defending nuanced positions on {activeTheme?.label?.toLowerCase() ?? "this topic"} in English.
+              At this pace, in <span className="font-semibold text-[#FF7AAC]">3 months</span> you&apos;ll be holding full debates and defending nuanced positions on {activeTheme?.label?.toLowerCase() ?? "this topic"} in English.
             </p>
             <p className="text-[12px] text-[#191919]/40 mt-1.5">
               (estimate based on avg. student progression)
@@ -418,7 +419,7 @@ function Panel({
         <span className="text-[12px] text-[#191919]/40">{meta}</span>
       </div>
       <p className="text-[15px] leading-snug text-[#191919] text-left line-clamp-4">
-        {quote ? <>&ldquo;{quote}&rdquo;</> : "\u00A0"}
+        {quote ? <>&ldquo;<CefrHighlightedText text={quote} />&rdquo;</> : "\u00A0"}
       </p>
       <div className="mt-auto pt-1">
         <button

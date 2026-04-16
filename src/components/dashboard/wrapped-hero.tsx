@@ -7,6 +7,7 @@ import { Grainient } from "@/components/ui/grainient";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { SessionDetail, StudentProgress, Topic } from "@/lib/metrics";
+import { getLessonMetrics, type LessonMetricsSummary } from "@/lib/db";
 
 const CARD_PALETTES: Array<[string, string, string]> = [
   ["#FFDCE4", "#FFC8D6", "#FFAFC2"], // soft pink
@@ -153,6 +154,12 @@ export function WrappedHero({
   student: StudentProgress;
   onOpenDetail?: () => void;
 }) {
+  const [metrics, setMetrics] = React.useState<LessonMetricsSummary | null>(null);
+
+  React.useEffect(() => {
+    getLessonMetrics(student.id, session.lesson).then(setMetrics);
+  }, [student.id, session.lesson]);
+
   const padded = String(session.lesson).padStart(2, "0");
   const palette = CARD_PALETTES[session.lesson % CARD_PALETTES.length];
   const last = student.lessons[student.lessons.length - 1];
@@ -216,9 +223,9 @@ export function WrappedHero({
           <div className="text-[12px] text-[#191919]/50 mt-1">How you did this lesson</div>
           <div className="flex flex-col gap-2.5 max-w-[340px]">
             {[
-              { label: "Accuracy", value: 87, from: "#4ade80", to: "#6DCFA0" },
-              { label: "Word range", value: 70, from: "#60a5fa", to: "#7AB8F0" },
-              { label: "Confidence", value: 95, from: "#f472b6", to: "#FF7AAC" },
+              { label: "Accuracy", value: metrics?.accuracy ?? 0, from: "#4ade80", to: "#6DCFA0" },
+              { label: "Word range", value: metrics?.cefrPct ?? 0, from: "#60a5fa", to: "#7AB8F0" },
+              { label: "Confidence", value: metrics?.confidence ?? 0, from: "#f472b6", to: "#FF7AAC" },
             ].map((m) => (
               <div key={m.label} className="flex items-center gap-2">
                 <span className="text-[13px] font-medium text-[#6a7580] w-[80px] text-right shrink-0">

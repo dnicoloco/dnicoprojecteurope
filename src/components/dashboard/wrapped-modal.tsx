@@ -133,6 +133,7 @@ type SlideData =
       kind: "grammar";
       accuracy: number;
       cefr: string;
+      confidence: number;
       dimensions: { A: number; B: number; C: number; D: number };
       palette: keyof typeof GRAIN_PALETTES;
     }
@@ -275,6 +276,7 @@ export function WrappedModal({
       kind: "grammar",
       accuracy: grammarSummary.accuracy_pct,
       cefr: grammarSummary.cefr,
+      confidence: grammarSummary.confidence,
       dimensions: grammarSummary.dimensions,
       palette: grammarSummary.accuracy_pct >= 80 ? "mint" : "blush",
     });
@@ -522,7 +524,7 @@ function SlideView({
     const bars = [
       { label: "Accuracy", value: slide.accuracy, color: "#6DCFA0" },
       { label: "Word range", value: Math.min(100, Math.round(({ A1: 15, A2: 30, B1: 50, B2: 70, C1: 85, C2: 100 }[slide.cefr] ?? 50))), color: "#7AB8F0" },
-      { label: "Confidence", value: Math.min(100, slide.accuracy + 8), color: "#FF7AAC" },
+      { label: "Confidence", value: Math.min(100, slide.confidence), color: "#FF7AAC" },
     ];
 
     return (
