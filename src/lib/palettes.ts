@@ -1,15 +1,20 @@
 export const PALETTES = {
-  rose: ["#FFB6D9", "#FF7AAC", "#E8649A"],
-  sky: ["#A8D8FF", "#5FA8FD", "#3D7CC9"],
-  mint: ["#9FE5BE", "#3DDABE", "#2DA88F"],
-  peach: ["#FFD0B8", "#FF9570", "#E87550"],
-  lilac: ["#D4BFF5", "#9E7AFF", "#7044D4"],
+  lavender: ["#E8DFFF", "#C4B0F0", "#A78BDB"],
+  sky: ["#D6ECFF", "#A8D4FF", "#7AB8F0"],
+  mint: ["#D1F5E0", "#9FE5BE", "#6DCFA0"],
+  blush: ["#FFE5E0", "#FFCDC6", "#F0AEA5"],
+  periwinkle: ["#D4DEFF", "#A8BAFF", "#8099F0"],
 } as const;
 
 export type PaletteName = keyof typeof PALETTES;
 
-// Rotate through palettes by index
 export function paletteForIndex(i: number): PaletteName {
   const names = Object.keys(PALETTES) as PaletteName[];
   return names[i % names.length];
 }
+
+export const EMOTION_PALETTES = {
+  positive: "mint" as PaletteName,
+  neutral: "lavender" as PaletteName,
+  negative: "blush" as PaletteName,
+} as const;

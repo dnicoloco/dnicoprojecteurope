@@ -216,11 +216,10 @@ export type Topic = {
 
 export const TOPICS: Record<string, Topic[]> = {
   marta: [
-    { id: "travel",   name: "Travel",   emoji: "✈️",  color: "#FF7AAC", sessionsCount: 3, vocabDeltaPct: 42, confidenceDelta: 0.04, growthLabel: "breakthrough" },
-    { id: "food",     name: "Food",     emoji: "🍝",  color: "#FFB347", sessionsCount: 2, vocabDeltaPct: 31, confidenceDelta: 0.03, growthLabel: "climbing" },
-    { id: "work",     name: "Work",     emoji: "💼",  color: "#2885FD", sessionsCount: 2, vocabDeltaPct: 18, confidenceDelta: 0.02, growthLabel: "climbing" },
-    { id: "family",   name: "Family",   emoji: "🏡",  color: "#3DDABE", sessionsCount: 2, vocabDeltaPct: 24, confidenceDelta: 0.02, growthLabel: "climbing" },
-    { id: "everyday", name: "Everyday", emoji: "☕",  color: "#8B6FD6", sessionsCount: 3, vocabDeltaPct: 12, confidenceDelta: 0.01, growthLabel: "steady" },
+    { id: "family",     name: "Family & Relationships", emoji: "🏡", color: "#E8DFFF", sessionsCount: 3, vocabDeltaPct: 42, confidenceDelta: 0.04, growthLabel: "breakthrough" },
+    { id: "opinions",   name: "Expressing Opinions",    emoji: "💬", color: "#D6ECFF", sessionsCount: 2, vocabDeltaPct: 31, confidenceDelta: 0.03, growthLabel: "climbing" },
+    { id: "feelings",   name: "Emotions & Feelings",    emoji: "💛", color: "#FFE5E0", sessionsCount: 2, vocabDeltaPct: 24, confidenceDelta: 0.02, growthLabel: "climbing" },
+    { id: "philosophy", name: "Big Ideas & Philosophy",  emoji: "🌀", color: "#D1F5E0", sessionsCount: 2, vocabDeltaPct: 18, confidenceDelta: 0.02, growthLabel: "new" },
   ],
   tomas: [
     { id: "intro",    name: "Intro",    emoji: "👋",  color: "#FF7AAC", sessionsCount: 2, vocabDeltaPct: 6,  confidenceDelta: 0.02, growthLabel: "steady" },

@@ -32,13 +32,14 @@ const GLASS_STYLE: React.CSSProperties = {
 };
 
 
-// Vibrant Grainient palettes per slide tone — richer than pastel, grainier feel.
+// Pastel-toned Grainient palettes per slide. Emotion-mapped: positive = mint/sky,
+// neutral = lavender/periwinkle, moment = blush.
 const GRAIN_PALETTES: Record<string, [string, string, string]> = {
-  pink: ["#FFB6D9", "#FF7AAC", "#9E7AFF"],
-  peach: ["#FFD0B8", "#FF9570", "#FF6B9D"],
-  sky: ["#A8D8FF", "#5FA8FD", "#3D7CC9"],
-  mint: ["#9FE5BE", "#3DDABE", "#2DA88F"],
-  lilac: ["#D4BFF5", "#9E7AFF", "#5227FF"],
+  lavender: ["#E8DFFF", "#C4B0F0", "#A78BDB"],
+  sky: ["#D6ECFF", "#A8D4FF", "#7AB8F0"],
+  mint: ["#D1F5E0", "#9FE5BE", "#6DCFA0"],
+  blush: ["#FFE5E0", "#FFCDC6", "#F0AEA5"],
+  periwinkle: ["#D4DEFF", "#A8BAFF", "#8099F0"],
 };
 
 // ------------------------------------------------------------
@@ -214,45 +215,48 @@ export function WrappedModal({
     date: session.date,
     tutor: student.tutor,
     durationMin: current?.durationMin ?? 0,
-    palette: "pink",
+    palette: "lavender",
   });
   if (current && first) {
+    const talkTrend = pctChange(first.talkRatioPct, current.talkRatioPct);
     slides.push({
       kind: "stat",
       bigValue: `${Math.round(current.talkRatioPct)}`,
       bigUnit: "%",
       caption: "of the lesson was you",
       trend: {
-        pct: pctChange(first.talkRatioPct, current.talkRatioPct),
+        pct: talkTrend,
         fromLabel: `from ${Math.round(first.talkRatioPct)}% in lesson 1`,
       },
-      palette: "peach",
+      palette: talkTrend >= 0 ? "mint" : "blush",
     });
+    const wpmTrend = pctChange(first.wpm, current.wpm);
     slides.push({
       kind: "stat",
       bigValue: `${Math.round(current.wpm)}`,
       caption: "words a minute — your pace",
       trend: {
-        pct: pctChange(first.wpm, current.wpm),
+        pct: wpmTrend,
         fromLabel: `from ${Math.round(first.wpm)} in lesson 1`,
       },
-      palette: "sky",
+      palette: wpmTrend >= 0 ? "sky" : "blush",
     });
+    const vocabTrend = pctChange(first.vocab, current.vocab);
     slides.push({
       kind: "stat",
       bigValue: `${current.vocab}`,
       caption: "unique words you used",
       trend: {
-        pct: pctChange(first.vocab, current.vocab),
+        pct: vocabTrend,
         fromLabel: `from ${first.vocab} in lesson 1`,
       },
-      palette: "mint",
+      palette: vocabTrend >= 0 ? "periwinkle" : "blush",
     });
   }
   slides.push({
     kind: "moment",
     label: session.bestMomentLabel,
-    palette: "lilac",
+    palette: "lavender",
   });
 
   const atLast = slideIdx >= slides.length - 1;
@@ -294,7 +298,7 @@ export function WrappedModal({
           "bg-white overflow-hidden flex flex-col transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
           isFullscreen
             ? "w-full h-full rounded-none shadow-none"
-            : "relative w-full max-w-[560px] h-[min(88vh,780px)] rounded-[16px] shadow-[0_20px_60px_rgba(0,0,0,0.4)]",
+            : "relative w-full max-w-[640px] h-[min(92vh,860px)] rounded-[16px] shadow-[0_20px_60px_rgba(0,0,0,0.4)]",
         )}
       >
         {isFullscreen ? (
@@ -315,7 +319,7 @@ export function WrappedModal({
                     key={i}
                     className={cn(
                       "h-1 flex-1 rounded-full transition-colors",
-                      i <= slideIdx ? "bg-[#191919]" : "bg-black/10",
+                      i <= slideIdx ? "bg-white" : "bg-white/30",
                     )}
                   />
                 ))}
@@ -324,7 +328,7 @@ export function WrappedModal({
                 type="button"
                 onClick={onClose}
                 aria-label="Close"
-                className="w-8 h-8 inline-flex items-center justify-center rounded-full text-[#191919] hover:bg-black/5 cursor-pointer"
+                className="w-8 h-8 inline-flex items-center justify-center rounded-full text-white hover:bg-white/10 cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -334,13 +338,13 @@ export function WrappedModal({
             <SlideView slide={slides[slideIdx]} studentName={student.name} slideIdx={slideIdx} />
 
             {/* Footer controls */}
-            <div className="flex items-center justify-between gap-3 p-4 border-t border-black/[0.06] bg-white relative z-[2]">
+            <div className="flex items-center justify-between gap-3 p-4 relative z-[2]">
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={prev}
                   disabled={slideIdx === 0}
-                  className="inline-flex items-center gap-1 text-[13px] text-[#6a7580] hover:text-[#191919] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                  className="inline-flex items-center gap-1 text-[13px] text-white/60 hover:text-white disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
                 >
                   <ChevronLeft size={14} /> Back
                 </button>
@@ -348,7 +352,7 @@ export function WrappedModal({
                   <button
                     type="button"
                     onClick={() => setPhase("fullscreen")}
-                    className="text-[12px] text-[#94a3b8] hover:text-[#191919] underline underline-offset-4 decoration-dotted cursor-pointer"
+                    className="text-[12px] text-white/50 hover:text-white underline underline-offset-4 decoration-dotted cursor-pointer"
                   >
                     Skip to full lesson
                   </button>
@@ -357,7 +361,7 @@ export function WrappedModal({
               <button
                 type="button"
                 onClick={next}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#191919] text-white text-[13px] font-medium hover:-translate-y-0.5 transition-transform cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/90 text-[#191919] text-[13px] font-medium hover:-translate-y-0.5 transition-transform cursor-pointer"
               >
                 {atLast ? "Read the whole lesson" : "Next"}
                 <ChevronRight size={14} />

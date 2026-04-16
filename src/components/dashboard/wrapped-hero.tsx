@@ -9,11 +9,11 @@ import { cn } from "@/lib/utils";
 import type { SessionDetail, StudentProgress, Topic } from "@/lib/metrics";
 
 const CARD_PALETTES: Array<[string, string, string]> = [
-  ["#FFB6D9", "#FF7AAC", "#E8649A"], // rose
-  ["#A8D8FF", "#5FA8FD", "#3D7CC9"], // sky
-  ["#9FE5BE", "#3DDABE", "#2DA88F"], // mint
-  ["#FFD0B8", "#FF9570", "#E87550"], // peach
-  ["#D4BFF5", "#9E7AFF", "#7044D4"], // lilac
+  ["#E8DFFF", "#C4B0F0", "#A78BDB"], // lavender
+  ["#D6ECFF", "#A8D4FF", "#7AB8F0"], // sky
+  ["#D1F5E0", "#9FE5BE", "#6DCFA0"], // mint
+  ["#FFE5E0", "#FFCDC6", "#F0AEA5"], // blush
+  ["#D4DEFF", "#A8BAFF", "#8099F0"], // periwinkle
 ];
 
 const TTS_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/tts`;
@@ -186,7 +186,7 @@ export function WrappedHero({
             saturation={1.0}
             zoom={1.1}
           />
-          <div className="absolute z-10 top-3 left-3 text-[14px] font-medium text-white/55">
+          <div className="absolute z-10 top-3 left-3 text-[14px] font-semibold text-white/70">
             lesson
           </div>
           <div className="absolute z-10 top-10 left-3 font-display text-[64px] leading-none text-white">
