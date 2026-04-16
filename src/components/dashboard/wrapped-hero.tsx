@@ -186,10 +186,10 @@ export function WrappedHero({
             saturation={1.0}
             zoom={1.1}
           />
-          <div className="absolute z-10 top-3 left-3 text-[14px] font-semibold text-white/70">
+          <div className="absolute z-10 top-3 left-3 text-[14px] font-semibold text-[#191919]">
             lesson
           </div>
-          <div className="absolute z-10 top-10 left-3 font-display text-[64px] leading-none text-white">
+          <div className="absolute z-10 top-10 left-3 font-display text-[64px] leading-none text-[#191919]">
             {padded}
           </div>
           <div className="absolute z-10 bottom-2 left-0 right-0 px-2 opacity-70">

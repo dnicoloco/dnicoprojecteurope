@@ -137,20 +137,6 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
 
       <JourneyStrip personaStudentKey={student.id} />
 
-      <HorizontalRow title="Your topics" seeAllOnClick={() => {}}>
-        {topics.map((t, i) => (
-          <TopicCard key={t.id} topic={t} index={i} />
-        ))}
-        {SUGGESTED_TOPICS.map((s) => (
-          <GhostCard
-            key={s.label}
-            kind="topic"
-            label={`Try next: ${s.label}`}
-            hint={s.hint}
-          />
-        ))}
-      </HorizontalRow>
-
       {!hasSoonSession && <BookNextCard student={student} />}
 
       <WrappedModal

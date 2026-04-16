@@ -223,6 +223,90 @@ export async function searchUtterances(
   return ((data as { results?: SearchHit[] } | null)?.results ?? []) as SearchHit[];
 }
 
+// ------------------------------------------------------------
+// Lesson grammar summary: aggregate accuracy, CEFR, dimensions.
+// ------------------------------------------------------------
+export type LessonGrammarSummary = {
+  accuracy_pct: number;
+  cefr: string;
+  totalErrors: number;
+  dimensions: { A: number; B: number; C: number; D: number };
+};
+
+export async function getLessonGrammarSummary(
+  personaStudentKey: string | undefined,
+  lessonNumber: number,
+): Promise<LessonGrammarSummary | null> {
+  if (!personaStudentKey) return null;
+  const lessonId = LESSON_DB_IDS[personaStudentKey]?.[lessonNumber];
+  if (!lessonId) return null;
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("utterance_grammar")
+    .select("accuracy_pct, cefr_estimate, dimension_counts")
+    .eq("lesson_id", lessonId);
+  if (error || !data || data.length === 0) return null;
+  const avg = Math.round(data.reduce((s, r) => s + Number(r.accuracy_pct), 0) / data.length);
+  // Most common CEFR
+  const cefrCounts: Record<string, number> = {};
+  data.forEach(r => { cefrCounts[r.cefr_estimate] = (cefrCounts[r.cefr_estimate] ?? 0) + 1; });
+  const cefr = Object.entries(cefrCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "A2";
+  // Sum dimensions
+  const dims = { A: 0, B: 0, C: 0, D: 0 };
+  data.forEach(r => {
+    const dc = r.dimension_counts as Record<string, number>;
+    dims.A += dc?.A ?? 0; dims.B += dc?.B ?? 0; dims.C += dc?.C ?? 0; dims.D += dc?.D ?? 0;
+  });
+  return { accuracy_pct: avg, cefr, totalErrors: dims.A + dims.B + dims.C + dims.D, dimensions: dims };
+}
+
+// ------------------------------------------------------------
+// Per-utterance grammar data (for transcript highlights + bars).
+// ------------------------------------------------------------
+export type UtteranceGrammar = {
+  utterance_id: string;
+  accuracy_pct: number;
+  cefr_estimate: string;
+  errors: Array<{
+    offset: number;
+    length: number;
+    span: string;
+    suggestion: string | null;
+    message: string;
+    dimension: string;
+  }>;
+  dimension_counts: { A: number; B: number; C: number; D: number };
+};
+
+const _grammarCache = new Map<string, Promise<Map<string, UtteranceGrammar>>>();
+
+async function _fetchLessonGrammar(lessonId: string) {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("utterance_grammar")
+    .select("utterance_id, accuracy_pct, cefr_estimate, errors, dimension_counts")
+    .eq("lesson_id", lessonId);
+  if (error || !data) return new Map<string, UtteranceGrammar>();
+  const map = new Map<string, UtteranceGrammar>();
+  for (const row of data) {
+    map.set(row.utterance_id, row as unknown as UtteranceGrammar);
+  }
+  return map;
+}
+
+export async function getLessonGrammarMap(
+  personaStudentKey: string | undefined,
+  lessonNumber: number,
+): Promise<Map<string, UtteranceGrammar>> {
+  if (!personaStudentKey) return new Map();
+  const lessonId = LESSON_DB_IDS[personaStudentKey]?.[lessonNumber];
+  if (!lessonId) return new Map();
+  if (!_grammarCache.has(lessonId)) {
+    _grammarCache.set(lessonId, _fetchLessonGrammar(lessonId));
+  }
+  return _grammarCache.get(lessonId)!;
+}
+
 export async function getConversationFirsts(
   personaStudentKey: string | undefined,
 ): Promise<ConversationFirst[]> {

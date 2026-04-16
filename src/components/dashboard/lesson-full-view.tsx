@@ -5,7 +5,9 @@ import { ArrowLeft, Volume2, Pause, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   getLessonTranscript,
+  getLessonGrammarMap,
   type LessonUtterance,
+  type UtteranceGrammar,
 } from "@/lib/db";
 import type { StudentProgress } from "@/lib/metrics";
 
@@ -226,15 +228,20 @@ export function LessonFullView({
   onBack: () => void;
 }) {
   const [transcript, setTranscript] = React.useState<LessonUtterance[]>([]);
+  const [grammarMap, setGrammarMap] = React.useState<Map<string, UtteranceGrammar>>(new Map());
   const [loading, setLoading] = React.useState(true);
   const { playingId, play } = useTTS();
 
   React.useEffect(() => {
     let alive = true;
     setLoading(true);
-    getLessonTranscript(personaStudentKey, lessonNumber).then((tr) => {
+    Promise.all([
+      getLessonTranscript(personaStudentKey, lessonNumber),
+      getLessonGrammarMap(personaStudentKey, lessonNumber),
+    ]).then(([tr, gm]) => {
       if (alive) {
         setTranscript(tr);
+        setGrammarMap(gm);
         setLoading(false);
       }
     });
@@ -302,6 +309,7 @@ export function LessonFullView({
                   student={student}
                   playingId={playingId}
                   onPlay={play}
+                  grammarMap={grammarMap}
                 />
               ))}
             </div>
@@ -330,16 +338,21 @@ const GLASS_STYLE: React.CSSProperties = {
   ].join(", "),
 };
 
+const DIM_COLORS: Record<string, string> = { A: "#7AB8F0", B: "#FF7AAC", C: "#6DCFA0", D: "#A78BDB" };
+const DIM_SHORT: Record<string, string> = { A: "Sentence", B: "Tense", C: "Nominal", D: "Modal" };
+
 function TurnBlock({
   turn,
   student,
   playingId,
   onPlay,
+  grammarMap,
 }: {
   turn: ConversationTurn;
   student: StudentProgress;
   playingId: string | null;
   onPlay: (id: string, text: string, speaker: "student" | "other") => void;
+  grammarMap: Map<string, UtteranceGrammar>;
 }) {
   const isStudent = turn.speaker === "student";
   const pid = `turn-${turn.startSec}`;
@@ -347,10 +360,37 @@ function TurnBlock({
 
   const displayText = cleanText(turn.combinedText, !isStudent);
 
+  const turnDims = isStudent ? (() => {
+    const d = { A: 0, B: 0, C: 0, D: 0 };
+    for (const u of turn.utterances) {
+      const g = grammarMap.get(u.id);
+      if (!g) continue;
+      d.A += g.dimension_counts?.A ?? 0;
+      d.B += g.dimension_counts?.B ?? 0;
+      d.C += g.dimension_counts?.C ?? 0;
+      d.D += g.dimension_counts?.D ?? 0;
+    }
+    return d;
+  })() : null;
+  const hasErrors = turnDims && (turnDims.A + turnDims.B + turnDims.C + turnDims.D > 0);
+  const maxDim = hasErrors ? Math.max(1, turnDims.A, turnDims.B, turnDims.C, turnDims.D) : 1;
+
   if (isStudent) {
     return (
-      <div className="flex w-full justify-end">
-        <div className="flex flex-col items-end max-w-[75%]">
+      <div className="flex w-full justify-end gap-2">
+        {hasErrors && (
+          <div className="flex flex-col justify-center gap-0.5 w-[72px] shrink-0 self-center">
+            {(["A", "B", "C", "D"] as const).map((k) => (
+              <div key={k} className="flex items-center gap-1">
+                <span className="text-[7px] text-[#94a3b8] w-[28px] text-right truncate">{DIM_SHORT[k]}</span>
+                <div className="flex-1 h-[3px] rounded-full bg-black/[0.04] overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${(turnDims[k] / maxDim) * 100}%`, backgroundColor: DIM_COLORS[k] }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="flex flex-col items-end max-w-[68%]">
           <div className="flex items-baseline gap-2 mb-1 pr-1 text-[11px] flex-row-reverse">
             <span className="text-[#94a3b8] tabular-nums">{fmtMMSS(turn.startSec)}</span>
             <button

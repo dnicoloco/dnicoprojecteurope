@@ -16,6 +16,7 @@ import { AnimatedUnderlineText } from "@/components/ui/animated-underline-text";
 import { CycleGradientText } from "@/components/ui/cycle-gradient-text";
 import { LessonFullView } from "@/components/dashboard/lesson-full-view";
 import type { SessionDetail, StudentProgress, Topic } from "@/lib/metrics";
+import { getLessonGrammarSummary, type LessonGrammarSummary } from "@/lib/db";
 
 const GLASS_STYLE: React.CSSProperties = {
   background: "rgba(15, 23, 42, 0.01)",
@@ -130,6 +131,13 @@ type SlideData =
       palette: keyof typeof GRAIN_PALETTES;
     }
   | {
+      kind: "grammar";
+      accuracy: number;
+      cefr: string;
+      dimensions: { A: number; B: number; C: number; D: number };
+      palette: keyof typeof GRAIN_PALETTES;
+    }
+  | {
       kind: "moment";
       label: string;
       palette: keyof typeof GRAIN_PALETTES;
@@ -156,6 +164,7 @@ export function WrappedModal({
   const [phase, setPhase] = React.useState<"slides" | "fullscreen">("slides");
   const [slideIdx, setSlideIdx] = React.useState(0);
   const [hasSeenBefore, setHasSeenBefore] = React.useState(false);
+  const [grammarSummary, setGrammarSummary] = React.useState<LessonGrammarSummary | null>(null);
 
   // Suppress unused warning on topic prop — reserved for per-topic colour tints.
   void topic;
@@ -172,6 +181,15 @@ export function WrappedModal({
       setHasSeenBefore(false);
     }
   }, [open, session]);
+
+  // Fetch grammar summary for the current lesson.
+  React.useEffect(() => {
+    if (!open || !session) return;
+    setGrammarSummary(null);
+    getLessonGrammarSummary(personaStudentKey, session.lesson).then(
+      (s) => setGrammarSummary(s),
+    );
+  }, [open, session, personaStudentKey]);
 
   // Mark seen once the user reaches the fullscreen phase.
   React.useEffect(() => {
@@ -251,6 +269,15 @@ export function WrappedModal({
         fromLabel: `from ${first.vocab} words in lesson 1`,
       },
       palette: vocabTrend >= 0 ? "periwinkle" : "blush",
+    });
+  }
+  if (grammarSummary) {
+    slides.push({
+      kind: "grammar",
+      accuracy: grammarSummary.accuracy_pct,
+      cefr: grammarSummary.cefr,
+      dimensions: grammarSummary.dimensions,
+      palette: grammarSummary.accuracy_pct >= 80 ? "mint" : "blush",
     });
   }
   slides.push({
@@ -506,6 +533,102 @@ function SlideView({
             />
             <span className="font-medium">{Math.abs(slide.trend.pct)}%</span>
             <span className="text-[#6a7580]">· {slide.trend.fromLabel}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (slide.kind === "grammar") {
+    const DIMENSION_LABELS: Record<string, string> = {
+      A: "Sentence Architecture",
+      B: "Tense & Aspect",
+      C: "Nominal Precision",
+      D: "Modal Range",
+    };
+    const DIMENSION_COLORS: Record<string, string> = {
+      A: "#7AB8F0",
+      B: "#FF7AAC",
+      C: "#6DCFA0",
+      D: "#A78BDB",
+    };
+    const maxDim = Math.max(slide.dimensions.A, slide.dimensions.B, slide.dimensions.C, slide.dimensions.D, 1);
+
+    return (
+      <div
+        key={`grammar-${slideIdx}`}
+        className="flex-1 relative flex flex-col items-center justify-center text-center px-8 overflow-hidden"
+      >
+        <div className="relative z-[1] flex flex-col items-center w-full max-w-[400px]">
+          {/* Big accuracy number */}
+          <div
+            className="px-10 py-5 rounded-[20px] backdrop-blur-[10px] relative overflow-hidden"
+            style={GLASS_STYLE}
+          >
+            <div className="absolute inset-0 opacity-75 pointer-events-none">
+              <Grainient
+                color1={GRAIN_PALETTES[slide.palette][0]}
+                color2={GRAIN_PALETTES[slide.palette][1]}
+                color3={GRAIN_PALETTES[slide.palette][2]}
+                timeSpeed={0.2}
+                warpStrength={1.4}
+                warpAmplitude={70}
+                grainAmount={0.2}
+                grainScale={1.6}
+                grainAnimated
+                contrast={1.3}
+                saturation={1.2}
+                zoom={1.15}
+              />
+            </div>
+            <div
+              className="relative font-display text-[120px] leading-none text-[#191919]"
+              style={{ fontWeight: 500 }}
+            >
+              <VerticalCutReveal
+                splitBy="characters"
+                staggerDuration={0.04}
+                staggerFrom="center"
+                transition={{ type: "spring", stiffness: 220, damping: 20 }}
+              >
+                {`${slide.accuracy}%`}
+              </VerticalCutReveal>
+            </div>
+          </div>
+
+          {/* Caption */}
+          <div className="mt-5 text-[17px] text-[#191919] leading-snug">
+            <VerticalCutReveal
+              splitBy="words"
+              staggerDuration={0.03}
+              staggerFrom="first"
+              transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.3 }}
+            >
+              {`grammar accuracy — CEFR ${slide.cefr}`}
+            </VerticalCutReveal>
+          </div>
+
+          {/* Dimension bars */}
+          <div className="mt-6 w-full flex flex-col gap-3">
+            {(["A", "B", "C", "D"] as const).map((dim) => (
+              <div key={dim} className="flex items-center gap-3 text-left">
+                <span className="text-[12px] text-[#6a7580] w-[140px] shrink-0 leading-tight">
+                  {dim}: {DIMENSION_LABELS[dim]}
+                </span>
+                <div className="flex-1 h-[10px] rounded-full bg-white/40 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{
+                      width: `${Math.round((slide.dimensions[dim] / maxDim) * 100)}%`,
+                      backgroundColor: DIMENSION_COLORS[dim],
+                    }}
+                  />
+                </div>
+                <span className="text-[13px] font-medium text-[#191919] w-[28px] text-right tabular-nums">
+                  {slide.dimensions[dim]}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
