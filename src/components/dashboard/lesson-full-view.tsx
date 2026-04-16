@@ -281,9 +281,9 @@ export function LessonFullView({
         style={{ background: "linear-gradient(to top, white 20%, transparent 100%)" }}
       />
 
-      {/* Notion-style section markers on right edge */}
+      {/* Notion-style section markers — thin lines on right edge */}
       {sections.length > 1 && (
-        <div className="absolute right-2 top-20 bottom-16 z-[6] flex flex-col justify-between w-[20px]">
+        <div className="absolute right-3 top-16 bottom-12 z-[6] flex flex-col justify-between">
           {sections.map((s, i) => (
             <button
               key={i}
@@ -295,9 +295,9 @@ export function LessonFullView({
                 const target = el.scrollHeight * (s.pct / 100);
                 el.scrollTo({ top: target, behavior: "smooth" });
               }}
-              className="group flex items-center justify-end cursor-pointer"
+              className="group flex items-center justify-end cursor-pointer py-0.5"
             >
-              <div className="w-[14px] h-[3px] rounded-full bg-[#191919]/15 group-hover:bg-[#191919]/50 group-hover:w-[18px] transition-all" />
+              <div className="w-[10px] h-[2px] rounded-[1px] bg-[#191919]/12 group-hover:bg-[#191919]/40 group-hover:w-[14px] transition-all" />
             </button>
           ))}
         </div>
@@ -310,8 +310,8 @@ export function LessonFullView({
         </div>
       ) : (
         <>
-          {/* Header — inside scroll, fades behind top gradient */}
-          <div className="px-6 py-3 flex items-center gap-4">
+          {/* Header — sticky above fades */}
+          <div className="sticky top-0 z-[8] px-6 py-3 flex items-center gap-4 bg-white">
             <button
               type="button"
               onClick={onBack}

@@ -105,7 +105,7 @@ function MetricTile({
   const Arrow = pct >= 0 ? ArrowUp : ArrowDown;
 
   return (
-    <div className="rounded-[8px] p-3 bg-[#FAFAFA] border border-black/[0.04]">
+    <div className="rounded-[4px] p-3 bg-[#FAFAFA] border border-black/[0.04]">
       <div className="text-[11px] uppercase tracking-[0.08em] text-[#6a7580] font-medium">
         {label}
       </div>
@@ -230,9 +230,9 @@ export function WrappedHero({
                 <span className="text-[13px] font-medium text-[#6a7580] w-[80px] text-right shrink-0">
                   {m.label}
                 </span>
-                <div className="flex-1 h-[16px] rounded-[8px] bg-[#F1F3F5] overflow-hidden">
+                <div className="flex-1 h-[16px] rounded-[4px] bg-[#F1F3F5] overflow-hidden">
                   <div
-                    className="h-full rounded-[8px]"
+                    className="h-full rounded-[4px]"
                     style={{
                       width: `${m.value}%`,
                       background: `linear-gradient(90deg, ${m.from}, ${m.to})`,
@@ -246,21 +246,19 @@ export function WrappedHero({
             ))}
           </div>
 
-          {/* Tutor + date */}
-          <div className="flex items-center gap-2.5 mt-1">
-            <img
-              src="/tutor-avatar.jpg"
-              alt={student.tutor ?? "Tutor"}
-              className="w-8 h-8 rounded-full object-cover shrink-0"
-            />
-            <div className="text-[13px] text-[#6a7580]">
-              <span className="font-medium text-[#191919]">{student.tutor}</span>
-              <span className="mx-1.5">·</span>
-              {fmtSessionDate(session.date)}
-            </div>
-          </div>
-
           <div className="flex items-center justify-end gap-2 mt-auto">
+            {/* Tutor avatar — square, above replay */}
+            <div className="flex items-center gap-2.5 mr-auto">
+              <img
+                src="/tutor-avatar.jpg"
+                alt={student.tutor ?? "Tutor"}
+                className="w-11 h-11 rounded-[4px] object-cover shrink-0"
+              />
+              <div>
+                <div className="text-[14px] font-medium text-[#191919]">{student.tutor}</div>
+                <div className="text-[12px] text-[#6a7580]">{fmtSessionDate(session.date)}</div>
+              </div>
+            </div>
             <button
               type="button"
               onClick={() => ttsPlay(narration)}
