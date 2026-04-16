@@ -234,7 +234,7 @@ export function WrappedHero({
             const firstOverall = Math.round(firstAccuracy * 0.4 + firstFlow * 0.3 + firstRange * 0.3);
             const overallDelta = firstOverall ? overall - firstOverall : 0;
             return (
-              <div className="flex flex-col gap-2 max-w-[340px] mt-1">
+              <div className="flex flex-col gap-2 w-full mt-1">
                 {/* Overall bar — taller */}
                 <div className="flex items-center gap-2">
                   <span className="text-[13px] font-semibold text-[#191919] w-[80px] text-right shrink-0">
