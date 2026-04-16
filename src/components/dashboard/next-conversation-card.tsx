@@ -337,50 +337,58 @@ export function JourneyStrip({
         </div>
       </div>
 
-      {/* Then / Now timeline */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-        <Panel
-          id="past"
-          label="Then"
-          meta={pastDate ? formatDateShort(pastDate) : ""}
-          quote={pastQuote}
-          playingId={playingId}
-          onPlay={play}
-        />
-        <Panel
-          id="now"
-          label="Now"
-          meta={nowDate ? formatDateShort(nowDate) : ""}
-          quote={nowQuote}
-          playingId={playingId}
-          onPlay={play}
-        />
-      </div>
-
-      {/* Timeline connector */}
-      {deltaDays !== null && deltaDays > 0 && (
-        <div className="flex items-center gap-3 mt-4 px-2">
-          <div className="w-2 h-2 rounded-full bg-[#191919]/20 shrink-0" />
-          <div className="flex-1 h-px bg-[#191919]/10 relative">
-            <span className="absolute left-1/2 -translate-x-1/2 -top-3 text-[12px] font-medium text-[#191919]/50 bg-white px-2">
-              {prettyDelta(deltaDays)}
-            </span>
+      {/* Then / Now — only show comparison when quotes are from different lessons */}
+      {deltaDays !== null && deltaDays > 0 && pastQuote && nowQuote ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+            <Panel
+              id="past"
+              label="Then"
+              meta={pastDate ? formatDateShort(pastDate) : ""}
+              quote={pastQuote}
+              playingId={playingId}
+              onPlay={play}
+            />
+            <Panel
+              id="now"
+              label="Now"
+              meta={nowDate ? formatDateShort(nowDate) : ""}
+              quote={nowQuote}
+              playingId={playingId}
+              onPlay={play}
+            />
           </div>
-          <div className="w-2 h-2 rounded-full bg-[#191919] shrink-0" />
+
+          {/* Delta badge + projection */}
+          <div className="mt-5 px-1">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#191919] text-white text-[13px] font-medium">
+                {prettyDelta(deltaDays)} apart
+              </span>
+            </div>
+            <p className="text-[15px] text-[#191919] leading-relaxed">
+              In {prettyDelta(deltaDays)} you went from basic statements to expressing complex opinions on {activeTheme?.label?.toLowerCase() ?? "this topic"}. At this pace, in 3 months you&apos;ll be holding full debates and defending nuanced positions in English.
+            </p>
+            <p className="text-[12px] text-[#191919]/40 mt-1.5">
+              (estimate based on avg. student progression)
+            </p>
+          </div>
+        </>
+      ) : (
+        /* Single lesson or no match — show honestly */
+        <div className="rounded-[6px] p-4 backdrop-blur-[16px]" style={GLASS_STYLE}>
+          <p className="text-[15px] text-[#191919]">
+            {nowQuote
+              ? <>&ldquo;{nowQuote}&rdquo;</>
+              : "No strong matches for this topic yet."}
+          </p>
+          {nowQuote && (
+            <p className="text-[13px] text-[#191919]/50 mt-2">
+              You explored {activeTheme?.label?.toLowerCase() ?? "this"} in one lesson so far. After more sessions, we&apos;ll show your progression.
+            </p>
+          )}
         </div>
       )}
-
-      {/* Projection line */}
-      <div className="mt-4 px-2">
-        <p className="text-[15px] text-[#191919] leading-relaxed">
-          {deltaDays !== null && deltaDays > 0
-            ? `In ${prettyDelta(deltaDays)} you went from basic statements to expressing complex opinions on ${activeTheme?.label?.toLowerCase() ?? "this topic"}. At this pace, in 3 months you'll be holding full debates and defending nuanced positions in English.`
-            : "Keep going and we'll track your progression on this topic over time."}
-        </p>
-        <p className="text-[12px] text-[#191919]/40 mt-1">
-          (estimate based on avg. student progression)
-        </p>
-      </div>
     </section>
   );
 }
@@ -400,35 +408,40 @@ function Panel({
   playingId: string | null;
   onPlay: (id: string, text: string, speaker: "student" | "other") => void;
 }) {
+  const active = playingId === id;
   return (
     <div
-      className="rounded-[6px] p-4 flex flex-col gap-3 min-h-[180px] backdrop-blur-[16px] text-left"
+      className="rounded-[6px] p-4 flex flex-col gap-3 min-h-[160px] backdrop-blur-[16px] text-left"
       style={GLASS_STYLE}
     >
       <div className="flex items-start justify-between gap-2">
         <h3
-          className="font-display text-[24px] leading-none text-[#191919]"
+          className="font-display text-[22px] leading-none text-[#191919]"
           style={{ fontWeight: 500 }}
         >
           {label}
         </h3>
-        <SpeakerButton
-          id={id}
-          text={quote}
-          speaker="student"
-          playingId={playingId}
-          onPlay={onPlay}
-          disabled={!quote}
-        />
+        <span className="text-[12px] text-[#191919]/40">{meta}</span>
       </div>
-      <p
-        className="text-[15px] leading-snug italic text-left line-clamp-4"
-        style={GLASS_TEXT}
-      >
+      <p className="text-[15px] leading-snug text-[#191919] text-left line-clamp-4">
         {quote ? <>&ldquo;{quote}&rdquo;</> : "\u00A0"}
       </p>
-      <div className="mt-auto pt-2 flex items-end justify-between gap-3">
-        <span className="text-[12px] text-[#64748b] min-h-[1em]">{meta}</span>
+      <div className="mt-auto pt-1">
+        <button
+          type="button"
+          onClick={() => quote && onPlay(id, quote, "student")}
+          disabled={!quote}
+          className={cn(
+            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-[12px] font-medium transition-colors cursor-pointer",
+            active
+              ? "bg-[#191919] text-white"
+              : "bg-[#FF7AAC] text-white hover:bg-[#f0699d]",
+            !quote && "opacity-40 cursor-not-allowed",
+          )}
+        >
+          {active ? <Pause size={12} /> : <Volume2 size={12} />}
+          {active ? "Pause" : "Play"}
+        </button>
       </div>
     </div>
   );
