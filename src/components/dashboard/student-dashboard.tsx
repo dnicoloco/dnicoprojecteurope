@@ -92,7 +92,6 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
 
       <HorizontalRow
         title="Recent sessions"
-        seeAllOnClick={() => {}}
         rightSlot={
           <div className="flex items-center gap-2">
             <FilterChip
