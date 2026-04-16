@@ -13,7 +13,6 @@ import { Grainient } from "@/components/ui/grainient";
 import { SparklesText } from "@/components/ui/sparkles-text";
 import { VerticalCutReveal } from "@/components/ui/vertical-cut-reveal";
 import { AnimatedUnderlineText } from "@/components/ui/animated-underline-text";
-import { CycleGradientText } from "@/components/ui/cycle-gradient-text";
 import { LessonFullView } from "@/components/dashboard/lesson-full-view";
 import type { SessionDetail, StudentProgress, Topic } from "@/lib/metrics";
 import { getLessonGrammarSummary, type LessonGrammarSummary } from "@/lib/db";
@@ -241,7 +240,7 @@ export function WrappedModal({
       kind: "stat",
       bigValue: `${Math.round(current.talkRatioPct)}`,
       bigUnit: "%",
-      caption: `of the lesson was you talking — ${current.talkRatioPct > 55 ? "you drove the conversation" : "your tutor led this one"}`,
+      caption: `of the lesson was you talking · ${current.talkRatioPct > 55 ? "you drove the conversation" : "your tutor led this one"}`,
       trend: {
         pct: talkTrend,
         fromLabel: `from ${Math.round(first.talkRatioPct)}% in lesson 1`,
@@ -252,7 +251,7 @@ export function WrappedModal({
     slides.push({
       kind: "stat",
       bigValue: `${Math.round(current.wpm)}`,
-      caption: `words per minute — ${current.wpm > 60 ? "you're getting into a flow" : current.wpm > 45 ? "steady and building speed" : "taking your time, that's okay"}`,
+      caption: `words per minute · ${current.wpm > 60 ? "you're getting into a flow" : current.wpm > 45 ? "steady and building speed" : "taking your time, that's okay"}`,
       trend: {
         pct: wpmTrend,
         fromLabel: `from ${Math.round(first.wpm)} wpm in lesson 1`,
@@ -263,7 +262,7 @@ export function WrappedModal({
     slides.push({
       kind: "stat",
       bigValue: `${current.vocab}`,
-      caption: `different words you used — ${current.vocab > 500 ? "your vocabulary is expanding fast" : current.vocab > 300 ? "a growing word bank" : "every new word counts"}`,
+      caption: `different words you used · ${current.vocab > 500 ? "your vocabulary is expanding fast" : current.vocab > 300 ? "a growing word bank" : "every new word counts"}`,
       trend: {
         pct: vocabTrend,
         fromLabel: `from ${first.vocab} words in lesson 1`,
@@ -325,7 +324,7 @@ export function WrappedModal({
           "overflow-hidden flex flex-col transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
           isFullscreen
             ? "w-full h-full rounded-none shadow-none bg-white"
-            : "relative w-full max-w-[640px] h-[min(92vh,860px)] rounded-[16px] shadow-[0_20px_60px_rgba(0,0,0,0.4)]",
+            : "relative w-full max-w-[720px] h-[min(82vh,760px)] rounded-[16px] shadow-[0_20px_60px_rgba(0,0,0,0.4)]",
         )}
       >
         {isFullscreen ? (
@@ -426,7 +425,7 @@ function SlideView({
         className="flex-1 relative flex flex-col items-center justify-center text-center px-8 overflow-hidden"
       >
         <div className="relative z-[1] flex flex-col items-center">
-          <div className="text-[12px] uppercase tracking-[0.14em] text-[#6a7580] font-medium">
+          <div className="text-[15px] text-[#6a7580] font-medium text-center">
             <VerticalCutReveal splitBy="characters" staggerDuration={0.02} staggerFrom="first">
               Lesson wrapped
             </VerticalCutReveal>
@@ -440,7 +439,7 @@ function SlideView({
             sparklesCount={18}
           />
 
-          <div className="mt-5 text-[15px] text-[#6a7580]">
+          <div className="mt-5 text-[15px] font-medium text-[#6a7580] text-center">
             <VerticalCutReveal
               splitBy="words"
               staggerDuration={0.04}
@@ -450,7 +449,7 @@ function SlideView({
               {`${fmtDate(slide.date)}${slide.durationMin > 0 ? ` · ${Math.round(slide.durationMin)} min` : ""}${slide.tutor ? ` · with ${slide.tutor}` : ""}`}
             </VerticalCutReveal>
           </div>
-          <div className="mt-6 text-[16px] text-[#191919] max-w-[340px]">
+          <div className="mt-6 text-[17px] font-medium text-[#191919] max-w-[340px] text-center">
             <VerticalCutReveal
               splitBy="words"
               staggerDuration={0.05}
@@ -513,7 +512,7 @@ function SlideView({
           </div>
 
           {/* Caption below the number */}
-          <div className="mt-5 text-[17px] text-[#191919] max-w-[400px] leading-snug">
+          <div className="mt-5 text-[15px] font-medium text-[#191919] max-w-[400px] leading-snug text-center">
             <VerticalCutReveal
               splitBy="words"
               staggerDuration={0.03}
@@ -597,14 +596,14 @@ function SlideView({
           </div>
 
           {/* Caption */}
-          <div className="mt-5 text-[17px] text-[#191919] leading-snug">
+          <div className="mt-5 text-[15px] font-medium text-[#191919] leading-snug text-center">
             <VerticalCutReveal
               splitBy="words"
               staggerDuration={0.03}
               staggerFrom="first"
               transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.3 }}
             >
-              {`grammar accuracy — CEFR ${slide.cefr}`}
+              {`grammar accuracy · CEFR ${slide.cefr}`}
             </VerticalCutReveal>
           </div>
 
@@ -643,10 +642,9 @@ function SlideView({
     >
       <GrainientBackdrop palette={slide.palette} opacity={0.8} variant={slideIdx} />
       <div className="relative z-[1] flex flex-col items-center max-w-[440px]">
-        <CycleGradientText
-          words={["Moment.", "Of the.", "Lesson."]}
-          className="text-[20px] md:text-[22px]"
-        />
+        <div className="text-[13px] font-medium text-[#191919]/60 text-center">
+          Moment of the lesson
+        </div>
         <div
           className="mt-4 px-7 py-6 rounded-[20px] backdrop-blur-[10px] relative overflow-hidden"
           style={GLASS_STYLE}
