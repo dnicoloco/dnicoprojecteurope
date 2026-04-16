@@ -339,28 +339,20 @@ export function LessonFullView({
         </div>
       )}
 
-      {/* Scrollable content with mask fade at top + bottom */}
-      {/* Fade overlays — pointer-events-none so scroll works through them */}
-      <div
-        className="absolute left-0 right-0 z-[4] pointer-events-none"
-        style={{
-          top: 0,
-          height: 80,
-          background: "linear-gradient(to bottom, white 40%, transparent 100%)",
-        }}
-      />
-      <div
-        className="absolute left-0 right-0 bottom-0 z-[4] pointer-events-none"
-        style={{
-          height: 48,
-          background: "linear-gradient(to top, white 30%, transparent 100%)",
-        }}
-      />
-
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto"
-      >
+      {/* Scroll area wrapper — relative so fade overlays position to this, not outer */}
+      <div className="flex-1 relative overflow-hidden">
+        <div
+          className="absolute top-0 left-0 right-0 h-[60px] z-[4] pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, white 30%, transparent 100%)" }}
+        />
+        <div
+          className="absolute bottom-0 left-0 right-0 h-[48px] z-[4] pointer-events-none"
+          style={{ background: "linear-gradient(to top, white 25%, transparent 100%)" }}
+        />
+        <div
+          ref={scrollRef}
+          className="h-full overflow-y-auto"
+        >
       {loading ? (
         <div className="flex items-center justify-center h-64 text-[13px] text-[#6a7580]">
           Loading transcript…
@@ -384,6 +376,7 @@ export function LessonFullView({
               ))}
             </div>
           )}
+        </div>
       </div>
     </div>
   );
