@@ -432,10 +432,12 @@ function SlideView({
         className="flex-1 relative flex flex-col items-center justify-center text-center px-8 overflow-hidden"
       >
         <div className="relative z-[1] flex flex-col items-center text-center">
-          <div className="font-display text-[22px] text-[#191919]/60" style={{ fontWeight: 500 }}>
-            <VerticalCutReveal splitBy="characters" staggerDuration={0.02} staggerFrom="first">
-              Lesson wrapped
-            </VerticalCutReveal>
+          <div className="font-display text-[22px] text-[#191919]" style={{ fontWeight: 500 }}>
+            <div className="w-full flex justify-center">
+              <VerticalCutReveal splitBy="characters" staggerDuration={0.02} staggerFrom="first">
+                Lesson wrapped
+              </VerticalCutReveal>
+            </div>
           </div>
 
           <SparklesText
@@ -445,15 +447,17 @@ function SlideView({
             sparklesCount={18}
           />
 
-          <div className="mt-6 text-[20px] text-[#191919]/70 max-w-[360px]">
-            <VerticalCutReveal
-              splitBy="words"
-              staggerDuration={0.05}
-              staggerFrom="first"
-              transition={{ type: "spring", stiffness: 190, damping: 22, delay: 0.3 }}
-            >
-              {`Hey ${studentName}, here's how this one landed.`}
-            </VerticalCutReveal>
+          <div className="mt-6 text-[20px] text-[#191919] max-w-[360px]">
+            <div className="w-full flex justify-center">
+              <VerticalCutReveal
+                splitBy="words"
+                staggerDuration={0.05}
+                staggerFrom="first"
+                transition={{ type: "spring", stiffness: 190, damping: 22, delay: 0.3 }}
+              >
+                {`Hey ${studentName}, here's how this one landed.`}
+              </VerticalCutReveal>
+            </div>
           </div>
         </div>
       </div>
@@ -509,14 +513,16 @@ function SlideView({
 
           {/* Caption below the number */}
           <div className="mt-5 text-[18px] font-medium text-[#191919] max-w-[400px] leading-snug text-center items-center">
-            <VerticalCutReveal
-              splitBy="words"
-              staggerDuration={0.03}
-              staggerFrom="first"
-              transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.3 }}
-            >
-              {slide.caption}
-            </VerticalCutReveal>
+            <div className="w-full flex justify-center">
+              <VerticalCutReveal
+                splitBy="words"
+                staggerDuration={0.03}
+                staggerFrom="first"
+                transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.3 }}
+              >
+                {slide.caption}
+              </VerticalCutReveal>
+            </div>
           </div>
 
           {/* Trend pill */}
@@ -524,10 +530,10 @@ function SlideView({
             <Arrow
               size={13}
               strokeWidth={2.5}
-              className={up ? "text-[#FF7AAC]" : "text-[#6a7580]"}
+              className={up ? "text-[#FF7AAC]" : "text-[#191919]"}
             />
             <span className="font-medium">{Math.abs(slide.trend.pct)}%</span>
-            <span className="text-[#6a7580]">· {slide.trend.fromLabel}</span>
+            <span className="text-[#191919]">· {slide.trend.fromLabel}</span>
           </div>
         </div>
       </div>
@@ -621,7 +627,7 @@ function SlideView({
     >
       <GrainientBackdrop palette={slide.palette} opacity={0.8} variant={slideIdx} />
       <div className="relative z-[1] flex flex-col items-center max-w-[440px]">
-        <div className="text-[13px] font-medium text-[#191919]/60 text-center">
+        <div className="text-[13px] font-medium text-[#191919] text-center">
           Moment of the lesson
         </div>
         <div
@@ -644,19 +650,21 @@ function SlideView({
               zoom={1.2}
             />
           </div>
-          <p
+          <div
             className="relative font-display text-[24px] leading-tight text-[#191919]"
             style={{ fontWeight: 500 }}
           >
-            <VerticalCutReveal
-              splitBy="words"
-              staggerDuration={0.04}
-              staggerFrom="first"
-              transition={{ type: "spring", stiffness: 190, damping: 22 }}
-            >
-              {`"${slide.label}"`}
-            </VerticalCutReveal>
-          </p>
+            <div className="w-full flex justify-center">
+              <VerticalCutReveal
+                splitBy="words"
+                staggerDuration={0.04}
+                staggerFrom="first"
+                transition={{ type: "spring", stiffness: 190, damping: 22 }}
+              >
+                {`"${slide.label}"`}
+              </VerticalCutReveal>
+            </div>
+          </div>
         </div>
       </div>
     </div>
