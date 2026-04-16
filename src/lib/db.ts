@@ -340,6 +340,13 @@ export type UtteranceGrammar = {
     dimension: string;
   }>;
   dimension_counts: { A: number; B: number; C: number; D: number };
+  cefr_spans?: Array<{
+    start: number;
+    end: number;
+    text: string;
+    level: string;
+    label: string;
+  }>;
 };
 
 const _grammarCache = new Map<string, Promise<Map<string, UtteranceGrammar>>>();
@@ -348,7 +355,7 @@ async function _fetchLessonGrammar(lessonId: string) {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("utterance_grammar")
-    .select("utterance_id, accuracy_pct, cefr_estimate, errors, dimension_counts")
+    .select("utterance_id, accuracy_pct, cefr_estimate, errors, dimension_counts, cefr_spans")
     .eq("lesson_id", lessonId);
   if (error || !data) return new Map<string, UtteranceGrammar>();
   const map = new Map<string, UtteranceGrammar>();

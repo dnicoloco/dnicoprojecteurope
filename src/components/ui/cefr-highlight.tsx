@@ -19,6 +19,15 @@ const CEFR_TEXT: Record<string, string> = {
   C2: "#1a8a72",
 };
 
+export type CefrSpan = {
+  start: number;
+  end: number;
+  text: string;
+  level: string;
+  label: string;
+};
+
+// Word-level fallback (dictionary lookup)
 export function CefrHighlightedText({ text }: { text: string }) {
   const words = text.split(/(\s+)/);
   return (
@@ -39,6 +48,64 @@ export function CefrHighlightedText({ text }: { text: string }) {
               aria-hidden="true"
             >
               {level}
+            </span>
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
+// Phrase-level Opus spans — preferred when available
+export function CefrSpanHighlightedText({
+  text,
+  spans,
+}: {
+  text: string;
+  spans: CefrSpan[];
+}) {
+  if (!spans || spans.length === 0) {
+    return <CefrHighlightedText text={text} />;
+  }
+
+  // Sort spans by start offset
+  const sorted = [...spans]
+    .filter((s) => s.start >= 0 && s.end <= text.length && CEFR_BG[s.level])
+    .sort((a, b) => a.start - b.start);
+
+  const parts: Array<{ text: string; span?: CefrSpan }> = [];
+  let cursor = 0;
+
+  for (const s of sorted) {
+    if (s.start < cursor) continue; // overlapping, skip
+    if (s.start > cursor) {
+      parts.push({ text: text.slice(cursor, s.start) });
+    }
+    parts.push({ text: text.slice(s.start, s.end), span: s });
+    cursor = s.end;
+  }
+  if (cursor < text.length) {
+    parts.push({ text: text.slice(cursor) });
+  }
+
+  return (
+    <span>
+      {parts.map((p, i) => {
+        if (!p.span) return <span key={i}>{p.text}</span>;
+        const bg = CEFR_BG[p.span.level];
+        const color = CEFR_TEXT[p.span.level];
+        return (
+          <span
+            key={i}
+            className="group/phrase relative cursor-default rounded-[3px] px-0.5 -mx-0.5"
+            style={{ backgroundColor: bg, color }}
+          >
+            {p.text}
+            <span
+              className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded text-[9px] font-medium text-white bg-[#191919] opacity-0 group-hover/phrase:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 select-none"
+              aria-hidden="true"
+            >
+              {p.span.level} · {p.span.label}
             </span>
           </span>
         );

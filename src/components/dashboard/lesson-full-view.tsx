@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { ArrowLeft, Volume2, Pause, ChevronDown, BarChart3 } from "lucide-react";
+import { CefrSpanHighlightedText, type CefrSpan } from "@/components/ui/cefr-highlight";
 import { cn } from "@/lib/utils";
 import {
   getLessonTranscript,
@@ -481,7 +482,22 @@ function TurnBlock({
             className="rounded-[14px] rounded-br-[6px] px-4 py-2.5 text-[17px] leading-relaxed backdrop-blur-[16px] text-[#191919]"
             style={GLASS_STYLE}
           >
-            <CefrHighlightedText text={displayText} />
+            {(() => {
+              // Collect Opus CEFR spans for this turn's utterances
+              const allSpans: CefrSpan[] = [];
+              let offset = 0;
+              for (const u of turn.utterances) {
+                const g = grammarMap.get(u.id);
+                const cleaned = cleanText(u.text, false);
+                if (g?.cefr_spans) {
+                  for (const s of g.cefr_spans) {
+                    allSpans.push({ ...s, start: s.start + offset, end: s.end + offset });
+                  }
+                }
+                offset += cleaned.length + 1; // +1 for the space between utterances
+              }
+              return <CefrSpanHighlightedText text={displayText} spans={allSpans} />;
+            })()}
           </div>
           {/* Accuracy bars — visible on hover or when toggled */}
           {turnMetrics && (
