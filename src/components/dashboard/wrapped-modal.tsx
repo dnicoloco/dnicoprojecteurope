@@ -344,8 +344,8 @@ export function WrappedModal({
 
             {/* Top bar: lesson info left, close right */}
             <div className="absolute top-4 left-5 right-5 z-[3] flex items-center justify-between">
-              <div className="text-[13px] font-medium text-white/70">
-                Lesson {session.lesson} · {fmtDate(session.date)}
+              <div className="font-display text-[18px] text-white/90" style={{ fontWeight: 500 }}>
+                Lesson {session.lesson} <span className="text-white/50 font-normal text-[14px] ml-1">{fmtDate(session.date)}</span>
               </div>
               <button
                 type="button"
@@ -431,14 +431,13 @@ function SlideView({
         key={`headline-${slideIdx}`}
         className="flex-1 relative flex flex-col items-center justify-center text-center px-8 overflow-hidden"
       >
-        <div className="relative z-[1] flex flex-col items-center">
-          <div className="text-[15px] text-[#6a7580] font-medium text-center">
+        <div className="relative z-[1] flex flex-col items-center text-center">
+          <div className="font-display text-[22px] text-[#191919]/60" style={{ fontWeight: 500 }}>
             <VerticalCutReveal splitBy="characters" staggerDuration={0.02} staggerFrom="first">
               Lesson wrapped
             </VerticalCutReveal>
           </div>
 
-          {/* Big "03" — SparklesText for magic on first impression */}
           <SparklesText
             text={padded}
             className="mt-4 text-[148px] leading-none text-[#191919]"
@@ -446,22 +445,12 @@ function SlideView({
             sparklesCount={18}
           />
 
-          <div className="mt-5 text-[18px] font-medium text-[#6a7580] text-center items-center">
-            <VerticalCutReveal
-              splitBy="words"
-              staggerDuration={0.04}
-              staggerFrom="first"
-              transition={{ type: "spring", stiffness: 200, damping: 24, delay: 0.2 }}
-            >
-              {`${fmtDate(slide.date)}${slide.durationMin > 0 ? ` · ${Math.round(slide.durationMin)} min` : ""}${slide.tutor ? ` · with ${slide.tutor}` : ""}`}
-            </VerticalCutReveal>
-          </div>
-          <div className="mt-6 text-[17px] font-medium text-[#191919] max-w-[340px] text-center items-center">
+          <div className="mt-6 text-[20px] text-[#191919]/70 max-w-[360px]">
             <VerticalCutReveal
               splitBy="words"
               staggerDuration={0.05}
               staggerFrom="first"
-              transition={{ type: "spring", stiffness: 190, damping: 22, delay: 0.5 }}
+              transition={{ type: "spring", stiffness: 190, damping: 22, delay: 0.3 }}
             >
               {`Hey ${studentName}, here's how this one landed.`}
             </VerticalCutReveal>
