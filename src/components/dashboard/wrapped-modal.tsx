@@ -439,7 +439,7 @@ function SlideView({
             sparklesCount={18}
           />
 
-          <div className="mt-5 text-[15px] font-medium text-[#6a7580] text-center">
+          <div className="mt-5 text-[15px] font-medium text-[#6a7580] text-center items-center">
             <VerticalCutReveal
               splitBy="words"
               staggerDuration={0.04}
@@ -449,7 +449,7 @@ function SlideView({
               {`${fmtDate(slide.date)}${slide.durationMin > 0 ? ` · ${Math.round(slide.durationMin)} min` : ""}${slide.tutor ? ` · with ${slide.tutor}` : ""}`}
             </VerticalCutReveal>
           </div>
-          <div className="mt-6 text-[17px] font-medium text-[#191919] max-w-[340px] text-center">
+          <div className="mt-6 text-[17px] font-medium text-[#191919] max-w-[340px] text-center items-center">
             <VerticalCutReveal
               splitBy="words"
               staggerDuration={0.05}
@@ -512,7 +512,7 @@ function SlideView({
           </div>
 
           {/* Caption below the number */}
-          <div className="mt-5 text-[15px] font-medium text-[#191919] max-w-[400px] leading-snug text-center">
+          <div className="mt-5 text-[15px] font-medium text-[#191919] max-w-[400px] leading-snug text-center items-center">
             <VerticalCutReveal
               splitBy="words"
               staggerDuration={0.03}
@@ -586,7 +586,7 @@ function SlideView({
             </div>
           </div>
 
-          <div className="mt-5 text-[15px] font-medium text-[#191919] leading-snug text-center">
+          <div className="mt-5 text-[15px] font-medium text-[#191919] leading-snug text-center items-center">
             grammar accuracy · {slide.cefr}
           </div>
 

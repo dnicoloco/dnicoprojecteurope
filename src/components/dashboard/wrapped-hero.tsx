@@ -129,6 +129,11 @@ function MetricTile({
   );
 }
 
+function pctDelta(values: number[]): number {
+  if (values.length < 2 || !values[0]) return 0;
+  return Math.round(((values[values.length - 1] - values[0]) / values[0]) * 100);
+}
+
 function fmtSessionDate(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleDateString("en-GB", {
@@ -204,62 +209,65 @@ export function WrappedHero({
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col min-w-0 gap-4">
-          <h2 className="font-display text-[26px] text-[#191919] leading-tight line-clamp-2">
+        <div className="flex-1 flex flex-col min-w-0 gap-3">
+          <h2 className="font-display text-[24px] text-[#191919] leading-tight line-clamp-2">
             {session.bestMomentLabel}
           </h2>
 
-          <div className="grid grid-cols-3 gap-2.5">
-            <MetricTile
-              label="talk"
-              value={`${Math.round(last.talkRatioPct)}`}
-              unit="%"
-              values={talkValues}
-            />
-            <MetricTile
-              label="wpm"
-              value={`${Math.round(last.wpm)}`}
-              values={wpmValues}
-            />
-            <MetricTile
-              label="vocab"
-              value={`${last.vocab}`}
-              values={vocabValues}
-            />
+          {/* Horizontal metric bars */}
+          <div className="flex flex-col gap-2">
+            {[
+              { label: "Talk", value: Math.round(last.talkRatioPct), max: 100, pct: pctDelta(talkValues), color: "#FF7AAC" },
+              { label: "Pace", value: Math.round(last.wpm), max: 120, pct: pctDelta(wpmValues), color: "#7AB8F0" },
+              { label: "Words", value: last.vocab, max: 1000, pct: pctDelta(vocabValues), color: "#6DCFA0" },
+            ].map((m) => (
+              <div key={m.label} className="flex items-center gap-2.5">
+                <span className="text-[12px] font-medium text-[#6a7580] w-[42px] text-right shrink-0">
+                  {m.label}
+                </span>
+                <div className="flex-1 h-[8px] rounded-full bg-[#F1F3F5] overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${Math.min(100, (m.value / m.max) * 100)}%`,
+                      backgroundColor: m.color,
+                    }}
+                  />
+                </div>
+                <span className="font-display text-[16px] text-[#191919] w-[40px] text-right tabular-nums leading-none">
+                  {m.value}
+                </span>
+                {m.pct !== 0 && (
+                  <span className={cn("text-[11px] font-medium w-[38px]", m.pct > 0 ? "text-[#FF7AAC]" : "text-[#6a7580]")}>
+                    {m.pct > 0 ? "↑" : "↓"}{Math.abs(m.pct)}%
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
 
-          <div className="flex items-end justify-between gap-4 flex-wrap">
-            <div className="text-[13px] text-[#6a7580]">
-              {fmtSessionDate(session.date)}
-              <span className="mx-1.5">·</span>
-              {Math.round(last.durationMin)} min
-              <span className="mx-1.5">·</span>
-              with {student.tutor}
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => ttsPlay(narration)}
-                className={cn(
-                  "inline-flex items-center justify-center w-10 h-10 rounded-[6px] transition-colors cursor-pointer",
-                  "border border-[rgba(25,25,25,0.08)] bg-white text-[#191919] hover:bg-[#FAFAFA]",
-                  ttsPlaying &&
-                    "bg-[#191919] text-white border-[#191919] hover:bg-[#191919]",
-                )}
-                aria-label={ttsPlaying ? "Pause narration" : "Hear your wrap"}
-                title={ttsPlaying ? "Pause narration" : "Hear your wrap"}
-              >
-                {ttsPlaying ? <Pause size={16} /> : <Volume2 size={16} />}
-              </button>
-              <Button
-                variant="primary"
-                size="default"
-                onClick={onOpenDetail}
-              >
-                <Play size={14} className="fill-white" />
-                Replay wrapped
-              </Button>
-            </div>
+          <div className="flex items-center justify-end gap-2 mt-auto">
+            <button
+              type="button"
+              onClick={() => ttsPlay(narration)}
+              className={cn(
+                "inline-flex items-center justify-center w-10 h-10 rounded-[6px] transition-colors cursor-pointer",
+                "border border-[rgba(25,25,25,0.08)] bg-white text-[#191919] hover:bg-[#FAFAFA]",
+                ttsPlaying &&
+                  "bg-[#191919] text-white border-[#191919] hover:bg-[#191919]",
+              )}
+              aria-label={ttsPlaying ? "Pause narration" : "Hear your wrap"}
+            >
+              {ttsPlaying ? <Pause size={16} /> : <Volume2 size={16} />}
+            </button>
+            <Button
+              variant="primary"
+              size="default"
+              onClick={onOpenDetail}
+            >
+              <Play size={14} className="fill-white" />
+              Replay wrapped
+            </Button>
           </div>
         </div>
       </div>

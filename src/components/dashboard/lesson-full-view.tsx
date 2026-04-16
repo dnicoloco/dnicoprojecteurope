@@ -261,7 +261,12 @@ export function LessonFullView({
       ) : (
         <>
           {/* Compact header — scrolls with content */}
-          <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm border-b border-black/[0.06] px-6 py-3 flex items-center gap-4">
+          <div
+            className="sticky top-0 z-10 px-6 py-3 flex items-center gap-4"
+            style={{
+              background: "linear-gradient(to bottom, white 70%, transparent 100%)",
+            }}
+          >
             <button
               type="button"
               onClick={onBack}
