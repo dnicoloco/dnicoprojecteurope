@@ -27,30 +27,21 @@ export function TopicCard({
   return (
     <button className="group shrink-0 w-[220px] text-left cursor-pointer">
       <div
-        className="relative aspect-square w-full rounded-[6px] overflow-hidden border border-black/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_1px_2px_rgba(0,0,0,0.04),0_6px_14px_-8px_rgba(0,0,0,0.1)] group-hover:border-black/[0.15] group-hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_3px_6px_rgba(0,0,0,0.07),0_14px_24px_-10px_rgba(0,0,0,0.16)] group-hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-end p-3"
+        className="relative aspect-square w-full rounded-[6px] overflow-hidden border border-black/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_1px_2px_rgba(0,0,0,0.04),0_6px_14px_-8px_rgba(0,0,0,0.1)] group-hover:border-black/[0.15] group-hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_3px_6px_rgba(0,0,0,0.07),0_14px_24px_-10px_rgba(0,0,0,0.16)] group-hover:-translate-y-0.5 transition-all duration-200 flex items-end p-4"
         style={{ background: "#1a1a1d" }}
       >
-        {/* Inner card with gradient bg */}
-        <div
-          className="rounded-[8px] px-4 py-4 flex items-end"
+        <span
+          className="font-display text-[38px] leading-[1.05]"
           style={{
-            background: `linear-gradient(145deg, ${c1}22, ${c2}18)`,
-            border: `1px solid ${c1}30`,
+            background: `linear-gradient(135deg, ${c1}, ${c2})`,
+            color: "transparent",
+            backgroundClip: "text",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
           }}
         >
-          <span
-            className="font-display text-[26px] leading-[1.1]"
-            style={{
-              background: `linear-gradient(135deg, ${c1}, ${c2})`,
-              color: "transparent",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            {topic.name} {topic.emoji}
-          </span>
-        </div>
+          {topic.name} {topic.emoji}
+        </span>
       </div>
       <div className="pt-2.5 px-0.5">
         <div className="text-[14px] text-[#191919]/80 truncate">
