@@ -1,16 +1,17 @@
 import * as React from "react";
-import Image from "next/image";
 import type { Topic } from "@/lib/metrics";
 
-const TOPIC_IMAGES: Record<string, string> = {
-  family: "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=440&h=440&fit=crop&q=80",
-  opinions: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=440&h=440&fit=crop&q=80",
-  feelings: "https://images.unsplash.com/photo-1493612276216-ee3925520721?w=440&h=440&fit=crop&q=80",
-  philosophy: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?w=440&h=440&fit=crop&q=80",
+const GRADIENT_MAP: Record<string, string> = {
+  "#E8DFFF": "linear-gradient(135deg, #E8DFFF, #C4B0F0)",
+  "#D6ECFF": "linear-gradient(135deg, #D6ECFF, #A8D4FF)",
+  "#D1F5E0": "linear-gradient(135deg, #D1F5E0, #9FE5BE)",
+  "#FFE5E0": "linear-gradient(135deg, #FFE5E0, #FFCDC6)",
+  "#D4DEFF": "linear-gradient(135deg, #D4DEFF, #A8BAFF)",
 };
 
-const FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=440&h=440&fit=crop&q=80";
+function gradientForColor(hex: string): string {
+  return GRADIENT_MAP[hex] ?? `linear-gradient(135deg, ${hex}, ${hex}88)`;
+}
 
 export function TopicCard({
   topic,
@@ -21,35 +22,28 @@ export function TopicCard({
 }) {
   void index;
   const delta = topic.vocabDeltaPct;
-  const imgSrc = TOPIC_IMAGES[topic.id] ?? FALLBACK_IMAGE;
 
   return (
     <button className="group shrink-0 w-[220px] text-left cursor-pointer">
       <div
-        className="relative aspect-square w-full rounded-[6px] overflow-hidden border border-black/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_1px_2px_rgba(0,0,0,0.04),0_6px_14px_-8px_rgba(0,0,0,0.1)] group-hover:border-black/[0.15] group-hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_3px_6px_rgba(0,0,0,0.07),0_14px_24px_-10px_rgba(0,0,0,0.16)] group-hover:-translate-y-0.5 transition-all duration-200"
+        className="relative aspect-square w-full rounded-[6px] overflow-hidden border border-black/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_1px_2px_rgba(0,0,0,0.04),0_6px_14px_-8px_rgba(0,0,0,0.1)] group-hover:border-black/[0.15] group-hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.09),0_3px_6px_rgba(0,0,0,0.07),0_14px_24px_-10px_rgba(0,0,0,0.16)] group-hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-end p-4"
         style={{ background: "#1a1a1d" }}
       >
-        {/* Editorial blurred photo */}
-        <div className="absolute top-0 left-0 right-0 h-[65%] overflow-hidden">
-          <Image
-            src={imgSrc}
-            alt=""
-            width={440}
-            height={440}
-            className="w-full h-full object-cover blur-[4px] brightness-105 saturate-[1.1] scale-110"
-            unoptimized
-          />
-        </div>
-
-        <span className="absolute top-3 right-3 text-[28px] z-[1]">
+        <span className="absolute top-3 right-3 text-[28px]">
           {topic.emoji}
         </span>
 
-        {/* Dark bottom with topic name */}
-        <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-4 z-[1]">
-          <div className="font-display text-[24px] text-white leading-[1.05]">
-            {topic.name}
-          </div>
+        <div
+          className="font-display text-[30px] leading-[1.1]"
+          style={{
+            background: gradientForColor(topic.color),
+            color: "transparent",
+            backgroundClip: "text",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          {topic.name}
         </div>
       </div>
       <div className="pt-2.5 px-0.5">
