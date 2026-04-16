@@ -337,18 +337,16 @@ export function JourneyStrip({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
-        {/* Past */}
+      {/* Then / Now timeline */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
         <Panel
           id="past"
-          label="Past"
+          label="Then"
           meta={pastDate ? formatDateShort(pastDate) : ""}
           quote={pastQuote}
           playingId={playingId}
           onPlay={play}
         />
-
-        {/* Now */}
         <Panel
           id="now"
           label="Now"
@@ -357,58 +355,32 @@ export function JourneyStrip({
           playingId={playingId}
           onPlay={play}
         />
-
-        {/* Next */}
-        <div
-          className="rounded-[6px] p-4 flex flex-col gap-3 min-h-[180px] backdrop-blur-[16px] text-left"
-          style={GLASS_STYLE}
-        >
-          <div className="flex items-start justify-between gap-2">
-            <h3
-              className="font-display text-[24px] leading-none text-[#191919]"
-              style={{ fontWeight: 500 }}
-            >
-              Next
-            </h3>
-            <SpeakerButton
-              id="next"
-              text={nextYouLine}
-              speaker="student"
-              playingId={playingId}
-              onPlay={play}
-              disabled={!nextYouLine}
-            />
-          </div>
-          <p
-            className="text-[15px] leading-snug italic text-left line-clamp-4"
-            style={GLASS_TEXT}
-          >
-            {nextYouLine ? <>&ldquo;{nextYouLine}&rdquo;</> : "\u00A0"}
-          </p>
-          <div className="mt-auto pt-2 flex items-end justify-between gap-3">
-            <span className="text-[12px] text-[#64748b] min-h-[1em]">
-              {card?.projected_ready_date
-                ? `${daysUntilLabel(card.projected_ready_date)} · ${formatDateShort(card.projected_ready_date)}`
-                : ""}
-            </span>
-            <Button
-              variant="primary"
-              size="default"
-              onClick={() => setModalOpen(true)}
-              disabled={!card}
-              className="px-6"
-            >
-              Learn
-            </Button>
-          </div>
-        </div>
       </div>
 
-      <NextConversationModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        personaStudentKey={personaStudentKey}
-      />
+      {/* Timeline connector */}
+      {deltaDays !== null && deltaDays > 0 && (
+        <div className="flex items-center gap-3 mt-4 px-2">
+          <div className="w-2 h-2 rounded-full bg-[#191919]/20 shrink-0" />
+          <div className="flex-1 h-px bg-[#191919]/10 relative">
+            <span className="absolute left-1/2 -translate-x-1/2 -top-3 text-[12px] font-medium text-[#191919]/50 bg-white px-2">
+              {prettyDelta(deltaDays)}
+            </span>
+          </div>
+          <div className="w-2 h-2 rounded-full bg-[#191919] shrink-0" />
+        </div>
+      )}
+
+      {/* Projection line */}
+      <div className="mt-4 px-2">
+        <p className="text-[15px] text-[#191919] leading-relaxed">
+          {deltaDays !== null && deltaDays > 0
+            ? `In ${prettyDelta(deltaDays)} you went from basic statements to expressing complex opinions on ${activeTheme?.label?.toLowerCase() ?? "this topic"}. At this pace, in 3 months you'll be holding full debates and defending nuanced positions in English.`
+            : "Keep going and we'll track your progression on this topic over time."}
+        </p>
+        <p className="text-[12px] text-[#191919]/40 mt-1">
+          (estimate based on avg. student progression)
+        </p>
+      </div>
     </section>
   );
 }
