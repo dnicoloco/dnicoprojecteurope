@@ -49,16 +49,14 @@ type Theme = { id: string; label: string; query: string };
 
 const THEMES: Record<string, Theme[]> = {
   marta: [
-    { id: "disagree", label: "Disagreeing", query: "times I disagreed or pushed back politely" },
-    { id: "feelings", label: "Feelings", query: "describing how I felt or what I was feeling" },
-    { id: "opinions", label: "Opinions", query: "expressing my personal opinion or view" },
-    { id: "family", label: "Family", query: "talking about my family and parents" },
-    { id: "philosophy", label: "Big ideas", query: "philosophical or abstract reflections" },
+    { id: "habits", label: "Daily habits", query: "talking about my daily habits routines eating walking exercise and personal lifestyle" },
+    { id: "opinions", label: "Sharing opinions", query: "expressing my personal opinion view or preference about something I feel strongly about" },
+    { id: "growth", label: "Self-improvement", query: "talking about discipline concentration learning improving myself and personal growth" },
   ],
   tomas: [
-    { id: "humour", label: "Humour", query: "making a joke or being playful" },
-    { id: "past", label: "Past stories", query: "telling stories about past experiences" },
-    { id: "hobbies", label: "Hobbies", query: "talking about hobbies and interests" },
+    { id: "habits", label: "Daily habits", query: "talking about my daily habits routines eating walking exercise and personal lifestyle" },
+    { id: "opinions", label: "Sharing opinions", query: "expressing my personal opinion view or preference about something I feel strongly about" },
+    { id: "growth", label: "Self-improvement", query: "talking about discipline concentration learning improving myself and personal growth" },
   ],
 };
 
@@ -316,7 +314,7 @@ export function JourneyStrip({
                 : "\u00A0"}
           </span>
         </div>
-        <div className="flex gap-1.5 flex-wrap">
+        <div className="flex gap-2 flex-wrap">
           {themes.map((t) => {
             const active = t.id === themeId;
             return (
@@ -324,11 +322,12 @@ export function JourneyStrip({
                 key={t.id}
                 onClick={() => setThemeId(t.id)}
                 className={cn(
-                  "text-[13px] px-3 py-1.5 rounded-full border transition-colors cursor-pointer",
+                  "text-[14px] px-4 py-2 rounded-[12px] font-medium backdrop-blur-[16px] transition-all cursor-pointer",
                   active
-                    ? "bg-[#191919] text-white border-[#191919]"
-                    : "bg-white text-[#191919] border-[rgba(25,25,25,0.12)] hover:border-[rgba(25,25,25,0.3)]",
+                    ? "bg-[#191919] text-white shadow-[0_1px_3px_rgba(0,0,0,0.2)]"
+                    : "text-[#191919] shadow-[0_0_0_0.5px_rgba(15,23,42,0.12),0_1px_1px_-0.5px_rgba(15,23,42,0.06),0_2px_2px_-1px_rgba(15,23,42,0.06),inset_0_1.5px_1px_rgba(255,255,255,0.9)] hover:shadow-[0_0_0_0.5px_rgba(15,23,42,0.2),0_2px_4px_rgba(15,23,42,0.1)]",
                 )}
+                style={active ? undefined : { background: "rgba(15, 23, 42, 0.01)" }}
               >
                 {t.label}
               </button>
@@ -359,15 +358,10 @@ export function JourneyStrip({
             />
           </div>
 
-          {/* Delta badge + projection */}
-          <div className="mt-5 px-1">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#191919] text-white text-[13px] font-medium">
-                {prettyDelta(deltaDays)} apart
-              </span>
-            </div>
+          {/* Projection — centred */}
+          <div className="mt-5 text-center max-w-[600px] mx-auto">
             <p className="text-[15px] text-[#191919] leading-relaxed">
-              In {prettyDelta(deltaDays)} you went from basic statements to expressing complex opinions on {activeTheme?.label?.toLowerCase() ?? "this topic"}. At this pace, in 3 months you&apos;ll be holding full debates and defending nuanced positions in English.
+              At this pace, in 3 months you&apos;ll be holding full debates and defending nuanced positions on {activeTheme?.label?.toLowerCase() ?? "this topic"} in English.
             </p>
             <p className="text-[12px] text-[#191919]/40 mt-1.5">
               (estimate based on avg. student progression)
