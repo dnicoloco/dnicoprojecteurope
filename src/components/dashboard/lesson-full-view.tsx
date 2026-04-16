@@ -377,20 +377,8 @@ function TurnBlock({
 
   if (isStudent) {
     return (
-      <div className="flex w-full justify-end gap-2">
-        {hasErrors && (
-          <div className="flex flex-col justify-center gap-0.5 w-[72px] shrink-0 self-center">
-            {(["A", "B", "C", "D"] as const).map((k) => (
-              <div key={k} className="flex items-center gap-1">
-                <span className="text-[7px] text-[#94a3b8] w-[28px] text-right truncate">{DIM_SHORT[k]}</span>
-                <div className="flex-1 h-[3px] rounded-full bg-black/[0.04] overflow-hidden">
-                  <div className="h-full rounded-full" style={{ width: `${(turnDims[k] / maxDim) * 100}%`, backgroundColor: DIM_COLORS[k] }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-        <div className="flex flex-col items-end max-w-[68%]">
+      <div className="flex w-full justify-end">
+        <div className="flex flex-col items-end max-w-[75%]">
           <div className="flex items-baseline gap-2 mb-1 pr-1 text-[11px] flex-row-reverse">
             <span className="text-[#94a3b8] tabular-nums">{fmtMMSS(turn.startSec)}</span>
             <button
