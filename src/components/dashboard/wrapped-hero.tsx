@@ -246,6 +246,20 @@ export function WrappedHero({
             ))}
           </div>
 
+          {/* Tutor + date */}
+          <div className="flex items-center gap-2.5 mt-1">
+            <img
+              src="/tutor-avatar.jpg"
+              alt={student.tutor ?? "Tutor"}
+              className="w-8 h-8 rounded-full object-cover shrink-0"
+            />
+            <div className="text-[13px] text-[#6a7580]">
+              <span className="font-medium text-[#191919]">{student.tutor}</span>
+              <span className="mx-1.5">·</span>
+              {fmtSessionDate(session.date)}
+            </div>
+          </div>
+
           <div className="flex items-center justify-end gap-2 mt-auto">
             <button
               type="button"
