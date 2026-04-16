@@ -206,14 +206,34 @@ export function LessonChat({
       if (!resp.ok) throw new Error(`Chat ${resp.status}`);
       const data = await resp.json();
 
-      const assistantMsg: ChatMessage = {
-        id: `a-${Date.now()}`,
-        role: "assistant",
-        content: data.content ?? "I couldn't process that. Try again.",
-        snippets: data.snippets ?? undefined,
-        quiz: data.quiz ?? undefined,
+      const fullContent = data.content ?? "I couldn't process that. Try again.";
+      const snippets = data.snippets ?? undefined;
+      const quiz = data.quiz ?? undefined;
+      const msgId = `a-${Date.now()}`;
+
+      // Stream text in character by character
+      setMessages((m) => [...m, { id: msgId, role: "assistant", content: "" }]);
+      setLoading(false);
+
+      const chars = [...fullContent];
+      let shown = 0;
+      const tick = () => {
+        const chunk = Math.floor(Math.random() * 3) + 1;
+        shown = Math.min(shown + chunk, chars.length);
+        const partial = chars.slice(0, shown).join("");
+        setMessages((m) =>
+          m.map((msg) =>
+            msg.id === msgId
+              ? { ...msg, content: partial, snippets: shown >= chars.length ? snippets : undefined, quiz: shown >= chars.length ? quiz : undefined }
+              : msg,
+          ),
+        );
+        if (shown < chars.length) {
+          setTimeout(tick, 12 + Math.random() * 18);
+        }
       };
-      setMessages((m) => [...m, assistantMsg]);
+      tick();
+      return;
     } catch {
       setMessages((m) => [
         ...m,
