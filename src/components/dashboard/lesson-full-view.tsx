@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { ArrowLeft, Volume2, Pause, ChevronDown, BarChart3 } from "lucide-react";
-import { CefrSpanHighlightedText, type CefrSpan } from "@/components/ui/cefr-highlight";
+import { ArrowLeft, Volume2, Pause } from "lucide-react";
+import { CefrSpanHighlightedText, type GrammarError } from "@/components/ui/cefr-highlight";
 import { cn } from "@/lib/utils";
 import {
   getLessonTranscript,
@@ -231,7 +231,6 @@ export function LessonFullView({
   const [transcript, setTranscript] = React.useState<LessonUtterance[]>([]);
   const [grammarMap, setGrammarMap] = React.useState<Map<string, UtteranceGrammar>>(new Map());
   const [loading, setLoading] = React.useState(true);
-  const [showBars, setShowBars] = React.useState(false);
   const { playingId, play } = useTTS();
 
   React.useEffect(() => {
@@ -289,17 +288,6 @@ export function LessonFullView({
                 with {student.tutor}
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowBars((b) => !b)}
-              className={cn(
-                "inline-flex items-center justify-center w-9 h-9 rounded-[6px] border border-black/[0.08] cursor-pointer shrink-0 transition-colors",
-                showBars ? "bg-[#191919] text-white border-[#191919]" : "bg-white text-[#191919] hover:bg-black/5",
-              )}
-              title={showBars ? "Hide metrics" : "Show metrics: Accuracy · CEFR"}
-            >
-              <BarChart3 size={15} />
-            </button>
             <button
               type="button"
               onClick={() => {
@@ -372,7 +360,6 @@ export function LessonFullView({
                   playingId={playingId}
                   onPlay={play}
                   grammarMap={grammarMap}
-                  showBars={showBars}
                 />
               ))}
             </div>
@@ -409,14 +396,12 @@ function TurnBlock({
   playingId,
   onPlay,
   grammarMap,
-  showBars,
 }: {
   turn: ConversationTurn;
   student: StudentProgress;
   playingId: string | null;
   onPlay: (id: string, text: string, speaker: "student" | "other") => void;
   grammarMap: Map<string, UtteranceGrammar>;
-  showBars: boolean;
 }) {
   const isStudent = turn.speaker === "student";
   const pid = `turn-${turn.startSec}`;
@@ -467,24 +452,31 @@ function TurnBlock({
               const g = grammarMap.get(u.id);
               const hasSpans = g?.cefr_spans && g.cefr_spans.length > 0;
               const cleaned = cleanText(u.text, false);
+              const uText = hasSpans ? u.text : cleaned;
+              // Convert grammar errors to GrammarError format
+              const grammarErrors: GrammarError[] = (g?.errors ?? []).map((e) => ({
+                start: e.offset,
+                end: e.offset + e.length,
+                text: e.span,
+                suggestion: e.suggestion,
+                message: e.message,
+              }));
               return (
                 <span key={u.id}>
                   {ui > 0 && " "}
-                  {hasSpans
-                    ? <CefrSpanHighlightedText text={u.text} spans={g!.cefr_spans!} />
-                    : <CefrSpanHighlightedText text={cleaned} spans={[]} />}
+                  <CefrSpanHighlightedText
+                    text={uText}
+                    spans={hasSpans ? g!.cefr_spans! : []}
+                    errors={grammarErrors.length > 0 ? grammarErrors : undefined}
+                  />
                 </span>
               );
             })}
           </div>
-          {/* CEFR badge + structure count — visible on hover or toggle */}
+          {/* CEFR badge + structure count */}
           {turnMetrics && (
-            <div
-              className={cn(
-                "flex items-center gap-2 mt-1.5 pr-1 transition-opacity duration-200",
-                showBars ? "opacity-100" : "opacity-0 group-hover/turn:opacity-100",
-              )}
-            >
+            <div className="flex items-center gap-2 mt-1.5 pr-1">
+
               <span
                 className="text-[10px] font-medium px-1.5 py-0.5 rounded-[3px]"
                 style={{
