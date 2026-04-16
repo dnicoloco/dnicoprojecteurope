@@ -66,14 +66,14 @@ export function TutorStudentDashboard({
       {/* 3. Topic mixes with affinity overlay */}
       {topics.length > 0 && (
         <HorizontalRow title={`${student.name}'s topics × your approach`}>
-          {topics.map((t) => {
+          {topics.map((t, i) => {
             const aff =
               lens?.topicAffinity.find((a) => a.topicId === t.id)?.affinity ??
               "works";
             const affStyle = AFFINITY_LABEL[aff];
             return (
               <div key={t.id} className="relative shrink-0">
-                <TopicCard topic={t} />
+                <TopicCard topic={t} index={i} />
                 <span
                   className="absolute top-2 left-2 text-[14px] font-medium px-1.5 py-0.5 rounded-[6px]"
                   style={{ background: affStyle.bg, color: affStyle.color }}

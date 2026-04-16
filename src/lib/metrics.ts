@@ -259,9 +259,9 @@ export const SESSION_DETAILS: Record<string, SessionDetail[]> = {
       scheduledAt: "18:30",
       topTopicId: "family",
       segments: [
-        { topicId: "family",   startMin: 0,  minutes: 15 },
-        { topicId: "everyday", startMin: 15, minutes: 20 },
-        { topicId: "travel",   startMin: 35, minutes: 10 },
+        { topicId: "family",     startMin: 0,  minutes: 15 },
+        { topicId: "feelings",   startMin: 15, minutes: 20 },
+        { topicId: "opinions",   startMin: 35, minutes: 10 },
       ],
       bestMomentMin: 31,
       bestMomentLabel: "Described your sister in three full sentences",
@@ -273,11 +273,11 @@ export const SESSION_DETAILS: Record<string, SessionDetail[]> = {
       lesson: 2,
       date: "2026-03-27",
       scheduledAt: "19:00",
-      topTopicId: "work",
+      topTopicId: "opinions",
       segments: [
-        { topicId: "travel",   startMin: 0,  minutes: 5 },
-        { topicId: "work",     startMin: 5,  minutes: 20 },
-        { topicId: "everyday", startMin: 25, minutes: 18 },
+        { topicId: "opinions",   startMin: 0,  minutes: 5 },
+        { topicId: "feelings",   startMin: 5,  minutes: 20 },
+        { topicId: "philosophy", startMin: 25, minutes: 18 },
       ],
       bestMomentMin: 8,
       bestMomentLabel: "Ordered coffee cleanly, zero fillers",
@@ -289,11 +289,11 @@ export const SESSION_DETAILS: Record<string, SessionDetail[]> = {
       lesson: 3,
       date: "2026-04-03",
       scheduledAt: "18:30",
-      topTopicId: "travel",
+      topTopicId: "family",
       segments: [
-        { topicId: "travel",   startMin: 0,  minutes: 25 },
-        { topicId: "food",     startMin: 25, minutes: 20 },
-        { topicId: "everyday", startMin: 45, minutes: 10 },
+        { topicId: "family",     startMin: 0,  minutes: 25 },
+        { topicId: "opinions",   startMin: 25, minutes: 20 },
+        { topicId: "feelings",   startMin: 45, minutes: 10 },
       ],
       bestMomentMin: 22,
       bestMomentLabel: "Told your Italy story unprompted for 90 seconds",
@@ -484,14 +484,14 @@ export const TUTOR_DATA: TutorData = {
     { studentId: "yuki",   tag: "flat",     short: "10d idle",   headline: "10 days since last lesson" },
   ],
   breakthroughs: [
-    { studentId: "marta", short: "travel ↑", headline: "Led 69% of talk in lesson 3" },
+    { studentId: "marta", short: "family ↑", headline: "Led 69% of talk in lesson 3" },
     { studentId: "alex",  short: "vocab 1k+", headline: "Crossed 1,000 unique words" },
   ],
   topicsYouAreStrongAt: [
-    { topicId: "travel",   name: "Travel",   emoji: "✈️", color: "#FF7AAC", studentCount: 3, avgGrowthPct: 34 },
-    { topicId: "everyday", name: "Everyday", emoji: "☕", color: "#8B6FD6", studentCount: 4, avgGrowthPct: 28 },
-    { topicId: "family",   name: "Family",   emoji: "🏡", color: "#3DDABE", studentCount: 2, avgGrowthPct: 22 },
-    { topicId: "work",     name: "Work",     emoji: "💼", color: "#2885FD", studentCount: 2, avgGrowthPct: 18 },
+    { topicId: "family",     name: "Family & Relationships", emoji: "🏡", color: "#E8DFFF", studentCount: 3, avgGrowthPct: 34 },
+    { topicId: "opinions",   name: "Expressing Opinions",    emoji: "💬", color: "#D6ECFF", studentCount: 4, avgGrowthPct: 28 },
+    { topicId: "feelings",   name: "Emotions & Feelings",    emoji: "💛", color: "#FFE5E0", studentCount: 2, avgGrowthPct: 22 },
+    { topicId: "philosophy", name: "Big Ideas & Philosophy",  emoji: "🌀", color: "#D1F5E0", studentCount: 2, avgGrowthPct: 18 },
   ],
   practice: {
     talkTimePct: 38,
@@ -518,13 +518,12 @@ export type TutorStudentLens = {
 export const TUTOR_STUDENT_LENS: Record<string, TutorStudentLens> = {
   marta: {
     topicAffinity: [
-      { topicId: "travel",   affinity: "star" },
-      { topicId: "food",     affinity: "works" },
-      { topicId: "work",     affinity: "flat" },
-      { topicId: "family",   affinity: "works" },
-      { topicId: "everyday", affinity: "works" },
+      { topicId: "family",     affinity: "star" },
+      { topicId: "opinions",   affinity: "works" },
+      { topicId: "feelings",   affinity: "works" },
+      { topicId: "philosophy", affinity: "flat" },
     ],
-    nextFocus: "Keep her on travel and food , she broke out there. Stretch: conditionals in a restaurant scenario.",
+    nextFocus: "Keep her on family and opinions, she broke out there. Stretch: conditionals in an emotional scenario.",
     nextTip: "She responds best when you frame grammar inside a concrete scene. Avoid abstract drills.",
     cohortNote: "Students at Borys's stage who kept topic variety reached C1 ~3 months faster.",
     resources: [
@@ -800,7 +799,7 @@ export const LANGUAGE_STICKERS: Record<string, StickerDef[]> = {
       emoji: "🏛️",
       location: [41.9, 12.5],
       hook: "In Rome they queue for cacio e pepe.",
-      themeTopicId: "travel",
+      themeTopicId: "family",
       capability: "hold your own at a trattoria counter",
     },
     {
@@ -809,7 +808,7 @@ export const LANGUAGE_STICKERS: Record<string, StickerDef[]> = {
       emoji: "🍕",
       location: [40.85, 14.27],
       hook: "Naples invented pizza.",
-      themeTopicId: "food",
+      themeTopicId: "opinions",
       capability: "navigate a pizzeria menu",
     },
     {
@@ -818,7 +817,7 @@ export const LANGUAGE_STICKERS: Record<string, StickerDef[]> = {
       emoji: "🎨",
       location: [43.77, 11.25],
       hook: "Florence is the Renaissance capital.",
-      themeTopicId: "everyday",
+      themeTopicId: "philosophy",
       capability: "read gallery captions",
     },
     {
@@ -827,7 +826,7 @@ export const LANGUAGE_STICKERS: Record<string, StickerDef[]> = {
       emoji: "👗",
       location: [45.46, 9.19],
       hook: "Milan is Italy's fashion capital.",
-      themeTopicId: "work",
+      themeTopicId: "feelings",
       capability: "make small talk with a barista",
     },
     {
@@ -836,7 +835,7 @@ export const LANGUAGE_STICKERS: Record<string, StickerDef[]> = {
       emoji: "🍝",
       location: [44.49, 11.34],
       hook: "Bologna gave the world tagliatelle al ragù.",
-      themeTopicId: "food",
+      themeTopicId: "opinions",
       capability: "chat with a nonna at the mercato",
     },
     {
@@ -845,7 +844,7 @@ export const LANGUAGE_STICKERS: Record<string, StickerDef[]> = {
       emoji: "🏔️",
       location: [45.07, 7.68],
       hook: "Turin is the gateway to the Italian Alps.",
-      themeTopicId: "everyday",
+      themeTopicId: "family",
       capability: "order in a mountain rifugio",
     },
     {

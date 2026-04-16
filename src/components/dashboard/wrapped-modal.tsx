@@ -283,10 +283,10 @@ export function WrappedModal({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 transition-colors duration-500",
+        "fixed z-50 transition-colors duration-500",
         isFullscreen
-          ? "bg-white"
-          : "bg-black/70 backdrop-blur-sm flex items-center justify-center p-4",
+          ? "inset-0 top-[104px] bg-white"
+          : "inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4",
       )}
       onClick={isFullscreen ? undefined : onClose}
     >

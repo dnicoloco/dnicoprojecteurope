@@ -66,7 +66,10 @@ function chunkIntoTurns(utterances: LessonUtterance[]): ConversationTurn[] {
   };
   for (let i = 1; i < sorted.length; i++) {
     const u = sorted[i];
-    if (u.speaker === current.speaker) {
+    const gap = Number(u.start_sec) - current.endSec;
+    // Break turn on speaker change OR a >3s silence gap (keeps single-speaker
+    // data from collapsing into one giant block).
+    if (u.speaker === current.speaker && gap < 3) {
       current.utterances.push(u);
       current.endSec = Number(u.end_sec);
       current.combinedText += " " + u.text;
@@ -227,7 +230,7 @@ export function LessonFullView({
   return (
     <div className="flex flex-col h-full">
       {/* Header with Grainient accent */}
-      <div className="relative shrink-0 overflow-hidden" style={{ minHeight: 100 }}>
+      <div className="relative shrink-0 overflow-hidden" style={{ minHeight: 64 }}>
         <div className="absolute inset-0 opacity-60 pointer-events-none">
           <Grainient
             color1={palette[0]}
@@ -243,7 +246,7 @@ export function LessonFullView({
             zoom={1.1}
           />
         </div>
-        <div className="relative z-[1] px-6 py-5 flex items-center gap-4">
+        <div className="relative z-[1] px-6 py-3 flex items-center gap-4">
           <button
             type="button"
             onClick={onBack}
