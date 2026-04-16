@@ -344,8 +344,8 @@ export function LessonFullView({
         ref={scrollRef}
         className="flex-1 overflow-y-auto"
         style={{
-          maskImage: "linear-gradient(to bottom, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%)",
+          maskImage: "linear-gradient(to bottom, black 0%, black calc(100% - 48px), transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, black 0%, black calc(100% - 48px), transparent 100%)",
         }}
       >
       {loading ? (
