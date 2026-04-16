@@ -19,15 +19,10 @@ export function GhostCard({ label, hint, icon }: Props) {
           <Plus size={32} className="text-[#FF7AAC]" strokeWidth={1.8} />
         )}
       </div>
-      <div className="pt-2.5 px-0.5">
-        <div className="text-[14px] font-medium text-[#191919]/80 truncate">
+      <div className="pt-2 px-0.5">
+        <div className="text-[13px] text-[#191919] line-clamp-1">
           {label}
         </div>
-        {hint && (
-          <div className="text-[14px] text-[#6a7580] mt-0.5 line-clamp-1">
-            {hint}
-          </div>
-        )}
       </div>
     </div>
   );
