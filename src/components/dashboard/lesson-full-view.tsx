@@ -11,19 +11,46 @@ import type { StudentProgress } from "@/lib/metrics";
 
 const TTS_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/tts`;
 
-// CEFR highlight colors (matching their colour scheme).
+// CEFR highlight colors — A1/A2 subtle, B1/B2 visible, C1/C2 strong.
 const CEFR_BG: Record<string, string> = {
+  A1: "rgba(148,163,184,0.12)",
+  A2: "rgba(148,163,184,0.18)",
   B1: "rgba(64,224,208,0.22)",
   B2: "rgba(255,107,157,0.22)",
   C1: "rgba(158,122,255,0.25)",
   C2: "rgba(112,68,212,0.3)",
 };
 const CEFR_TEXT: Record<string, string> = {
+  A1: "#64748b",
+  A2: "#475569",
   B1: "#0d9488",
   B2: "#e11d73",
   C1: "#7c3aed",
   C2: "#5b21b6",
 };
+
+// ============================================================
+// Stutter cleanup — collapses repeated words for cleaner display.
+// Tutor gets aggressive cleanup, student gets light cleanup.
+// ============================================================
+function cleanText(text: string, aggressive: boolean): string {
+  let t = text;
+  // Collapse 2+ consecutive identical words: "I I I" → "I"
+  t = t.replace(/\b(\w+)(?:\s+\1){1,}/gi, "$1");
+  // Collapse partial repeats: "it can it can" → "it can"
+  t = t.replace(/\b((?:\w+\s+){1,3})(?:\1){1,}/gi, "$1");
+  if (aggressive) {
+    // Remove filler hedges: "like, you know,"
+    t = t.replace(/,?\s*you know,?\s*/gi, " ");
+    // Remove "like" as filler (not after verbs)
+    t = t.replace(/,?\s*like,\s*/gi, ", ");
+    // Clean up "mhmm", "uh", "um" standalone
+    t = t.replace(/\b(?:mhmm|uh|um|hmm)\b[.,]?\s*/gi, "");
+  }
+  // Clean up double spaces and trim
+  t = t.replace(/\s{2,}/g, " ").trim();
+  return t;
+}
 
 
 // ============================================================
@@ -305,11 +332,12 @@ function TurnBlock({
   const pid = `turn-${turn.startSec}`;
   const active = playingId === pid;
 
+  const displayText = cleanText(turn.combinedText, !isStudent);
+
   if (isStudent) {
     return (
       <div className="flex w-full justify-end">
         <div className="flex flex-col items-end max-w-[75%]">
-          {/* Timestamp + play — no student name */}
           <div className="flex items-baseline gap-2 mb-1 pr-1 text-[11px] flex-row-reverse">
             <span className="text-[#94a3b8] tabular-nums">{fmtMMSS(turn.startSec)}</span>
             <button
@@ -324,19 +352,17 @@ function TurnBlock({
               {active ? <Pause size={10} /> : <Volume2 size={10} />}
             </button>
           </div>
-          {/* Glassy bubble — normal text so CEFR highlights are visible */}
           <div
             className="rounded-[14px] rounded-br-[6px] px-4 py-2.5 text-[14px] leading-relaxed backdrop-blur-[16px] text-[#191919]"
             style={GLASS_STYLE}
           >
-            <CefrHighlightedText text={turn.combinedText} />
+            <CefrHighlightedText text={displayText} />
           </div>
         </div>
       </div>
     );
   }
 
-  // Tutor: plain text on background, no box. Show tutor name.
   return (
     <div className="flex w-full justify-start">
       <div className="flex flex-col items-start max-w-[75%]">
@@ -356,7 +382,7 @@ function TurnBlock({
           </button>
         </div>
         <p className="text-[14px] text-[#191919] leading-relaxed pl-1">
-          {turn.combinedText}
+          {displayText}
         </p>
       </div>
     </div>
