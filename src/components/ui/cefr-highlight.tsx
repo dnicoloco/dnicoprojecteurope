@@ -4,7 +4,7 @@ import * as React from "react";
 import { lookupCefr } from "@/lib/cefr-words";
 
 const CEFR_BG: Record<string, string> = {
-  A1: "rgba(148,163,184,0.12)",
+  A1: "rgba(96,165,250,0.15)",
   A2: "rgba(40,133,253,0.12)",
   B1: "rgba(255,122,172,0.15)",
   B2: "rgba(255,122,172,0.28)",
@@ -12,7 +12,7 @@ const CEFR_BG: Record<string, string> = {
   C2: "rgba(61,218,190,0.35)",
 };
 const CEFR_TEXT: Record<string, string> = {
-  A1: "#64748b",
+  A1: "#60A5FA",
   A2: "#2885FD",
   B1: "#e8649a",
   B2: "#d4447a",

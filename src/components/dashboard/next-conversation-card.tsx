@@ -349,7 +349,7 @@ export function JourneyStrip({
                 quote={nowQuote}
                 playingId={playingId}
                 onPlay={play}
-                quoteColor="#3B82F6"
+                quoteColor="#191919"
                 metrics={[
                   { label: "Accuracy", value: 91 },
                   { label: "Flow", value: 66 },
