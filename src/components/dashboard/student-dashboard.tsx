@@ -92,28 +92,6 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
 
       <HorizontalRow
         title="Recent sessions"
-        rightSlot={
-          <div className="flex items-center gap-2">
-            <FilterChip
-              label="Tutor"
-              value={tutorFilter}
-              options={[
-                { value: "all", label: "All tutors" },
-                ...tutorOptions.map((t) => ({ value: t, label: t })),
-              ]}
-              onChange={setTutorFilter}
-            />
-            <FilterChip
-              label="Language"
-              value={langFilter}
-              options={[
-                { value: "all", label: "All languages" },
-                ...langOptions.map((l) => ({ value: l, label: l })),
-              ]}
-              onChange={setLangFilter}
-            />
-          </div>
-        }
       >
         <GhostCard
           kind="session"

@@ -346,8 +346,8 @@ export function WrappedModal({
 
             {/* Top bar: lesson info left, close right */}
             <div className="absolute top-4 left-5 right-5 z-[3] flex items-center justify-between">
-              <div className="font-display text-[18px] text-white/90" style={{ fontWeight: 500 }}>
-                Lesson {session.lesson} <span className="text-white/50 font-normal text-[14px] ml-1">{fmtDate(session.date)}</span>
+              <div className="font-display text-[18px] text-[#191919]" style={{ fontWeight: 500 }}>
+                Lesson {session.lesson} <span className="text-[#191919]/50 font-normal text-[14px] ml-1">{fmtDate(session.date)}</span>
               </div>
               <button
                 type="button"
@@ -362,8 +362,21 @@ export function WrappedModal({
             {/* Slide body */}
             <SlideView slide={slides[slideIdx]} studentName={student.name} slideIdx={slideIdx} />
 
-            {/* Bottom bar: back left, dots center, skip+next right */}
-            <div className="absolute bottom-5 left-5 right-5 z-[3] flex items-center">
+            {/* Dots — absolutely centred, independent of buttons */}
+            <div className="absolute bottom-5 left-0 right-0 z-[3] flex justify-center gap-2 pointer-events-none">
+              {slides.map((_, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "w-2 h-2 rounded-full transition-colors",
+                    i === slideIdx ? "bg-[#191919]/60" : "bg-[#191919]/15",
+                  )}
+                />
+              ))}
+            </div>
+
+            {/* Back left, skip+next right */}
+            <div className="absolute bottom-5 left-5 z-[4]">
               <button
                 type="button"
                 onClick={prev}
@@ -372,39 +385,25 @@ export function WrappedModal({
               >
                 <ChevronLeft size={14} /> Back
               </button>
-
-              {/* Dot indicators — centered */}
-              <div className="flex-1 flex items-center justify-center gap-2">
-                {slides.map((_, i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      "w-2 h-2 rounded-full transition-colors",
-                      i === slideIdx ? "bg-white" : "bg-white/30",
-                    )}
-                  />
-                ))}
-              </div>
-
-              <div className="flex items-center gap-2">
-                {hasSeenBefore && (
-                  <button
-                    type="button"
-                    onClick={() => setPhase("fullscreen")}
-                    className="text-[12px] text-white/50 hover:text-white cursor-pointer"
-                  >
-                    Skip
-                  </button>
-                )}
+            </div>
+            <div className="absolute bottom-5 right-5 z-[4] flex items-center gap-2">
+              {hasSeenBefore && (
                 <button
                   type="button"
-                  onClick={next}
-                  className="inline-flex items-center gap-1 px-4 py-2 rounded-[6px] bg-white text-[#191919] text-[13px] font-medium shadow-[0_1px_0_rgba(0,0,0,0.04),0_2px_4px_rgba(0,0,0,0.1)] cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-transform"
+                  onClick={() => setPhase("fullscreen")}
+                  className="text-[12px] text-[#191919]/40 hover:text-[#191919] cursor-pointer"
                 >
+                  Skip
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={next}
+                className="inline-flex items-center gap-1 px-4 py-2 rounded-[6px] bg-white text-[#191919] text-[13px] font-medium shadow-[0_1px_0_rgba(0,0,0,0.04),0_2px_4px_rgba(0,0,0,0.1)] cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-transform"
+              >
                   {atLast ? "Read the whole lesson" : "Next"}
                   <ChevronRight size={14} />
                 </button>
-              </div>
             </div>
           </>
         )}
