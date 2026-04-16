@@ -425,12 +425,12 @@ function ProjectionWidget({ theme }: { theme: string }) {
 
   return (
     <div className="mt-8 mb-2 text-center max-w-[620px] mx-auto">
-      <p className="text-[16px] text-[#191919] leading-[2]">
-        In{" "}
-        <InlineControl value={months} onMinus={() => handleMonthsChange(-1)} onPlus={() => handleMonthsChange(1)} />
-        {" "}month{months === 1 ? "" : "s"} with{" "}
+      <p className="text-[16px] text-[#191919] leading-[2.2]">
+        With{" "}
         <InlineControl value={lessonsPerMonth} onMinus={() => handleLessonsChange(-2)} onPlus={() => handleLessonsChange(2)} />
-        {" "}lessons/month, {milestone.text.charAt(0).toLowerCase()}{milestone.text.slice(1)} in {theme.toLowerCase() || "English"}.
+        {" "}lessons a month, in{" "}
+        <InlineControl value={months} onMinus={() => handleMonthsChange(-1)} onPlus={() => handleMonthsChange(1)} />
+        {" "}month{months === 1 ? "" : "s"} {milestone.text.charAt(0).toLowerCase()}{milestone.text.slice(1)} in {theme.toLowerCase() || "English"}.
       </p>
 
       <p className="text-[12px] text-[#191919]/30 mt-3">
