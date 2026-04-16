@@ -398,19 +398,18 @@ const MILESTONES: Array<{ maxMonths: number; text: string }> = [
 ];
 
 function ProjectionWidget({ theme }: { theme: string }) {
-  const [lessonsPerMonth, setLessonsPerMonth] = React.useState(8);
-  const [months, setMonths] = React.useState(Math.max(1, Math.round(HOURS_PER_LEVEL / 8)));
+  const [lessonsPerWeek, setLessonsPerWeek] = React.useState(2);
+  const lessonsPerMonth = lessonsPerWeek * 4;
+  const [months, setMonths] = React.useState(Math.max(1, Math.round(HOURS_PER_LEVEL / (2 * 4))));
 
-  // When lessons change, recalculate months to same milestone
   const handleLessonsChange = (delta: number) => {
-    const next = Math.max(2, Math.min(20, lessonsPerMonth + delta));
-    setLessonsPerMonth(next);
-    setMonths(Math.max(1, Math.round(HOURS_PER_LEVEL / next)));
+    const next = Math.max(1, Math.min(5, lessonsPerWeek + delta));
+    setLessonsPerWeek(next);
+    setMonths(Math.max(1, Math.round(HOURS_PER_LEVEL / (next * 4))));
   };
 
-  // When months change, keep lessons the same — shifts the milestone
   const handleMonthsChange = (delta: number) => {
-    setMonths((v) => Math.max(1, Math.min(36, v + delta)));
+    setMonths((v) => Math.max(1, Math.min(24, v + delta)));
   };
 
   const milestone = MILESTONES.find((m) => months <= m.maxMonths) ?? MILESTONES[MILESTONES.length - 1];
@@ -427,8 +426,8 @@ function ProjectionWidget({ theme }: { theme: string }) {
     <div className="mt-8 mb-2 text-center max-w-[620px] mx-auto">
       <p className="text-[16px] text-[#191919] leading-[2.2]">
         With{" "}
-        <InlineControl value={lessonsPerMonth} onMinus={() => handleLessonsChange(-2)} onPlus={() => handleLessonsChange(2)} />
-        {" "}lessons a month, in{" "}
+        <InlineControl value={lessonsPerWeek} onMinus={() => handleLessonsChange(-1)} onPlus={() => handleLessonsChange(1)} />
+        {" "}lesson{lessonsPerWeek === 1 ? "" : "s"} a week, in{" "}
         <InlineControl value={months} onMinus={() => handleMonthsChange(-1)} onPlus={() => handleMonthsChange(1)} />
         {" "}month{months === 1 ? "" : "s"} {milestone.text.charAt(0).toLowerCase()}{milestone.text.slice(1)} in {theme.toLowerCase() || "English"}.
       </p>
