@@ -55,12 +55,13 @@ function chunkIntoTurns(utterances: LessonUtterance[]): ConversationTurn[] {
     endSec: Number(sorted[0].end_sec),
     combinedText: sorted[0].text,
   };
+  const MAX_SENTENCES_PER_TURN = 3;
   for (let i = 1; i < sorted.length; i++) {
     const u = sorted[i];
     const gap = Number(u.start_sec) - current.endSec;
-    // Break turn on speaker change OR a >3s silence gap (keeps single-speaker
-    // data from collapsing into one giant block).
-    if (u.speaker === current.speaker && gap < 3) {
+    const tooLong = current.utterances.length >= MAX_SENTENCES_PER_TURN;
+    // Break on: speaker change, >1.5s pause, or 3+ sentences in one bubble.
+    if (u.speaker === current.speaker && gap < 1.5 && !tooLong) {
       current.utterances.push(u);
       current.endSec = Number(u.end_sec);
       current.combinedText += " " + u.text;

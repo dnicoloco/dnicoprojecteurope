@@ -441,114 +441,64 @@ function SlideView({
   if (slide.kind === "stat") {
     const up = slide.trend.pct >= 0;
     const Arrow = up ? ArrowUp : ArrowDown;
-
-    // Alternate two stat-slide layouts
-    const isOdd = slideIdx % 2 === 1;
+    const staggerDir = slideIdx % 2 === 0 ? ("last" as const) : ("center" as const);
 
     return (
       <div
         key={`stat-${slideIdx}`}
-        className={cn(
-          "flex-1 relative flex flex-col items-center px-8 overflow-hidden",
-          isOdd ? "justify-center text-center" : "justify-center text-center",
-        )}
+        className="flex-1 relative flex flex-col items-center justify-center text-center px-8 overflow-hidden"
       >
         <div className="relative z-[1] flex flex-col items-center">
-          {/* Caption-first layout (odd slides) uses animated-underline for a different visual rhythm */}
-          {isOdd ? (
-            <>
-              <div className="text-[#191919]">
-                <AnimatedUnderlineText
-                  text={slide.caption}
-                  textClassName="text-[22px] leading-snug max-w-[380px]"
-                  underlineClassName="text-[#FF7AAC]"
-                />
-              </div>
-              <div
-                className="mt-8 px-10 py-5 rounded-[20px] backdrop-blur-[10px] relative overflow-hidden"
-                style={GLASS_STYLE}
+          {/* Number always first */}
+          <div
+            className="px-10 py-5 rounded-[20px] backdrop-blur-[10px] relative overflow-hidden"
+            style={GLASS_STYLE}
+          >
+            <div className="absolute inset-0 opacity-75 pointer-events-none">
+              <Grainient
+                color1={GRAIN_PALETTES[slide.palette][0]}
+                color2={GRAIN_PALETTES[slide.palette][1]}
+                color3={GRAIN_PALETTES[slide.palette][2]}
+                timeSpeed={0.2}
+                warpStrength={1.4}
+                warpAmplitude={70}
+                grainAmount={0.2}
+                grainScale={1.6}
+                grainAnimated
+                contrast={1.3}
+                saturation={1.2}
+                zoom={1.15}
+              />
+            </div>
+            <div
+              className="relative font-display text-[120px] leading-none text-[#191919]"
+              style={{ fontWeight: 500 }}
+            >
+              <VerticalCutReveal
+                splitBy="characters"
+                staggerDuration={0.04}
+                staggerFrom={staggerDir}
+                transition={{ type: "spring", stiffness: 220, damping: 20 }}
               >
-                <div className="absolute inset-0 opacity-75 pointer-events-none">
-                  <Grainient
-                    color1={GRAIN_PALETTES[slide.palette][0]}
-                    color2={GRAIN_PALETTES[slide.palette][1]}
-                    color3={GRAIN_PALETTES[slide.palette][2]}
-                    timeSpeed={0.2}
-                    warpStrength={1.4}
-                    warpAmplitude={70}
-                    grainAmount={0.2}
-                    grainScale={1.6}
-                    grainAnimated
-                    contrast={1.3}
-                    saturation={1.2}
-                    zoom={1.15}
-                  />
-                </div>
-                <div
-                  className="relative font-display text-[118px] leading-none text-[#191919]"
-                  style={{ fontWeight: 500 }}
-                >
-                  <VerticalCutReveal
-                    splitBy="characters"
-                    staggerDuration={0.04}
-                    staggerFrom="center"
-                    transition={{ type: "spring", stiffness: 220, damping: 20 }}
-                  >
-                    {`${slide.bigValue}${slide.bigUnit ?? ""}`}
-                  </VerticalCutReveal>
-                </div>
-              </div>
-            </>
-          ) : (
-            <>
-              <div
-                className="px-12 py-7 rounded-[22px] backdrop-blur-[10px] relative overflow-hidden"
-                style={GLASS_STYLE}
-              >
-                <div className="absolute inset-0 opacity-80 pointer-events-none">
-                  <Grainient
-                    color1={GRAIN_PALETTES[slide.palette][0]}
-                    color2={GRAIN_PALETTES[slide.palette][1]}
-                    color3={GRAIN_PALETTES[slide.palette][2]}
-                    timeSpeed={0.25}
-                    warpStrength={1.8}
-                    warpAmplitude={90}
-                    grainAmount={0.22}
-                    grainScale={1.5}
-                    grainAnimated
-                    contrast={1.35}
-                    saturation={1.25}
-                    zoom={1.1}
-                  />
-                </div>
-                <div
-                  className="relative font-display text-[124px] leading-none text-[#191919]"
-                  style={{ fontWeight: 500 }}
-                >
-                  <VerticalCutReveal
-                    splitBy="characters"
-                    staggerDuration={0.05}
-                    staggerFrom="last"
-                    transition={{ type: "spring", stiffness: 220, damping: 20 }}
-                  >
-                    {`${slide.bigValue}${slide.bigUnit ?? ""}`}
-                  </VerticalCutReveal>
-                </div>
-              </div>
-              <div className="mt-5 text-[18px] text-[#191919] max-w-[380px]">
-                <VerticalCutReveal
-                  splitBy="words"
-                  staggerDuration={0.04}
-                  staggerFrom="first"
-                  transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.3 }}
-                >
-                  {slide.caption}
-                </VerticalCutReveal>
-              </div>
-            </>
-          )}
+                {`${slide.bigValue}${slide.bigUnit ?? ""}`}
+              </VerticalCutReveal>
+            </div>
+          </div>
 
-          <div className="mt-6 inline-flex items-center gap-1.5 text-[13px] text-[#191919] bg-white/85 backdrop-blur-sm border border-black/[0.08] rounded-full px-4 py-1.5">
+          {/* Caption below the number */}
+          <div className="mt-5 text-[17px] text-[#191919] max-w-[400px] leading-snug">
+            <VerticalCutReveal
+              splitBy="words"
+              staggerDuration={0.03}
+              staggerFrom="first"
+              transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.3 }}
+            >
+              {slide.caption}
+            </VerticalCutReveal>
+          </div>
+
+          {/* Trend pill */}
+          <div className="mt-5 inline-flex items-center gap-1.5 text-[13px] text-[#191919] bg-white/85 backdrop-blur-sm border border-black/[0.08] rounded-full px-4 py-1.5">
             <Arrow
               size={13}
               strokeWidth={2.5}
