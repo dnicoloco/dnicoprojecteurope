@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Sparkline } from "./sparkline";
 import { Grainient } from "@/components/ui/grainient";
 import type { SessionDetail, Topic } from "@/lib/metrics";
 
@@ -60,22 +59,18 @@ export function SessionCard({
         <div className="absolute z-10 top-9 left-3 font-display text-[64px] leading-none text-[#191919]">
           {padded}
         </div>
-        <div className="absolute z-10 bottom-2 left-0 right-0 px-2 opacity-70">
-          <Sparkline
-            values={session.confidenceArc}
-            stroke="rgba(255,255,255,0.85)"
-            fill="rgba(255,255,255,0.06)"
-            width={204}
-            height={36}
-            className="w-full"
-          />
+        <img
+          src="/tutor-avatar.jpg"
+          alt="Tutor"
+          className="absolute z-20 top-3 right-3 w-10 h-10 rounded-[4px] object-cover border-2 border-white/60"
+        />
+        <div className="absolute z-10 bottom-3 left-3 right-3">
+          <div className="text-[11px] font-medium text-[#191919]/70">Sarah W.</div>
+          <div className="text-[10px] text-[#191919]/50">{fmtDate(session.date)}</div>
         </div>
       </div>
-      <div className="pt-2.5 px-0.5">
-        <div className="text-[14px] font-medium text-[#191919] truncate">
-          {fmtDate(session.date)}
-        </div>
-        <div className="text-[14px] text-[#191919] mt-0.5 line-clamp-1">
+      <div className="pt-2 px-0.5">
+        <div className="text-[13px] text-[#191919] line-clamp-1">
           {session.bestMomentLabel}
         </div>
       </div>
