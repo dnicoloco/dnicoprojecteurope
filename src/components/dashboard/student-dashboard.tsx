@@ -71,11 +71,11 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
 
   return (
     <div className="w-full max-w-6xl mx-auto pt-8 pb-16 px-6 space-y-8">
-      <div className="flex items-stretch gap-6">
+      <div className="flex items-end gap-6">
         <div className="flex-1 min-w-0">
           <GreetingHero name={student.name} studentKey={student.id} />
         </div>
-        <div className="hidden md:block w-[320px] lg:w-[400px] shrink-0 relative self-stretch">
+        <div className="hidden md:block w-[320px] lg:w-[400px] shrink-0">
           <VocabPills studentKey={student.id} />
         </div>
       </div>
