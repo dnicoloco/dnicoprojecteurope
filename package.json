@@ -1,0 +1,42 @@
+{
+  "name": "dnicoprojecteurope",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.103.2",
+    "@types/lodash": "^4.17.24",
+    "@types/matter-js": "^0.20.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cobe": "^2.0.1",
+    "framer-motion": "^12.38.0",
+    "lodash": "^4.18.1",
+    "lucide-react": "^1.8.0",
+    "matter-js": "^0.20.0",
+    "next": "16.2.3",
+    "ogl": "^1.0.11",
+    "poly-decomp": "^0.3.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "recharts": "^3.8.1",
+    "svg-path-commander": "^2.2.1",
+    "tailwind-merge": "^3.5.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.3",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,259 @@
+@import "tailwindcss";
+
+:root {
+  --background: #faf9f5;
+  --surface: #ffffff;
+
+  --tokyo-pink: #ff7aac;
+  --kyiv-yellow: #ffe03d;
+  --new-york-blue: #2885fd;
+  --barcelona-teal: #3ddabe;
+  --slate: #6a7580;
+  --dark-grey: #363638;
+  --black: #191919;
+  --white: #ffffff;
+
+  --foreground: var(--black);
+  --muted: var(--slate);
+  --border: rgba(25, 25, 25, 0.08);
+  --primary: var(--tokyo-pink);
+  --primary-hover: #ff5e99;
+  --secondary: var(--black);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-tokyo-pink: var(--tokyo-pink);
+  --color-kyiv-yellow: var(--kyiv-yellow);
+  --color-new-york-blue: var(--new-york-blue);
+  --color-barcelona-teal: var(--barcelona-teal);
+  --color-slate: var(--slate);
+  --color-dark-grey: var(--dark-grey);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-platform);
+}
+
+html,
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.55;
+  height: 100%;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hide the native scrollbar on opt-in horizontal rows — chevrons on hover are
+   the navigation affordance. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+h1, h2, h3, h4, h5, h6,
+.font-display {
+  font-family: var(--font-platform), system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+/* ============================================================
+   Button , calmer pink, minimal glow
+   ============================================================ */
+
+.limbo-button {
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  isolation: isolate;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-weight: 500;
+}
+
+.limbo-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.22),
+    transparent
+  );
+  transition: left 0.5s;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.limbo-button:hover::after {
+  left: 100%;
+}
+
+/* Primary, flat Tokyo Pink with a crisp dark border */
+.limbo-button-primary {
+  background: #ff6ca3;
+  color: #ffffff;
+  border: 1px solid #191919;
+  box-shadow: 0 1px 0 rgba(25, 25, 25, 0.12);
+}
+
+.limbo-button-primary:hover {
+  box-shadow: 0 2px 0 rgba(25, 25, 25, 0.14);
+}
+
+.limbo-button-primary:active {
+  background: #ee5e94;
+  box-shadow: 0 1px 0 rgba(25, 25, 25, 0.14);
+}
+
+.limbo-button-primary svg {
+  stroke: #ffffff;
+}
+
+/* Secondary, flat dark */
+.limbo-button-secondary {
+  background: #191919;
+  color: #ffffff;
+  border: 1px solid #191919;
+  box-shadow: 0 1px 0 rgba(25, 25, 25, 0.12);
+}
+
+.limbo-button-secondary:hover {
+  background: #2a2a2a;
+  box-shadow: 0 2px 6px rgba(25, 25, 25, 0.15);
+}
+
+.limbo-button-secondary:active {
+  background: #0f0f0f;
+}
+
+.limbo-button-secondary svg {
+  stroke: #ffffff;
+}
+
+.limbo-button.loading .button-content {
+  opacity: 0.6;
+}
+
+/* ============================================================
+   Pink slider — range input styling
+   ============================================================ */
+
+.pink-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.pink-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ff6ca3;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(25, 25, 25, 0.25);
+  cursor: grab;
+  transition: transform 0.15s ease;
+  margin-top: -7px;
+}
+
+.pink-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.pink-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+
+.pink-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ff6ca3;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(25, 25, 25, 0.25);
+  cursor: grab;
+  transition: transform 0.15s ease;
+}
+
+.pink-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+/* ============================================================
+   CycleGradientText — three-slot rotating neon gradient text
+   ============================================================ */
+
+@keyframes gradient-foreground-1 {
+  from, 16.667%, to { opacity: 1; }
+  33.333%, 83.333% { opacity: 0; }
+}
+.animate-gradient-foreground-1 { animation: gradient-foreground-1 8s infinite; }
+
+@keyframes gradient-foreground-2 {
+  from, to { opacity: 0; }
+  33.333%, 50% { opacity: 1; }
+  16.667%, 66.667% { opacity: 0; }
+}
+.animate-gradient-foreground-2 { animation: gradient-foreground-2 8s infinite; }
+
+@keyframes gradient-foreground-3 {
+  from, 50%, to { opacity: 0; }
+  66.667%, 83.333% { opacity: 1; }
+}
+.animate-gradient-foreground-3 { animation: gradient-foreground-3 8s infinite; }
+
+.from-gradient-1-start { --tw-gradient-from: #ff7aac; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(255,122,172,0)); }
+.to-gradient-1-end { --tw-gradient-to: #9E7AFF; }
+
+.from-gradient-2-start { --tw-gradient-from: #2885fd; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(40,133,253,0)); }
+.to-gradient-2-end { --tw-gradient-to: #3ddabe; }
+
+.from-gradient-3-start { --tw-gradient-from: #ffbe0b; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(255,190,11,0)); }
+.to-gradient-3-end { --tw-gradient-to: #ff006e; }
+
+.bg-clip-text { -webkit-background-clip: text; background-clip: text; }
+
+@keyframes gradient-background-1 {
+  from, 16.667%, to { opacity: 0; }
+  25%, 91.667% { opacity: 1; }
+}
+.before\:animate-gradient-background-1::before { content: ""; animation: gradient-background-1 8s infinite; }
+
+@keyframes gradient-background-2 {
+  from, to { opacity: 1; }
+  33.333%, 50% { opacity: 0; }
+  25%, 58.333% { opacity: 1; }
+}
+.before\:animate-gradient-background-2::before { content: ""; animation: gradient-background-2 8s infinite; }
+
+@keyframes gradient-background-3 {
+  from, 58.333%, 91.667%, to { opacity: 1; }
+  66.667%, 83.333% { opacity: 0; }
+}
+.before\:animate-gradient-background-3::before { content: ""; animation: gradient-background-3 8s infinite; }
+
+.before\:content-\[attr\(data-content\)\]::before { content: attr(data-content); }
