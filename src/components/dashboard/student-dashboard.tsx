@@ -120,6 +120,11 @@ export function StudentDashboard({ student }: { student: StudentProgress }) {
           label="Book new session"
           hint="Pick a slot with your tutor"
         />
+        <GhostCard
+          kind="session"
+          label="Upcoming lesson"
+          hint="Thu 17 Apr · 18:30"
+        />
         {filteredSessions.map((s) => {
           const session = s as unknown as Parameters<typeof SessionCard>[0]["session"];
           const t = topics.find((x) => x.id === (s.topTopicId as string));

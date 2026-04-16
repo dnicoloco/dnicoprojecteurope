@@ -59,14 +59,16 @@ export function SessionCard({
         <div className="absolute z-10 top-9 left-3 font-display text-[64px] leading-none text-[#191919]">
           {padded}
         </div>
-        <img
-          src="/tutor-avatar.jpg"
-          alt="Tutor"
-          className="absolute z-20 top-3 right-3 w-10 h-10 rounded-[4px] object-cover border-2 border-white/60"
-        />
-        <div className="absolute z-10 bottom-3 left-3 right-3">
-          <div className="text-[11px] font-medium text-[#191919]/70">Sarah W.</div>
-          <div className="text-[10px] text-[#191919]/50">{fmtDate(session.date)}</div>
+        <div className="absolute z-10 bottom-3 left-3 right-3 flex items-center gap-2">
+          <img
+            src="/tutor-avatar.jpg"
+            alt="Tutor"
+            className="w-9 h-9 rounded-[4px] object-cover border border-white/40 shrink-0"
+          />
+          <div>
+            <div className="text-[12px] font-semibold text-[#191919]/80">Sarah W.</div>
+            <div className="text-[11px] text-[#191919]/55">{fmtDate(session.date)}</div>
+          </div>
         </div>
       </div>
       <div className="pt-2 px-0.5">
