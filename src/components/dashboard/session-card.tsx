@@ -5,11 +5,11 @@ import { Grainient } from "@/components/ui/grainient";
 import type { SessionDetail, Topic } from "@/lib/metrics";
 
 const CARD_PALETTES: Array<[string, string, string]> = [
-  ["#E8DFFF", "#C4B0F0", "#A78BDB"], // lavender
-  ["#D6ECFF", "#A8D4FF", "#7AB8F0"], // sky
-  ["#D1F5E0", "#9FE5BE", "#6DCFA0"], // mint
-  ["#FFE5E0", "#FFCDC6", "#F0AEA5"], // blush
-  ["#D4DEFF", "#A8BAFF", "#8099F0"], // periwinkle
+  ["#FFD6E0", "#FFBDCC", "#FFA3B8"], // pastel pink
+  ["#D0E8FF", "#B0D4FF", "#8EBFFF"], // pastel blue
+  ["#FFDDC1", "#FFCBA4", "#FFB88A"], // warm peach/orange
+  ["#C8F0D4", "#A8E4BC", "#88D8A4"], // soft green
+  ["#FFD6E0", "#E8C4D4", "#D0E8FF"], // pink into blue
 ];
 
 function fmtDate(iso: string): string {
