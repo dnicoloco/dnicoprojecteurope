@@ -349,6 +349,7 @@ export function JourneyStrip({
                 quote={nowQuote}
                 playingId={playingId}
                 onPlay={play}
+                quoteColor="#3B82F6"
                 metrics={[
                   { label: "Accuracy", value: 91 },
                   { label: "Flow", value: 66 },
@@ -475,6 +476,7 @@ function Panel({
   playingId,
   onPlay,
   metrics,
+  quoteColor,
 }: {
   id: string;
   label: string;
@@ -483,6 +485,7 @@ function Panel({
   playingId: string | null;
   onPlay: (id: string, text: string, speaker: "student" | "other") => void;
   metrics?: PanelMetric[];
+  quoteColor?: string;
 }) {
   const active = playingId === id;
   return (
@@ -496,7 +499,7 @@ function Panel({
         </span>
         <span className="text-[12px] text-[#191919]/30">{meta}</span>
       </div>
-      <p className="text-[17px] leading-snug text-[#191919] text-left line-clamp-5 font-medium">
+      <p className="text-[17px] leading-snug text-left line-clamp-5 font-medium" style={{ color: quoteColor ?? "#191919" }}>
         {quote ? <>&ldquo;<CefrHighlightedText text={quote} />&rdquo;</> : "\u00A0"}
       </p>
       {metrics && metrics.length > 0 && (
