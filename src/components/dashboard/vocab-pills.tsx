@@ -60,7 +60,7 @@ export function VocabPills({ studentKey }: { studentKey: string }) {
         {/* Hover tooltip — floats above pills */}
         {hovered && (
           <div
-            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-[320px] z-50 rounded-[8px] p-3 backdrop-blur-[16px] text-[13px]"
+            className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-[320px] z-[999] rounded-[8px] p-3 backdrop-blur-[16px] text-[13px]"
             style={{ boxShadow: GLASS_SHADOW, background: "rgba(255,255,255,0.95)" }}
           >
             <div className="font-medium text-[#191919] mb-0.5">
