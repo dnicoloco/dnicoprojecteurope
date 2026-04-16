@@ -270,46 +270,9 @@ export function LessonFullView({
   }, [turns]);
 
   return (
-    <div className="h-full relative">
-
-      {/* Notion-style section markers — thin lines on right edge */}
-      {sections.length > 1 && (
-        <div className="absolute right-3 top-16 bottom-12 z-[6] flex flex-col justify-between">
-          {sections.map((s, i) => (
-            <button
-              key={i}
-              type="button"
-              title={s.label}
-              onClick={() => {
-                const el = scrollRef.current;
-                if (!el) return;
-                const target = el.scrollHeight * (s.pct / 100);
-                el.scrollTo({ top: target, behavior: "smooth" });
-              }}
-              className="group flex items-center justify-end cursor-pointer py-0.5"
-            >
-              <div className="w-[10px] h-[2px] rounded-[1px] bg-[#191919]/12 group-hover:bg-[#191919]/40 group-hover:w-[14px] transition-all" />
-            </button>
-          ))}
-        </div>
-      )}
-
-      <div
-        ref={scrollRef}
-        className="h-full overflow-y-auto"
-        style={{
-          maskImage: "linear-gradient(to bottom, transparent 0px, black 56px, black calc(100% - 40px), transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent 0px, black 56px, black calc(100% - 40px), transparent 100%)",
-        }}
-      >
-      {loading ? (
-        <div className="flex items-center justify-center h-64 text-[13px] text-[#6a7580]">
-          Loading transcript…
-        </div>
-      ) : (
-        <>
-          {/* Header — sticky above fades */}
-          <div className="sticky top-0 z-[8] px-6 py-3 flex items-center gap-4 bg-white">
+    <div className="h-full flex flex-col relative">
+      {/* Header — outside scroll, never fades */}
+      <div className="shrink-0 px-6 py-3 flex items-center gap-4 bg-white border-b border-black/[0.04]">
             <button
               type="button"
               onClick={onBack}
@@ -352,9 +315,44 @@ export function LessonFullView({
               {playingId === "play-all" ? <Pause size={14} /> : <Volume2 size={14} />}
               {playingId === "play-all" ? "Stop" : "Play lesson"}
             </button>
-          </div>
+      </div>
 
-          {turns.length === 0 ? (
+      {/* Notion-style section markers */}
+      {sections.length > 1 && (
+        <div className="absolute right-3 top-16 bottom-8 z-[6] flex flex-col justify-between">
+          {sections.map((s, i) => (
+            <button
+              key={i}
+              type="button"
+              title={s.label}
+              onClick={() => {
+                const el = scrollRef.current;
+                if (!el) return;
+                const target = el.scrollHeight * (s.pct / 100);
+                el.scrollTo({ top: target, behavior: "smooth" });
+              }}
+              className="group flex items-center justify-end cursor-pointer py-0.5"
+            >
+              <div className="w-[10px] h-[2px] rounded-[1px] bg-[#191919]/12 group-hover:bg-[#191919]/40 group-hover:w-[14px] transition-all" />
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Scrollable content with mask fade at top + bottom */}
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto"
+        style={{
+          maskImage: "linear-gradient(to bottom, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%)",
+        }}
+      >
+      {loading ? (
+        <div className="flex items-center justify-center h-64 text-[13px] text-[#6a7580]">
+          Loading transcript…
+        </div>
+      ) : turns.length === 0 ? (
             <div className="flex items-center justify-center h-64 text-[13px] text-[#6a7580]">
               No transcript available for this lesson.
             </div>
@@ -373,8 +371,6 @@ export function LessonFullView({
               ))}
             </div>
           )}
-        </>
-      )}
       </div>
     </div>
   );

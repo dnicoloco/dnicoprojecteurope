@@ -336,41 +336,32 @@ export function WrappedModal({
           />
         ) : (
           <>
-            {/* Grainient fills the ENTIRE modal — behind dots + content + buttons */}
             <GrainientBackdrop
               palette={slides[slideIdx].palette}
               opacity={0.85}
               variant={slideIdx}
             />
 
-            {/* Dot indicators — small circles at top, on the gradient */}
-            <div className="flex items-center justify-center gap-2 pt-5 pb-2 relative z-[2]">
-              {slides.map((_, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "w-2 h-2 rounded-full transition-colors",
-                    i === slideIdx ? "bg-white" : "bg-white/30",
-                  )}
-                />
-              ))}
+            {/* Top bar: lesson info left, close right */}
+            <div className="absolute top-4 left-5 right-5 z-[3] flex items-center justify-between">
+              <div className="text-[13px] font-medium text-white/70">
+                Lesson {session.lesson} · {fmtDate(session.date)}
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close"
+                className="w-8 h-8 inline-flex items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/10 cursor-pointer"
+              >
+                <X size={16} />
+              </button>
             </div>
-
-            {/* Close button top-right */}
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close"
-              className="absolute top-4 right-4 z-[3] w-8 h-8 inline-flex items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/10 cursor-pointer"
-            >
-              <X size={16} />
-            </button>
 
             {/* Slide body */}
             <SlideView slide={slides[slideIdx]} studentName={student.name} slideIdx={slideIdx} />
 
-            {/* Back / Next — embossed pills floating on gradient */}
-            <div className="absolute bottom-5 left-5 right-5 z-[3] flex items-center justify-between">
+            {/* Bottom bar: back left, dots center, skip+next right */}
+            <div className="absolute bottom-5 left-5 right-5 z-[3] flex items-center">
               <button
                 type="button"
                 onClick={prev}
@@ -379,23 +370,39 @@ export function WrappedModal({
               >
                 <ChevronLeft size={14} /> Back
               </button>
-              {hasSeenBefore && slideIdx === 0 && (
+
+              {/* Dot indicators — centered */}
+              <div className="flex-1 flex items-center justify-center gap-2">
+                {slides.map((_, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      "w-2 h-2 rounded-full transition-colors",
+                      i === slideIdx ? "bg-white" : "bg-white/30",
+                    )}
+                  />
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2">
+                {hasSeenBefore && (
+                  <button
+                    type="button"
+                    onClick={() => setPhase("fullscreen")}
+                    className="text-[12px] text-white/50 hover:text-white cursor-pointer"
+                  >
+                    Skip
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={() => setPhase("fullscreen")}
-                  className="text-[12px] text-white/50 hover:text-white underline underline-offset-4 decoration-dotted cursor-pointer"
+                  onClick={next}
+                  className="inline-flex items-center gap-1 px-4 py-2 rounded-[6px] bg-white text-[#191919] text-[13px] font-medium shadow-[0_1px_0_rgba(0,0,0,0.04),0_2px_4px_rgba(0,0,0,0.1)] cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-transform"
                 >
-                  Skip
+                  {atLast ? "Read the whole lesson" : "Next"}
+                  <ChevronRight size={14} />
                 </button>
-              )}
-              <button
-                type="button"
-                onClick={next}
-                className="inline-flex items-center gap-1 px-4 py-2 rounded-[6px] bg-white text-[#191919] text-[13px] font-medium shadow-[0_1px_0_rgba(0,0,0,0.04),0_2px_4px_rgba(0,0,0,0.1)] cursor-pointer hover:-translate-y-0.5 active:translate-y-0 transition-transform"
-              >
-                {atLast ? "Read the whole lesson" : "Next"}
-                <ChevronRight size={14} />
-              </button>
+              </div>
             </div>
           </>
         )}
