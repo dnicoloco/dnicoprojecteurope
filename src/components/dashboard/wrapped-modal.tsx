@@ -32,14 +32,10 @@ const GLASS_STYLE: React.CSSProperties = {
 };
 
 
-// Pastel-toned Grainient palettes per slide. Emotion-mapped: positive = mint/sky,
-// neutral = lavender/periwinkle, moment = blush.
+// Matching session card palettes — soft pink + soft blue, alternating.
 const GRAIN_PALETTES: Record<string, [string, string, string]> = {
-  lavender: ["#E8DFFF", "#C4B0F0", "#A78BDB"],
-  sky: ["#D6ECFF", "#A8D4FF", "#7AB8F0"],
-  mint: ["#D1F5E0", "#9FE5BE", "#6DCFA0"],
-  blush: ["#FFE5E0", "#FFCDC6", "#F0AEA5"],
-  periwinkle: ["#D4DEFF", "#A8BAFF", "#8099F0"],
+  pink: ["#FFDCE4", "#FFC8D6", "#FFAFC2"],
+  blue: ["#E0EEFA", "#CCDFF2", "#B8D2EA"],
 };
 
 // ------------------------------------------------------------
@@ -233,7 +229,7 @@ export function WrappedModal({
     date: session.date,
     tutor: student.tutor,
     durationMin: current?.durationMin ?? 0,
-    palette: "lavender",
+    palette: "pink",
   });
   if (current && first) {
     const talkTrend = pctChange(first.talkRatioPct, current.talkRatioPct);
@@ -246,7 +242,7 @@ export function WrappedModal({
         pct: talkTrend,
         fromLabel: `from ${Math.round(first.talkRatioPct)}% in lesson 1`,
       },
-      palette: talkTrend >= 0 ? "mint" : "blush",
+      palette: "blue",
     });
     const wpmTrend = pctChange(first.wpm, current.wpm);
     slides.push({
@@ -257,7 +253,7 @@ export function WrappedModal({
         pct: wpmTrend,
         fromLabel: `from ${Math.round(first.wpm)} wpm in lesson 1`,
       },
-      palette: wpmTrend >= 0 ? "sky" : "blush",
+      palette: "pink",
     });
     const vocabTrend = pctChange(first.vocab, current.vocab);
     slides.push({
@@ -268,7 +264,7 @@ export function WrappedModal({
         pct: vocabTrend,
         fromLabel: `from ${first.vocab} words in lesson 1`,
       },
-      palette: vocabTrend >= 0 ? "periwinkle" : "blush",
+      palette: "blue",
     });
   }
   if (grammarSummary) {
@@ -278,13 +274,13 @@ export function WrappedModal({
       cefr: grammarSummary.cefr,
       confidence: grammarSummary.confidence,
       dimensions: grammarSummary.dimensions,
-      palette: grammarSummary.accuracy_pct >= 80 ? "mint" : "blush",
+      palette: "pink",
     });
   }
   slides.push({
     kind: "moment",
     label: session.bestMomentLabel,
-    palette: "lavender",
+    palette: "pink",
   });
 
   const atLast = slideIdx >= slides.length - 1;
@@ -338,11 +334,16 @@ export function WrappedModal({
           />
         ) : (
           <>
-            <GrainientBackdrop
-              palette={slides[slideIdx].palette}
-              opacity={0.85}
-              variant={slideIdx}
-            />
+            {/* Cross-fade: render both palettes, transition opacity */}
+            {(["pink", "blue"] as const).map((p) => (
+              <div
+                key={p}
+                className="absolute inset-0 transition-opacity duration-500 ease-in-out"
+                style={{ opacity: slides[slideIdx].palette === p ? 0.85 : 0 }}
+              >
+                <GrainientBackdrop palette={p} opacity={1} variant={slideIdx} />
+              </div>
+            ))}
 
             {/* Top bar: lesson info left, close right */}
             <div className="absolute top-4 left-5 right-5 z-[3] flex items-center justify-between">
