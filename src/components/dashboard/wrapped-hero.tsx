@@ -214,34 +214,29 @@ export function WrappedHero({
             {session.bestMomentLabel}
           </h2>
 
-          {/* Horizontal metric bars */}
-          <div className="flex flex-col gap-2">
+          {/* Horizontal metric bars — constrained width, same metrics as grammar slide */}
+          <div className="flex flex-col gap-2 max-w-[340px]">
             {[
-              { label: "Talk", value: Math.round(last.talkRatioPct), max: 100, pct: pctDelta(talkValues), color: "#FF7AAC" },
-              { label: "Pace", value: Math.round(last.wpm), max: 120, pct: pctDelta(wpmValues), color: "#7AB8F0" },
-              { label: "Words", value: last.vocab, max: 1000, pct: pctDelta(vocabValues), color: "#6DCFA0" },
+              { label: "Accuracy", value: 87, max: 100, color: "#6DCFA0" },
+              { label: "Word range", value: 70, max: 100, color: "#7AB8F0" },
+              { label: "Confidence", value: 95, max: 100, color: "#FF7AAC" },
             ].map((m) => (
-              <div key={m.label} className="flex items-center gap-2.5">
-                <span className="text-[12px] font-medium text-[#6a7580] w-[42px] text-right shrink-0">
+              <div key={m.label} className="flex items-center gap-2">
+                <span className="text-[11px] font-medium text-[#6a7580] w-[68px] text-right shrink-0">
                   {m.label}
                 </span>
                 <div className="flex-1 h-[8px] rounded-full bg-[#F1F3F5] overflow-hidden">
                   <div
                     className="h-full rounded-full"
                     style={{
-                      width: `${Math.min(100, (m.value / m.max) * 100)}%`,
+                      width: `${m.value}%`,
                       backgroundColor: m.color,
                     }}
                   />
                 </div>
-                <span className="font-display text-[16px] text-[#191919] w-[40px] text-right tabular-nums leading-none">
-                  {m.value}
+                <span className="font-display text-[14px] text-[#191919] w-[32px] text-right tabular-nums leading-none">
+                  {m.value}%
                 </span>
-                {m.pct !== 0 && (
-                  <span className={cn("text-[11px] font-medium w-[38px]", m.pct > 0 ? "text-[#FF7AAC]" : "text-[#6a7580]")}>
-                    {m.pct > 0 ? "↑" : "↓"}{Math.abs(m.pct)}%
-                  </span>
-                )}
               </div>
             ))}
           </div>
